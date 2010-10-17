@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ -f 'log.prepare_test_case' ]; then
+   echo ''
+else
+   ./prepare_testing_data
+   echo ''
+fi
+
+
+echo '-------------------------- Testing amazon_ls files -----------------------------'
+amazon_ls.py TEST_STUDY $* > log.amazon_ls_files 2>&1
+
+if [ $? -ne 0 ] ; then
+   echo "An error have appeared during execution of amazon_ls.py" 
+   cat log.amazon_ls_files
+   rm log.amazon_ls_files
+else
+   count_boundary=`fgrep -c "boundary" log.amazon_ls_files`
+   count_blockMeshDict=`fgrep -c "blockMeshDict" log.amazon_ls_files`
+   count_faces=`fgrep -c "faces" log.amazon_ls_files`
+   count_neighbour=`fgrep -c "faces" log.amazon_ls_files`
+   if [ ${count_boundary} -gt 0 ] && [ ${count_blockMeshDict} -gt 0 ] && [ ${count_faces} -gt 0 ] && [ ${count_neighbour} -gt 0 ] ; then 
+      echo '----------------------------------- OK ------------------------------------------'
+   else
+      echo ' ERROR : There are not all files in the s3 '
+      rm log.amazon_ls_files
+   fi   
+
+fi
+

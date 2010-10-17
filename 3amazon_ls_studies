@@ -8,7 +8,7 @@ else
 fi
 
 
-echo '-------------------------- Testing amazon_ls script -----------------------------'
+echo '-------------------------- Testing amazon_ls studies -----------------------------'
 amazon_ls.py $* > log.amazon_ls_study 2>&1
 
 if [ $? -ne 0 ] ; then
