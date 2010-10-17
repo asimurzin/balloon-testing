@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm log.*
+amazon_s3clean.py
