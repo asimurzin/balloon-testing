@@ -20,7 +20,7 @@ else
    count_blockMeshDict=`fgrep -c "blockMeshDict" log.amazon_ls_files`
    count_faces=`fgrep -c "faces" log.amazon_ls_files`
    count_neighbour=`fgrep -c "faces" log.amazon_ls_files`
-   if [ ${count_boundary} -gt 0 ] && [ ${count_blockMeshDict} -gt 0 ] && [ ${count_faces} -gt 0 ] && [ ${count_neighbour} -gt 0 ] ; then 
+   if [[ ${count_boundary} -gt 0 && ${count_blockMeshDict} -gt 0 && ${count_faces} -gt 0 && ${count_neighbour} -gt 0 ]] ; then 
       echo '----------------------------------- OK ------------------------------------------'
    else
       echo ' ERROR : There are not all files in the s3 '
