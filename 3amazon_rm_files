@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ -f 'log.prepare_test_case' ]; then
+   echo ''
+else
+   ./prepare_testing_data
+   echo ''
+fi
+
+echo '-------------------------- Testing amazon_rm files -----------------------------'
+amazon_rm.py --study-name=TEST_STUDY boundary faces $* > log.amazon_rm_files 2>&1
+
+if [ $? -ne 0 ] ; then
+   echo "An error have appeared during execution of amazon_rm.py" 
+   cat log.amazon_rm_files
+   rm log.amazon_rm_files
+else
+  amazon_ls.py TEST_STUDY > log.list_files 2>&1
+  count_boundary=`fgrep -c "boundary"  log.list_files `
+  count_faces=`fgrep -c "faces" log.list_files`
+  
+  if [[ ${count_boundary} -eq 0 && ${count_faces} -eq 0 ]]; then
+     echo '----------------------------------- OK ------------------------------------------'
+  else
+     echo ' ERROR : Not all files have been removed from the s3 '
+     rm log.list_files
+     rm log.amazon_rm_files
+  fi
+fi
+
+
+
