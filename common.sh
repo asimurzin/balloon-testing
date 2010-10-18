@@ -20,11 +20,36 @@
 
 
 #-----------------------------------------------------------------------------------------
-prepare_testing_data()
+case_dir='case'
+
+
+#-----------------------------------------------------------------------------------------
+create_list_filenames_in_casedir()
 {
+  a_list_filenames=`(cd ${case_dir} && ls -I *~ )`
+  echo $a_list_filenames
+}
+
+create_list_case_files()
+{
+  a_list_filenames=`create_list_filenames_in_casedir`
+  a_list_files=''
+  for a_filename in ${a_list_filenames}
+  do
+    a_list_files+=" ${case_dir}/${a_filename}"
+  done
+  echo ${a_list_files}
+}
+
+#-----------------------------------------------------------------------------------------
+prepare_testing_data()
+{ 
+
+#a_list_filenames=`create_list_filenames_in_casedir`
+a_list_files=`create_list_case_files`
 if [ ! -f 'log.prepare_test_case'  ]; then
    echo '---------------------------- Preparing test data -------------------------------'
-   `amazon_upload_start.py --study-name=TEST_STUDY ./case/blockMeshDict ./case/boundary ./case/faces ./case/neighbour $* > log.prepare_test_case 2>&1`
+   `amazon_upload_start.py --study-name=TEST_STUDY ${a_list_files} $* > log.prepare_test_case 2>&1`
    if [ $? -ne 0 ]; then
       echo ' An error have appeared during execution of amazon_upload_start.py'
       cat log.prepare_test_case
