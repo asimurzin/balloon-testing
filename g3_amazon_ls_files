@@ -34,17 +34,23 @@ if [ $? -ne 0 ] ; then
    cat log.amazon_ls_files
    rm log.amazon_ls_files
 else
-   count_boundary=`fgrep -c "boundary" log.amazon_ls_files`
-   count_blockMeshDict=`fgrep -c "blockMeshDict" log.amazon_ls_files`
-   count_faces=`fgrep -c "faces" log.amazon_ls_files`
-   count_neighbour=`fgrep -c "faces" log.amazon_ls_files`
-   if [[ ${count_boundary} -gt 0 && ${count_blockMeshDict} -gt 0 && ${count_faces} -gt 0 && ${count_neighbour} -gt 0 ]] ; then 
-      echo '----------------------------------- OK -----------------------------------------'
-   else
-      echo ' ERROR : There are not all files in the s3 '
+   an_allright="True"
+   a_list_filenames=`create_list_filenames_in_casedir`
+   for a_filename in ${a_list_filenames}
+   do
+      count_entrances=`fgrep -c ${a_filename} log.amazon_ls_files`
+      if [ ${count_entrances} -eq 0 ]; then
+         an_allright="False"
+         an_not_exists_file=${a_filename}
+         break
+      fi
+   done 
+   if [ "${an_allright}" = "False" ]; then
+      echo " ERROR : There is no '${an_not_exists_file}' file in the s3 "
       rm log.amazon_ls_files
-   fi   
-
+   else
+      echo '----------------------------------- OK -----------------------------------------'
+   fi
 fi
 
 
