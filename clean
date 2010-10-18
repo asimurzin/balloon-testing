@@ -1,4 +1,5 @@
 #!/bin/bash
 
 rm log.*
+rm -rf case.out
 amazon_s3clean.py
