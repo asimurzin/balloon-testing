@@ -1,8 +1,6 @@
 #!/bin/bash
 
-if [ -f 'log.prepare_test_case' ]; then
-   echo ''
-else
+if [ ! -f 'log.prepare_test_case' ]; then
    ./prepare_testing_data
    echo ''
 fi
@@ -21,7 +19,7 @@ else
    count_faces=`fgrep -c "faces" log.amazon_ls_files`
    count_neighbour=`fgrep -c "faces" log.amazon_ls_files`
    if [[ ${count_boundary} -gt 0 && ${count_blockMeshDict} -gt 0 && ${count_faces} -gt 0 && ${count_neighbour} -gt 0 ]] ; then 
-      echo '----------------------------------- OK ------------------------------------------'
+      echo '----------------------------------- OK -----------------------------------------'
    else
       echo ' ERROR : There are not all files in the s3 '
       rm log.amazon_ls_files
