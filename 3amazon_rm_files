@@ -1,9 +1,8 @@
 #!/bin/bash
 
-if [ ! -f 'log.prepare_test_case'  ]; then
-   ./prepare_testing_data
-   echo ''
-fi
+#source common function
+. common.sh
+prepare_testing_data
 
 echo '-------------------------- Testing amazon_rm files -----------------------------'
 amazon_rm.py --study-name=TEST_STUDY boundary faces $* > log.amazon_rm_files 2>&1
