@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+#-----------------------------------------------------------------------------------------
+#source common function
+. common.sh
+prepare_testing_data
+
+
+#-----------------------------------------------------------------------------------------
+echo '------------------------ Testing amazon_download file --------------------------'
+amazon_download.py --study-name=TEST_STUDY --located-files=blockMeshDict --output-dir='case.out' $* > log.amazon_download_file 2>&1
+
+if [ $? -ne 0 ]; then
+   echo "An error have appeared during execution of amazon_dwonload.py" 
+   cat log.amazon_download_file
+   rm log.amazon_download_file
+else
+  if [ -f case.out/blockMeshDict ]; then
+     echo '----------------------------------- OK -----------------------------------------'
+  else
+     echo ' ERROR : There is no downloading file , in "case.out" folder '
+     rm log.amazon_download_file
+  fi
+fi
+
