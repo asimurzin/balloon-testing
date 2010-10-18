@@ -19,6 +19,7 @@ if [ ! -f 'log.prepare_test_case'  ]; then
          rm log.prepare_test_case
       else
          echo '----------------------------------- OK -----------------------------------------'
+         echo ''
       fi
    fi   
 fi
