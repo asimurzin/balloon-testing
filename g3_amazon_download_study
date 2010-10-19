@@ -23,22 +23,35 @@
 #source common function
 . common.sh
 prepare_testing_data
+a_study_name=`get_study_name`
 
 
 #-----------------------------------------------------------------------------------------
+an_output_dir=${case_dir}.out
+
 echo '------------------------ Testing amazon_download study -------------------------'
-amazon_download.py --study-name=TEST_STUDY --output-dir='case.out' --enable-fresh $* > log.amazon_download_study 2>&1
+amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --enable-fresh $* > log.amazon_download_study 2>&1
 
 if [ $? -ne 0 ]; then
    echo "An error have appeared during execution of amazon_dwonload.py" 
    cat log.amazon_download_study
    rm log.amazon_download_study
 else
-  if [[ -f case.out/blockMeshDict && -f case.out/boundary && -f case.out/faces && -f case.out/neighbour ]]; then
-     echo '----------------------------------- OK -----------------------------------------'
+  a_list_filenames=`create_list_filenames_in_casedir`
+  an_allright="True"
+  for a_file in ${a_list_filenames}
+  do
+     if [ ! -f ${an_output_dir}/${a_file} ]; then
+        an_allright="False"
+        a_bad_file=${a_file}
+        break
+     fi
+  done
+  if [ "${an_allright}" = "False" ]; then
+     echo " ERROR : There is no '${a_bad_file}' file , in output folder  '${an_output_dir}'. "
+     rm log.amazon_download_study     
   else
-     echo ' ERROR : There are not all downloading files , in "case.out" folder '
-     rm log.amazon_download_study
+     echo '----------------------------------- OK -----------------------------------------'
   fi
 fi
 
