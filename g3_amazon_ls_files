@@ -42,12 +42,12 @@ else
       count_entrances=`fgrep -c ${a_filename} log.amazon_ls_files`
       if [ ${count_entrances} -eq 0 ]; then
          an_allright="False"
-         an_not_exists_file=${a_filename}
+         a_not_exists_file=${a_filename}
          break
       fi
    done 
    if [ "${an_allright}" = "False" ]; then
-      echo " ERROR : There is no '${an_not_exists_file}' file in the s3 "
+      echo " ERROR : There is no '${a_not_exists_file}' file in the s3 "
       rm log.amazon_ls_files
    else
       echo '----------------------------------- OK -----------------------------------------'
