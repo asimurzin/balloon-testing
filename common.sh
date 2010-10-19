@@ -19,17 +19,19 @@
 ##
 
 
-#-----------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------
 case_dir='case'
 
 
-#-----------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------
 create_list_filenames_in_casedir()
 {
   a_list_filenames=`(cd ${case_dir} && ls -I *~ )`
   echo $a_list_filenames
 }
 
+
+#-------------------------------------------------------------------------------------------
 create_list_case_files()
 {
   a_list_filenames=`create_list_filenames_in_casedir`
@@ -41,21 +43,28 @@ create_list_case_files()
   echo ${a_list_files}
 }
 
+
+#-----------------------------------------------------------------------------------------
+get_study_name()
+{
+ a_study_name=`sed '$!d' log.prepare_test_case`
+ echo $a_study_name
+}
+
 #-----------------------------------------------------------------------------------------
 prepare_testing_data()
 { 
-
-#a_list_filenames=`create_list_filenames_in_casedir`
 a_list_files=`create_list_case_files`
 if [ ! -f 'log.prepare_test_case'  ]; then
    echo '---------------------------- Preparing test data -------------------------------'
-   `amazon_upload_start.py --study-name=TEST_STUDY ${a_list_files} $* > log.prepare_test_case 2>&1`
+   `amazon_upload_start.py ${a_list_files} $* > log.prepare_test_case 2>&1`
    if [ $? -ne 0 ]; then
       echo ' An error have appeared during execution of amazon_upload_start.py'
       cat log.prepare_test_case
       rm log.prepare_test_case
    else
-      amazon_upload_resume.py --study-name=TEST_STUDY $* > log.prepare_test_case 2>&1
+      a_study_name=`get_study_name`
+      amazon_upload_resume.py --study-name=${a_study_name} $* > log.prepare_test_case 2>&1
       if [ $? -ne 0 ]; then
          echo ' An error have appeared during execution of amazon_upload_resume.py'
          cat log.prepare_test_case
