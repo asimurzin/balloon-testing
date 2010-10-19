@@ -23,21 +23,26 @@
 #source common function
 . common.sh
 prepare_testing_data
+a_study_name=`get_study_name`
 
 
 #-----------------------------------------------------------------------------------------
+an_output_dir=${case_dir}.out
+a_list_filenames=`create_list_filenames_in_casedir`
+a_downloading_file=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
+
 echo '------------------------ Testing amazon_download file --------------------------'
-amazon_download.py --study-name=TEST_STUDY --located-files=blockMeshDict --output-dir='case.out' $* > log.amazon_download_file 2>&1
+amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} $* > log.amazon_download_file 2>&1
 
 if [ $? -ne 0 ]; then
    echo "An error have appeared during execution of amazon_dwonload.py" 
    cat log.amazon_download_file
    rm log.amazon_download_file
 else
-  if [ -f case.out/blockMeshDict ]; then
+  if [ -f ${an_output_dir}/${a_downloading_file} ]; then
      echo '----------------------------------- OK -----------------------------------------'
   else
-     echo ' ERROR : There is no downloading file , in "case.out" folder '
+     echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
      rm log.amazon_download_file
   fi
 fi
