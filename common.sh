@@ -47,34 +47,35 @@ create_list_case_files()
 #-----------------------------------------------------------------------------------------
 get_study_name()
 {
- a_study_name=`sed '$!d' log.prepare_test_case`
- echo $a_study_name
+  a_study_name=`sed '$!d' log.prepare_test_case`
+  echo $a_study_name
 }
+
 
 #-----------------------------------------------------------------------------------------
 prepare_testing_data()
 { 
-a_list_files=`create_list_case_files`
-if [ ! -f 'log.prepare_test_case'  ]; then
-   echo '---------------------------- Preparing test data -------------------------------'
-   `amazon_upload_start.py ${a_list_files} $* > log.prepare_test_case 2>&1`
-   if [ $? -ne 0 ]; then
-      echo ' An error have appeared during execution of amazon_upload_start.py'
-      cat log.prepare_test_case
-      rm log.prepare_test_case
-   else
-      a_study_name=`get_study_name`
-      amazon_upload_resume.py --study-name=${a_study_name} $* > log.prepare_test_case 2>&1
-      if [ $? -ne 0 ]; then
-         echo ' An error have appeared during execution of amazon_upload_resume.py'
-         cat log.prepare_test_case
-         rm log.prepare_test_case
-      else
-         echo '----------------------------------- OK -----------------------------------------'
-         echo ''
-      fi
-   fi   
-fi
+  a_list_files=`create_list_case_files`
+  if [ ! -f 'log.prepare_test_case'  ]; then
+     echo '---------------------------- Preparing test data -------------------------------'
+     `amazon_upload_start.py ${a_list_files} $* > log.prepare_test_case 2>&1`
+     if [ $? -ne 0 ]; then
+        echo ' An error have appeared during execution of amazon_upload_start.py'
+        cat log.prepare_test_case
+        rm log.prepare_test_case
+     else
+        a_study_name=`get_study_name`
+        amazon_upload_resume.py --study-name=${a_study_name} $* > log.prepare_test_case 2>&1
+        if [ $? -ne 0 ]; then
+           echo ' An error have appeared during execution of amazon_upload_resume.py'
+           cat log.prepare_test_case
+           rm log.prepare_test_case
+        else
+           echo '----------------------------------- OK -----------------------------------------'
+           echo ''
+        fi
+     fi   
+  fi
 }
 
 
