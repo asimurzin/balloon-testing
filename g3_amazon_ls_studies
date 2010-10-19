@@ -23,6 +23,7 @@
 #source common function
 . common.sh
 prepare_testing_data
+a_study_name=`get_study_name`
 
 
 #-----------------------------------------------------------------------------------------
@@ -34,11 +35,11 @@ if [ $? -ne 0 ] ; then
    cat log.amazon_ls_study
    rm log.amazon_ls_study
 else
-   count=`fgrep -c "TEST_STUDY" log.amazon_ls_study`
+   count=`fgrep -c ${a_study_name} log.amazon_ls_study`
    if [ ${count} -gt 0 ] ; then 
       echo '----------------------------------- OK -----------------------------------------'
    else
-      echo ' ERROR : There is no "TEST_STUDY" in the s3 '
+      echo " ERROR : There is no '${a_study_name}' study in the s3 "
       rm log.amazon_ls_study
    fi   
 
