@@ -42,6 +42,5 @@ else
       echo " ERROR : There is no '${a_study_name}' study in the s3 "
       rm log.amazon_ls_study
    fi   
-
 fi
 

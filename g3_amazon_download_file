@@ -39,11 +39,11 @@ if [ $? -ne 0 ]; then
    cat log.amazon_download_file
    rm log.amazon_download_file
 else
-  if [ -f ${an_output_dir}/${a_downloading_file} ]; then
-     echo '----------------------------------- OK -----------------------------------------'
-  else
-     echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
-     rm log.amazon_download_file
-  fi
+   if [ -f ${an_output_dir}/${a_downloading_file} ]; then
+      echo '----------------------------------- OK -----------------------------------------'
+   else
+      echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
+      rm log.amazon_download_file
+   fi
 fi
 

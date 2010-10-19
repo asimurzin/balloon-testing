@@ -38,7 +38,7 @@ create_list_case_files()
   a_list_files=''
   for a_filename in ${a_list_filenames}
   do
-    a_list_files+=" ${case_dir}/${a_filename}"
+     a_list_files+=" ${case_dir}/${a_filename}"
   done
   echo ${a_list_files}
 }

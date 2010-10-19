@@ -38,26 +38,26 @@ if [ $? -ne 0 ] ; then
    cat log.amazon_rm_files
    rm log.amazon_rm_files
 else
-  amazon_ls.py ${a_study_name} > log.list_files 2>&1
-  an_allright="True"
-  for a_file in ${a_list_file_to_rm}
-  do
-    count_entrances=`fgrep -c ${a_file}  log.list_files `
-    if [ ${count_entrances} -ne 0 ]; then
+   amazon_ls.py ${a_study_name} > log.list_files 2>&1
+   an_allright="True"
+   for a_file in ${a_list_file_to_rm}
+   do
+      count_entrances=`fgrep -c ${a_file}  log.list_files `
+      if [ ${count_entrances} -ne 0 ]; then
          an_allright="False"
          a_not_deleted_file=${a_filename}
          break
-    fi
-  done
-  if [ "${an_allright}" = "False" ]; then
-     echo ' ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 '
-     rm log.list_files
-     rm log.amazon_rm_files
-  else
-     echo '----------------------------------- OK -----------------------------------------'
-     amazon_s3clean.py > tmp.log 2>&1
-     rm log.list_files tmp.log log.prepare_test_case
-  fi
+      fi
+   done
+   if [ "${an_allright}" = "False" ]; then
+      echo ' ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 '
+      rm log.list_files
+      rm log.amazon_rm_files
+   else
+      echo '----------------------------------- OK -----------------------------------------'
+      amazon_s3clean.py > tmp.log 2>&1
+      rm log.list_files tmp.log log.prepare_test_case
+   fi
 fi
 
 

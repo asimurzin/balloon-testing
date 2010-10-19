@@ -37,21 +37,21 @@ if [ $? -ne 0 ]; then
    cat log.amazon_download_study
    rm log.amazon_download_study
 else
-  a_list_filenames=`create_list_filenames_in_casedir`
-  an_allright="True"
-  for a_file in ${a_list_filenames}
-  do
-     if [ ! -f ${an_output_dir}/${a_file} ]; then
-        an_allright="False"
-        a_bad_file=${a_file}
-        break
-     fi
-  done
-  if [ "${an_allright}" = "False" ]; then
-     echo " ERROR : There is no '${a_bad_file}' file , in output folder  '${an_output_dir}'. "
-     rm log.amazon_download_study     
-  else
-     echo '----------------------------------- OK -----------------------------------------'
-  fi
+   a_list_filenames=`create_list_filenames_in_casedir`
+   an_allright="True"
+   for a_file in ${a_list_filenames}
+   do
+      if [ ! -f ${an_output_dir}/${a_file} ]; then
+         an_allright="False"
+         a_bad_file=${a_file}
+         break
+      fi
+   done
+   if [ "${an_allright}" = "False" ]; then
+      echo " ERROR : There is no '${a_bad_file}' file , in output folder  '${an_output_dir}'. "
+      rm log.amazon_download_study     
+   else
+      echo '----------------------------------- OK -----------------------------------------'
+   fi
 fi
 
