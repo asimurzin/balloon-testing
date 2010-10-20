@@ -22,8 +22,7 @@
 #-----------------------------------------------------------------------------------------
 #source common function
 . common.sh
-prepare_testing_data
-a_study_name=`get_study_name`
+a_study_name=`prepare_testing_data`
 
 
 #-----------------------------------------------------------------------------------------
