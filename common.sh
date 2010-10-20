@@ -79,6 +79,7 @@ prepare_testing_data()
      fi
    else
       a_study_name=`sed '$!d' studies`
+      echo ${a_study_name}
 fi
 }
 
