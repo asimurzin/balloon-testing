@@ -22,6 +22,14 @@
 #-----------------------------------------------------------------------------------------
 . common.sh
 
-rm log.*
+
 rm -rf ${case_dir}.out
-amazon_s3clean.py
+
+if [ -f studies ]; then 
+   a_list_studies=`cat studies`
+   amazon_rm_study.py ${a_list_studies}
+   rm studies
+   rm log.*
+fi
+
+
