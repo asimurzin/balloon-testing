@@ -23,11 +23,11 @@
 . common.sh
 
 
-rm -rf ${case_dir}.out
-
+#-----------------------------------------------------------------------------------------
 if [ -f studies ]; then 
    a_list_studies=`cat studies`
    amazon_rm_study.py ${a_list_studies}
+   rm -rf ${case_dir}.out
    rm studies
    rm log.*
 fi
