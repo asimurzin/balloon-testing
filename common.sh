@@ -45,10 +45,9 @@ create_list_case_files()
 
 
 #-----------------------------------------------------------------------------------------
-get_study_name()
+remove_log_prepare_test_case()
 {
-  a_study_name=`sed '$!d' log.prepare_test_case`
-  echo $a_study_name
+  rm log.prepare_test_case
 }
 
 
@@ -57,7 +56,7 @@ prepare_testing_data()
 { 
   a_list_files=`create_list_case_files`
   if [ ! -f 'log.prepare_test_case'  ]; then
-     a_study_name=`amazon_upload_start.py ${a_list_files} $* 2>log.prepare_test_case`
+     a_study_name=`amazon_upload_start.py ${a_list_files} 2>log.prepare_test_case`
      if [ -f studies ]; then
         echo ${a_study_name} >> studies
      else
@@ -67,20 +66,20 @@ prepare_testing_data()
         echo ' An error have appeared during execution of amazon_upload_start.py'
         cat log.prepare_test_case
         rm log.prepare_test_case
+        exit -1
      else
-        amazon_upload_resume.py --study-name=${a_study_name} $*  2>>log.prepare_test_case
+        a_study_name=`amazon_upload_resume.py --study-name=${a_study_name} 2>>log.prepare_test_case`
         if [ $? -ne 0 ]; then
            echo ' An error have appeared during execution of amazon_upload_resume.py'
            cat log.prepare_test_case
            rm log.prepare_test_case
-        else
-           echo ${a_study_name}
+           exit -1
         fi
-     fi
+      fi
    else
       a_study_name=`sed '$!d' studies`
-      echo ${a_study_name}
 fi
+echo ${a_study_name}
 }
 
 
