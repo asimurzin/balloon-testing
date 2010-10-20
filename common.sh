@@ -57,25 +57,26 @@ prepare_testing_data()
 { 
   a_list_files=`create_list_case_files`
   if [ ! -f 'log.prepare_test_case'  ]; then
-     echo '---------------------------- Preparing test data -------------------------------'
-     `amazon_upload_start.py ${a_list_files} $* > log.prepare_test_case 2>&1`
+     a_study_name=`amazon_upload_start.py ${a_list_files} $* 2>log.prepare_test_case`
      if [ $? -ne 0 ]; then
         echo ' An error have appeared during execution of amazon_upload_start.py'
         cat log.prepare_test_case
         rm log.prepare_test_case
      else
-        a_study_name=`get_study_name`
-        amazon_upload_resume.py --study-name=${a_study_name} $* > log.prepare_test_case 2>&1
+        amazon_upload_resume.py --study-name=${a_study_name} $*  2>log.prepare_test_case
         if [ $? -ne 0 ]; then
            echo ' An error have appeared during execution of amazon_upload_resume.py'
            cat log.prepare_test_case
            rm log.prepare_test_case
         else
-           echo '----------------------------------- OK -----------------------------------------'
-           echo ''
+           echo ${a_study_name}
         fi
-     fi   
-  fi
+     fi
+  else
+    a_first_line=`sed q log.prepare_test_case`
+    a_study_name=` python -c "temp=\"${a_first_line}\"; print temp.replace(\"\'\",'').replace(\"a_study_name = \",'')"`
+    echo ${a_study_name}
+fi
 }
 
 
