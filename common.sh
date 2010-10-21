@@ -52,6 +52,36 @@ remove_log_prepare_test_case()
 
 
 #-----------------------------------------------------------------------------------------
+get_studies()
+{
+  cat studies
+}
+
+
+#-----------------------------------------------------------------------------------------
+rm_studies()
+{
+  rm studies
+}
+
+
+#-----------------------------------------------------------------------------------------
+study_name_starts_with()
+{
+  echo testing
+}
+
+
+#-----------------------------------------------------------------------------------------
+create_study_name()
+{
+  a_begin_study_name=`study_name_starts_with`
+  a_study_name=`python -c "import uuid; print '${a_begin_study_name}-%s' % uuid.uuid4()"`
+  echo ${a_study_name}
+}
+
+
+#-----------------------------------------------------------------------------------------
 prepare_testing_data()
 { 
   a_list_filenames=`create_list_filenames_in_casedir`
@@ -59,7 +89,8 @@ prepare_testing_data()
   a_list_files=`create_list_case_files ${a_list_filenames}`
   
   if [ ! -f 'log.prepare_test_case'  ]; then
-     a_study_name=`amazon_upload_start.py ${a_list_files} 2>log.prepare_test_case`
+     a_study_name=`create_study_name`
+     `amazon_upload_start.py --study-name=${a_study_name} ${a_list_files} > log.prepare_test_case 2>&1`
      if [ -f studies ]; then
         echo ${a_study_name} >> studies
      else
@@ -71,7 +102,7 @@ prepare_testing_data()
         rm log.prepare_test_case
         exit -1
      else
-        a_study_name=`amazon_upload_resume.py --study-name=${a_study_name} 2>>log.prepare_test_case`
+        `amazon_upload_resume.py --study-name=${a_study_name} >>log.prepare_test_case 2>&1`
         if [ $? -ne 0 ]; then
            echo ' An error have appeared during execution of amazon_upload_resume.py'
            cat log.prepare_test_case
