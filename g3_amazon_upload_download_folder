@@ -49,7 +49,7 @@ else
 fi
 
 echo '----------------------- Testing amazon_download folder -------------------------'
-amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} > log.amazon_download_folder 2>&1
+amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} > log.amazon_download_folder --enable-fresh 2>&1
 if [ $? -ne 0 ]; then
    echo "An error have appeared during execution of amazon_download.py" 
    cat log.amazon_download_folder
