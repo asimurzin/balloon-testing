@@ -34,7 +34,7 @@ create_list_filenames_in_casedir()
 #-------------------------------------------------------------------------------------------
 create_list_case_files()
 {
-  a_list_filenames=`create_list_filenames_in_casedir`
+  a_list_filenames=$*
   a_list_files=''
   for a_filename in ${a_list_filenames}
   do
@@ -54,7 +54,10 @@ remove_log_prepare_test_case()
 #-----------------------------------------------------------------------------------------
 prepare_testing_data()
 { 
-  a_list_files=`create_list_case_files`
+  a_list_filenames=`create_list_filenames_in_casedir`
+
+  a_list_files=`create_list_case_files ${a_list_filenames}`
+  
   if [ ! -f 'log.prepare_test_case'  ]; then
      a_study_name=`amazon_upload_start.py ${a_list_files} 2>log.prepare_test_case`
      if [ -f studies ]; then
