@@ -27,7 +27,7 @@ a_study_name=`prepare_testing_data`
 
 #-----------------------------------------------------------------------------------------
 echo '-------------------------- Testing amazon_ls files -----------------------------'
-amazon_ls.py ${a_study_name} > log.amazon_ls_files 2>&1
+amazon_ls.py ${a_study_name} --debug > log.amazon_ls_files 2>&1
 
 if [ $? -ne 0 ] ; then
    echo "An error have appeared during execution of amazon_ls.py" 

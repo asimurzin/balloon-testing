@@ -33,7 +33,7 @@ a_testing_files=`create_list_case_files ${a_testing_filenames}`
 
 
 echo '------------------------ Testing amazon_ls | rm files --------------------------'
-a_study_name=`amazon_upload_start.py ${a_testing_files} 2>log.prepare_data | amazon_upload_resume.py 2>>log.prepare_data`
+a_study_name=`amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | amazon_upload_resume.py --debug 2>>log.prepare_data`
 
 if [ $? -ne 0 ]; then
    echo "An error have appeared during execution of 'amazon_upload_start.py | amazon_upload_resume.py ' " 
@@ -42,7 +42,7 @@ if [ $? -ne 0 ]; then
    exit -1
 fi
 
-`amazon_ls.py ${a_study_name} 2>log.amazon_ls_pipe_rm_files | xargs amazon_rm.py --study-name=${a_study_name} 2>>log.amazon_ls_pipe_rm_files`
+`amazon_ls.py ${a_study_name} --debug 2>log.amazon_ls_pipe_rm_files | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.amazon_ls_pipe_rm_files`
 
 if [ $? -ne 0 ]; then
    echo "An error have appeared during execution of 'amazon_ls.py ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name}' " 
@@ -51,7 +51,7 @@ if [ $? -ne 0 ]; then
    rm log.prepare_data
    exit -1
 else
-   amazon_ls.py ${a_study_name} > log.check_ls_pipe_rm_files 2>&1
+   amazon_ls.py ${a_study_name} --debug > log.check_ls_pipe_rm_files 2>&1
    an_allright="True"
    for a_filename in ${a_testing_filenames}
    do

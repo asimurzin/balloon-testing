@@ -30,14 +30,14 @@ echo '-------------------------- Testing amazon_rm files -----------------------
 a_list_filenames=`create_list_filenames_in_casedir`
 a_list_file_to_rm=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 1 ],' ',_list[ 0 ]" `
 
-amazon_rm.py --study-name=${a_study_name}  ${a_list_file_to_rm} > log.amazon_rm_files 2>&1
+amazon_rm.py --study-name=${a_study_name}  ${a_list_file_to_rm} --debug > log.amazon_rm_files 2>&1
 if [ $? -ne 0 ] ; then
    echo "An error have appeared during execution of amazon_rm.py" 
    cat log.amazon_rm_files
    rm log.amazon_rm_files
    exit -1
 else
-   amazon_ls.py ${a_study_name} > log.list_files 2>&1
+   amazon_ls.py ${a_study_name} --debug > log.list_files 2>&1
    an_allright="True"
    for a_file in ${a_list_file_to_rm}
    do

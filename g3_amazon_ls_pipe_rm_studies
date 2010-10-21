@@ -34,7 +34,7 @@ a_study_name2=`prepare_testing_data`
 
 #------------------------------------------------------------------------------------------
 
-amazon_ls.py 2>log.ls_pipe_rm_studies | grep testing | xargs amazon_rm_study.py 2>>log.ls_pipe_rm_studies
+amazon_ls.py --debug 2>log.ls_pipe_rm_studies | grep testing | xargs amazon_rm_study.py --debug 2>>log.ls_pipe_rm_studies
 
 echo '----------------------- Testing amazon_ls | rm studies -------------------------'
 if [ $? -ne 0 ]; then
@@ -42,7 +42,7 @@ if [ $? -ne 0 ]; then
    rm log.ls_pipe_rm_studies
    exit -1
 else
-   dummy=`amazon_ls.py 2>log.check_ls_pipe_rm_studies`
+   dummy=`amazon_ls.py --debug 2>log.check_ls_pipe_rm_studies`
    a_begin_study_name=`study_name_starts_with`
    count_entrances=`fgrep -c "${a_begin_study_name}" log.check_ls_pipe_rm_studies`
    if [ ${count_entrances} -ne 0 ]; then
