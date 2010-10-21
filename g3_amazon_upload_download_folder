@@ -56,14 +56,14 @@ if [ $? -ne 0 ]; then
    rm log.amazon_download_folder
    exit -1
 else
-   an_allrigth=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}/${case_dir}`
-   if [ "x${an_allrigth}" == "x" ]; then
+   a_differences=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}/${case_dir}`
+   if [ "x${a_differences}" == "x" ]; then
       echo '----------------------------------- OK -----------------------------------------'   
       dummy=`amazon_rm_study.py ${a_study_name} > log.tmp 2>&1`
       rm log.tmp
    else
       echo "ERROR: There are differences between '${case_dir}' and '${an_output_dir}/${case_dir}': " 
-      echo ${an_allrigth}
+      echo ${a_differences}
       exit -1
    fi
 fi
