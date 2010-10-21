@@ -29,14 +29,14 @@ a_study_name=`create_study_name`
 an_output_dir=${case_dir}.out
 
 echo '------------------------ Testing amazon_upload folder --------------------------'
-dummy=`amazon_upload_start.py --study-name=${a_study_name} ${case_dir} 2>log.amazon_upload_folder | amazon_upload_resume.py  2>>log.amazon_upload_folder`
+dummy=`amazon_upload_start.py --study-name=${a_study_name} ${case_dir} --debug 2>log.amazon_upload_folder | amazon_upload_resume.py --debug  2>>log.amazon_upload_folder`
 if [ $? -ne 0 ]; then
    echo "An error have appeared during execution of amazon_upload_start.py | amazon_upload_resume.py" 
    cat log.amazon_upload_folder
    rm log.amazon_upload_folder
    exit -1
 else
-   dummy=`amazon_ls.py ${a_study_name} >log.check_upload_folder 2>&1`
+   dummy=`amazon_ls.py ${a_study_name} --debug >log.check_upload_folder 2>&1`
    count_entrances=`fgrep -c ${case_dir} log.check_upload_folder`
    if [ ${count_entrances} -ne 0 ]; then
       echo '----------------------------------- OK -----------------------------------------'
@@ -49,7 +49,7 @@ else
 fi
 
 echo '----------------------- Testing amazon_download folder -------------------------'
-amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} > log.amazon_download_folder --enable-fresh 2>&1
+amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --debug --enable-fresh > log.amazon_download_folder  2>&1
 if [ $? -ne 0 ]; then
    echo "An error have appeared during execution of amazon_download.py" 
    cat log.amazon_download_folder
