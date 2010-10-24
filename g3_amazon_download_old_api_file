@@ -1,0 +1,62 @@
+#!/bin/bash
+
+#--------------------------------------------------------------------------------------
+## Copyright 2010 Alexey Petrov
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+## Author : Andrey Simurzin
+##
+
+
+#-----------------------------------------------------------------------------------------
+#source common function
+. common.sh
+
+
+#-----------------------------------------------------------------------------------------
+testing_download_old_api_file()
+{
+   an_old_api_number=$1
+   
+   a_study_name=`prepare_testing_data ${an_old_api_number}` 
+   an_output_dir=${case_dir}.out
+   a_list_filenames=`create_list_filenames_in_casedir`
+   a_filename=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
+   a_downloading_file=`python -c "import os; print os.path.abspath(\"${case_dir}/${a_filename}\")"`
+   
+   echo "-------------------- Testing amazon_download \"${an_old_api_number}\" api files ----------------------"
+   amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --enable-fresh --debug >     log.amazon_download_old_api_file 2>&1
+
+   if [ $? -ne 0 ]; then
+      echo "An error have appeared during execution of amazon_dwonload.py" 
+      cat log.amazon_download_old_api_file
+      rm log.amazon_download_old_api_file
+      exit -1
+   else
+      if [ -f ${an_output_dir}/${a_downloading_file} ]; then
+         echo '----------------------------------- OK -----------------------------------------'
+         `remove_log_prepare_test_case`
+         echo ''
+      else
+         echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
+         rm log.amazon_download_old_api_file
+         exit -1
+      fi
+   fi
+}
+
+testing_download_old_api_file dummy
+
+#for an_api in a_list_old_api:
+#    testing_download_old_api_file ${an_api}
