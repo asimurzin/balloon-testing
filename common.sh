@@ -84,7 +84,7 @@ create_study_name()
 
 
 #-----------------------------------------------------------------------------------------
-calc_path_to_old_api()
+calc_path_to_api()
 {
   an_api_number=$1
   if [ x${an_api_number} != x ]; then
@@ -100,14 +100,14 @@ calc_path_to_old_api()
 prepare_testing_data()
 { 
   an_old_api_number=$1
-  a_path_old_api_version=`calc_path_to_old_api $an_old_api_number`
+  a_path_to_api=`calc_path_to_api $an_old_api_number`
   a_list_filenames=`create_list_filenames_in_casedir`
 
   a_list_files=`create_list_case_files ${a_list_filenames}`
   
   if [ ! -f 'log.prepare_test_case'  ]; then
      a_study_name=`create_study_name`
-     `${a_path_old_api_version}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files} > log.prepare_test_case 2>&1`
+     `${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files} > log.prepare_test_case 2>&1`
      if [ -f studies ]; then
         echo ${a_study_name} >> studies
      else
@@ -119,7 +119,7 @@ prepare_testing_data()
         rm log.prepare_test_case
         exit -1
      else
-        `${a_path_old_api_version}amazon_upload_resume.py --study-name=${a_study_name} >>log.prepare_test_case 2>&1`
+        `${a_path_to_api}amazon_upload_resume.py --study-name=${a_study_name} >>log.prepare_test_case 2>&1`
         if [ $? -ne 0 ]; then
            echo ' An error have appeared during execution of amazon_upload_resume.py'
            cat log.prepare_test_case
