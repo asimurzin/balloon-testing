@@ -88,7 +88,7 @@ calc_path_to_old_api()
 {
   an_api_number=$1
   if [ x${an_api_number} != x ]; then
-     echo ./balloon/balloon-${an_old_api_number}/
+     echo ./balloon/balloon-${an_api_number}/
   else
      echo ''
   fi
