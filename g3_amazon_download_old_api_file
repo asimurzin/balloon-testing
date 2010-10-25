@@ -58,5 +58,5 @@ testing_download_old_api_file()
 
 testing_download_old_api_file dummy
 
-#for an_api in a_list_old_api:
+#for an_api in ${a_list_old_api}:
 #    testing_download_old_api_file ${an_api}
