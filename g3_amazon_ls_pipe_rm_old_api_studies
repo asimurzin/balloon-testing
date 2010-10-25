@@ -1,0 +1,69 @@
+#!/bin/bash
+
+#--------------------------------------------------------------------------------------
+## Copyright 2010 Alexey Petrov
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+## Author : Andrey Simurzin
+##
+
+
+#-----------------------------------------------------------------------------------------
+#source common function
+. common.sh
+
+
+
+#-----------------------------------------------------------------------------------------
+testing_ls_pipe_rm_old_api_studies()
+{
+  an_old_api_number=$1
+
+  a_study_name1=`prepare_testing_data ${an_old_api_number}`
+  `remove_log_prepare_test_case`
+  a_study_name2=`prepare_testing_data ${an_old_api_number}`
+
+  a_begin_study_name=`study_name_starts_with`
+
+  echo "----------------- Testing amazon_ls | rm \"${an_old_api_number}\" api studies -------------------"
+  
+  amazon_ls.py --debug 2>log.ls_pipe_rm_old_api_studies | grep ${a_begin_study_name} | xargs amazon_rm_study.py --debug 2>>log.ls_pipe_rm_old_api_studies
+
+  if [ $? -ne 0 ]; then
+     echo "An error have appeared during execution of 'amazon_ls.py | grep testing | xargs amazon_rm.py ' " 
+     rm log.ls_pipe_rm_old_api_studies
+     exit -1
+  else
+     dummy=`amazon_ls.py --debug 2>log.check_ls_pipe_rm_studies`
+     count_entrances=`fgrep -c "${a_begin_study_name}" log.check_ls_pipe_rm_studies`
+     if [ ${count_entrances} -ne 0 ]; then
+        echo " ERROR : There are studies named 'testing-..' in the s3 "
+        cat log.ls_pipe_rm_old_api_studies
+        rm log.ls_pipe_rm_old_api_studies
+     else
+        echo '----------------------------------- OK -----------------------------------------'
+        echo ''
+        rm log.check_ls_pipe_rm_studies
+        `remove_log_prepare_test_case`
+        `rm_studies`
+     fi
+  fi
+}
+
+
+#-----------------------------------------------------------------------------------------
+for an_api in ${a_list_old_api}
+do
+    testing_ls_pipe_rm_old_api_studies ${an_api}
+done
