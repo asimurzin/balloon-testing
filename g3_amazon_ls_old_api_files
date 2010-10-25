@@ -28,6 +28,7 @@
 testing_ls_old_api_files()
 {
   an_old_api_number=$1
+  `remove_log_prepare_test_case`
   a_study_name=`prepare_testing_data ${an_old_api_number}`
 
   echo "-------------------- Testing amazon_ls \"${an_old_api_number}\" api files -----------------------"

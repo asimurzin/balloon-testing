@@ -49,7 +49,7 @@ create_list_case_files()
 #-----------------------------------------------------------------------------------------
 remove_log_prepare_test_case()
 {
-  rm log.prepare_test_case
+  rm -f log.prepare_test_case
 }
 
 
