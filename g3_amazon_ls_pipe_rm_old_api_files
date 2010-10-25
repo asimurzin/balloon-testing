@@ -1,0 +1,88 @@
+#!/bin/bash
+
+#--------------------------------------------------------------------------------------
+## Copyright 2010 Alexey Petrov
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+## Author : Andrey Simurzin
+##
+
+
+#-----------------------------------------------------------------------------------------
+#source common function
+. common.sh
+
+
+
+#-----------------------------------------------------------------------------------------
+testing_ls_pipe_rm_old_api_files()
+{
+  an_old_api_number=$1
+  a_path_to_api=`calc_path_to_api $an_old_api_number`
+  
+  an_output_dir=${case_dir}.out
+  a_list_filenames=`create_list_filenames_in_casedir`
+  a_testing_filenames=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ], ' ', _list[ 1 ] " `
+  a_testing_files=`create_list_case_files ${a_testing_filenames}`
+
+  echo "------------------ Testing amazon_ls | rm  \"${an_old_api_number}\" api files -------------------"
+  a_study_name=`${a_path_to_api}amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | ${a_path_to_api}amazon_upload_resume.py --debug 2>>log.prepare_data`
+
+  if [ $? -ne 0 ]; then
+     echo "An error have appeared during execution of 'amazon_upload_start.py | amazon_upload_resume.py ' " 
+     cat log.prepare_data
+     rm log.prepare_data
+     exit -1
+  fi
+
+  `amazon_ls.py ${a_study_name} --debug 2>log.amazon_ls_pipe_rm_old_api_files | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.amazon_ls_pipe_rm_old_api_files`
+
+  if [ $? -ne 0 ]; then
+     echo "An error have appeared during execution of 'amazon_ls.py ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name}' " 
+     cat log.amazon_ls_pipe_rm_old_api_files
+     rm log.amazon_ls_pipe_rm_old_api_files
+     rm log.prepare_data
+     exit -1
+  else
+     amazon_ls.py ${a_study_name} --debug > log.check_ls_pipe_rm_files 2>&1
+     an_allright="True"
+     for a_filename in ${a_testing_filenames}
+     do
+        count_entrances=`fgrep -c ${a_filename} log.check_ls_pipe_rm_files`
+        if [ ${count_entrances} -ne 0 ]; then
+           an_allright="False"
+           a_not_deleted_file=${a_filename}
+           break
+        fi
+     done
+     if [ "${an_allright}" = "False" ]; then
+        echo " ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 "
+        #cat log.amazon_ls_pipe_rm_old_api_files
+        rm log.amazon_ls_pipe_rm_old_api_files
+        rm log.check_ls_pipe_rm_files
+        rm log.prepare_data
+        exit -1
+     else
+        echo '----------------------------------- OK -----------------------------------------'
+        rm log.check_ls_pipe_rm_files
+        rm log.prepare_data
+        `amazon_rm_study.py ${a_study_name} > tmp.log 2>&1`
+        rm tmp.log
+     fi
+  fi
+}
+
+
+#-----------------------------------------------------------------------------------------
+testing_ls_pipe_rm_old_api_files dummy
