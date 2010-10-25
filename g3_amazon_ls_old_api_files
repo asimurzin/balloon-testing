@@ -29,7 +29,6 @@ an_old_api_number=$1
 a_study_name=`prepare_testing_data ${an_old_api_number}`
 
 
-#-----------------------------------------------------------------------------------------
 echo "-------------------------- Testing amazon_ls \"${an_old_api_number}\" api files -----------------------------"
 amazon_ls.py ${a_study_name} --debug > log.amazon_ls_old_api_files 2>&1
 
@@ -61,6 +60,7 @@ else
    fi
 fi
 }
+
 
 #-----------------------------------------------------------------------------------------
 testing_ls_old_api_files dummy
