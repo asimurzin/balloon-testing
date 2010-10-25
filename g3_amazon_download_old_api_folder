@@ -1,0 +1,72 @@
+#!/bin/bash
+
+#--------------------------------------------------------------------------------------
+## Copyright 2010 Alexey Petrov
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+## Author : Andrey Simurzin
+##
+
+
+#-----------------------------------------------------------------------------------------
+#source common function
+. common.sh
+
+
+#-----------------------------------------------------------------------------------------
+testing_download_old_api_folder()
+{
+  an_old_api_number=$1
+  a_path_to_api=`calc_path_to_api $an_old_api_number`
+  
+  a_study_name=`create_study_name`
+  an_output_dir=${case_dir}.out
+
+  dummy=`${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${case_dir} --debug 2>log.amazon_upload_folder | ${a_path_to_api}amazon_upload_resume.py --debug  2>>log.amazon_upload_folder`
+  if [ $? -ne 0 ]; then
+     echo "An error have appeared during execution of ${a_path_to_api}amazon_upload_start.py | ${a_path_to_api}amazon_upload_resume.py" 
+     cat log.amazon_upload_folder
+     rm log.amazon_upload_folder
+     exit -1
+  fi
+
+  echo "---------------- Testing amazon_download  \"${an_old_api_number}\" api folder -------------------"
+  amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --debug --enable-fresh > log.amazon_download_folder  2>&1
+  if [ $? -ne 0 ]; then
+     echo "An error have appeared during execution of amazon_download.py" 
+     cat log.amazon_download_folder
+     rm log.amazon_download_folder
+     exit -1
+  else
+     an_abspath_files=`python -c "import os; print os.path.abspath(\"${case_dir}\")"`
+     a_differences=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}/${an_abspath_files}`
+     if [ "x${a_differences}" == "x" ]; then
+        echo '----------------------------------- OK -----------------------------------------'   
+        dummy=`amazon_rm_study.py ${a_study_name} > log.tmp 2>&1`
+        rm log.tmp
+        echo ''
+     else
+        echo "ERROR: There are differences between '${case_dir}' and '${an_output_dir}/${an_abspath_files}': " 
+        echo ${a_differences}
+        exit -1
+     fi
+  fi
+}
+
+
+#-----------------------------------------------------------------------------------------
+for an_api in ${a_list_old_api}
+do
+    testing_download_old_api_folder ${an_api}
+done
