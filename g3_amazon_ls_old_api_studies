@@ -27,29 +27,29 @@
 #-----------------------------------------------------------------------------------------
 testing_ls_old_api_studies()
 {
-an_old_api_number=$1
-a_study_name=`prepare_testing_data ${an_old_api_number}`
+  an_old_api_number=$1
+  a_study_name=`prepare_testing_data ${an_old_api_number}`
 
-echo "------------------- Testing amazon_ls \"${an_old_api_number}\" api studies ----------------------"
-amazon_ls.py --debug > log.amazon_ls_old_api_study 2>&1
+  echo "------------------- Testing amazon_ls \"${an_old_api_number}\" api studies ----------------------"
+  amazon_ls.py --debug > log.amazon_ls_old_api_study 2>&1
 
-if [ $? -ne 0 ] ; then
-   echo "An error have appeared during execution of amazon_ls.py" 
-   cat log.amazon_ls_old_api_study
-   rm log.amazon_ls_old_api_study
-   exit -1
-else
-   count=`fgrep -c "${a_study_name}" log.amazon_ls_old_api_study`
-   if [ ${count} -gt 0 ] ; then 
-      echo '----------------------------------- OK -----------------------------------------'
-      `remove_log_prepare_test_case`
-      echo ''
-   else
-      echo " ERROR : There is no '${a_study_name}' study in the s3 "
-      rm log.amazon_ls_old_api_study
-      exit -1
-   fi   
-fi
+  if [ $? -ne 0 ] ; then
+     echo "An error have appeared during execution of amazon_ls.py" 
+     cat log.amazon_ls_old_api_study
+     rm log.amazon_ls_old_api_study
+     exit -1
+  else
+     count=`fgrep -c "${a_study_name}" log.amazon_ls_old_api_study`
+     if [ ${count} -gt 0 ] ; then 
+        echo '----------------------------------- OK -----------------------------------------'
+        `remove_log_prepare_test_case`
+        echo ''
+     else
+        echo " ERROR : There is no '${a_study_name}' study in the s3 "
+        rm log.amazon_ls_old_api_study
+        exit -1
+     fi   
+  fi
 }
 
 #-----------------------------------------------------------------------------------------

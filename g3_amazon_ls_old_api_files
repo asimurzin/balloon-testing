@@ -25,40 +25,40 @@
 
 testing_ls_old_api_files()
 {
-an_old_api_number=$1
-a_study_name=`prepare_testing_data ${an_old_api_number}`
+  an_old_api_number=$1
+  a_study_name=`prepare_testing_data ${an_old_api_number}`
 
 
-echo "-------------------------- Testing amazon_ls \"${an_old_api_number}\" api files -----------------------------"
-amazon_ls.py ${a_study_name} --debug > log.amazon_ls_old_api_files 2>&1
+  echo "-------------------------- Testing amazon_ls \"${an_old_api_number}\" api files -----------------------------"
+  amazon_ls.py ${a_study_name} --debug > log.amazon_ls_old_api_files 2>&1
 
-if [ $? -ne 0 ] ; then
-   echo "An error have appeared during execution of amazon_ls.py" 
-   cat log.amazon_ls_old_api_files
-   rm log.amazon_ls_old_api_files
-   exit -1
-else
-   an_allright="True"
-   a_list_filenames=`create_list_filenames_in_casedir`
-   for a_filename in ${a_list_filenames}
-   do
-      count_entrances=`fgrep -c ${a_filename} log.amazon_ls_old_api_files`
-      if [ ${count_entrances} -eq 0 ]; then
-         an_allright="False"
-         a_not_exists_file=${a_filename}
-         break
-      fi
-   done 
-   if [ "${an_allright}" = "False" ]; then
-      echo " ERROR : There is no '${a_not_exists_file}' file in the s3 "
-      rm log.amazon_ls_old_api_files
-      exit -1
-   else
-      echo '----------------------------------- OK -----------------------------------------'
-      `remove_log_prepare_test_case`
-      echo ''
-   fi
-fi
+  if [ $? -ne 0 ] ; then
+     echo "An error have appeared during execution of amazon_ls.py" 
+     cat log.amazon_ls_old_api_files
+     rm log.amazon_ls_old_api_files
+     exit -1
+  else
+     an_allright="True"
+     a_list_filenames=`create_list_filenames_in_casedir`
+     for a_filename in ${a_list_filenames}
+     do
+        count_entrances=`fgrep -c ${a_filename} log.amazon_ls_old_api_files`
+        if [ ${count_entrances} -eq 0 ]; then
+           an_allright="False"
+           a_not_exists_file=${a_filename}
+           break
+        fi
+     done 
+     if [ "${an_allright}" = "False" ]; then
+        echo " ERROR : There is no '${a_not_exists_file}' file in the s3 "
+        rm log.amazon_ls_old_api_files
+        exit -1
+     else
+        echo '----------------------------------- OK -----------------------------------------'
+        `remove_log_prepare_test_case`
+        echo ''
+     fi
+  fi
 }
 
 
