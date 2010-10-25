@@ -75,6 +75,7 @@ testing_ls_pipe_rm_old_api_files()
         exit -1
      else
         echo '----------------------------------- OK -----------------------------------------'
+        echo ''
         rm log.check_ls_pipe_rm_files
         rm log.prepare_data
         `amazon_rm_study.py ${a_study_name} > tmp.log 2>&1`
@@ -85,4 +86,7 @@ testing_ls_pipe_rm_old_api_files()
 
 
 #-----------------------------------------------------------------------------------------
-testing_ls_pipe_rm_old_api_files dummy
+for an_api in ${a_list_old_api}
+do
+  testing_ls_pipe_rm_old_api_files ${an_api}
+done

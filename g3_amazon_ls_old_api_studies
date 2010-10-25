@@ -52,6 +52,10 @@ testing_ls_old_api_studies()
   fi
 }
 
+
 #-----------------------------------------------------------------------------------------
-testing_ls_old_api_studies dummy
+for an_api in ${a_list_old_api}
+do
+  testing_ls_old_api_studies ${an_api}
+done
 

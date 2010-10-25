@@ -23,13 +23,14 @@
 #source common function
 . common.sh
 
+
+#-----------------------------------------------------------------------------------------
 testing_ls_old_api_files()
 {
   an_old_api_number=$1
   a_study_name=`prepare_testing_data ${an_old_api_number}`
 
-
-  echo "-------------------------- Testing amazon_ls \"${an_old_api_number}\" api files -----------------------------"
+  echo "-------------------- Testing amazon_ls \"${an_old_api_number}\" api files -----------------------"
   amazon_ls.py ${a_study_name} --debug > log.amazon_ls_old_api_files 2>&1
 
   if [ $? -ne 0 ] ; then
@@ -63,6 +64,7 @@ testing_ls_old_api_files()
 
 
 #-----------------------------------------------------------------------------------------
-testing_ls_old_api_files dummy
-#for an_api in ${a_list_old_api}:
-#    testing_download_old_api_file ${an_api}
+for an_api in ${a_list_old_api}
+do
+   testing_ls_old_api_files ${an_api}
+done

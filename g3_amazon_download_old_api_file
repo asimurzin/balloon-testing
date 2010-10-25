@@ -35,7 +35,7 @@ testing_download_old_api_file()
    a_filename=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
    a_downloading_file=`python -c "import os; print os.path.abspath(\"${case_dir}/${a_filename}\")"`
    
-   echo "----------------- Testing amazon_download \"${an_old_api_number}\" api files -------------------"
+   echo "----------------- Testing amazon_download \"${an_old_api_number}\" api files --------------------"
    amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --enable-fresh --debug >     log.amazon_download_old_api_file 2>&1
 
    if [ $? -ne 0 ]; then
@@ -56,7 +56,9 @@ testing_download_old_api_file()
    fi
 }
 
-testing_download_old_api_file dummy
 
-#for an_api in ${a_list_old_api}:
-#    testing_download_old_api_file ${an_api}
+#-----------------------------------------------------------------------------------------
+for an_api in ${a_list_old_api}
+do
+    testing_download_old_api_file ${an_api}
+done

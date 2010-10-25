@@ -33,7 +33,7 @@ testing_download_old_api_study()
   an_output_dir=${case_dir}.out
   an_abspath_files=`python -c "import os; print os.path.abspath(\"${case_dir}\")"`
 
-  echo "-------------------- Testing amazon_download \"${an_old_api_number}\" api study ---------------------"
+  echo "----------------- Testing amazon_download \"${an_old_api_number}\" api study --------------------"
   amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --enable-fresh --debug > log.amazon_download_old_api_study 2>&1
 
   if [ $? -ne 0 ]; then
@@ -66,4 +66,7 @@ testing_download_old_api_study()
 
 
 #-----------------------------------------------------------------------------------------
-testing_download_old_api_study dummy
+for an_api in ${a_list_old_api}
+do
+    testing_download_old_api_study ${an_api}
+done
