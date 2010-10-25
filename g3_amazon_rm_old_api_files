@@ -34,7 +34,7 @@ testing_rm_old_api_file()
   a_list_filenames=`create_list_filenames_in_casedir`
   a_list_files=`create_list_case_files ${a_list_filenames}`
   a_list_file_to_rm=`python -c "temp='${a_list_files}';_list=temp.split(' '); import os; print os.path.abspath(_list[ 1 ] ),' ',os.path.abspath(_list[ 0 ] )" `
-  echo ${a_list_file_to_rm} > tmp.log
+
   amazon_rm.py --study-name=${a_study_name}  ${a_list_file_to_rm} --debug > log.amazon_rm_old_api_files 2>&1
   if [ $? -ne 0 ] ; then
      echo "An error have appeared during execution of amazon_rm.py" 
