@@ -38,7 +38,7 @@ run_old_api_script()
     if [ ! -f log.${a_script_name}_${an_api} ]; then
        ${a_fun_name} ${an_api}
     else
-       echo "${a_script_name} api_version=\"${an_api}\" already run : remove log.${a_script_name}_${an_api} to run"
+       echo "${a_script_name} api_version=\"${an_api}\" already run : remove \"log.${a_script_name}_${an_api}\" to run"
        continue
     fi
   done
