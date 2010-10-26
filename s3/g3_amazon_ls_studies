@@ -30,7 +30,7 @@ testing_ls_studies()
   a_script_name=`basename $0`
   a_study_name=`prepare_testing_data`
 
-  echo "------------------ Running \"${a_path_script}/${a_script_name}\" ---------------------"
+  echo "-------------------- Running \"${a_path_script}/${a_script_name}\" -----------------------"
   a_testing_script="amazon_ls.py --debug"
   ${a_testing_script} > log.${a_script_name} 2>&1
 
