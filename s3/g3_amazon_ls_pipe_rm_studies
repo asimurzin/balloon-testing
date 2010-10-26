@@ -38,9 +38,13 @@ testing_ls_pipe_rm_studies()
   a_testing_script="amazon_ls.py --debug 2>log.${a_script_name} | grep -e ${a_study_name1} -e ${a_study_name2} | xargs amazon_rm_study.py --debug 2>>log.${a_script_name}"
   `bash -c "${a_testing_script}"`
   if [ $? -ne 0 ]; then
+     echo ''
+     echo ''
      echo "An error have appeared during execution of"
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.${a_script_name}
      rm log.${a_script_name}
      exit -1
@@ -48,7 +52,11 @@ testing_ls_pipe_rm_studies()
      dummy=`amazon_ls.py --debug 2>log.check_ls_pipe_rm_studies`
      count_entrances=`fgrep -c -e ${a_study_name1} -e ${a_study_name2} log.check_ls_pipe_rm_studies`
      if [ ${count_entrances} -ne 0 ]; then
+        echo ''
+        echo ''
         echo " ERROR : There is study named ${a_study_name1} or ${a_study_name2} ( may be both ) in the s3 "
+        echo ''
+        echo ''
         cat log.${a_script_name}
         rm log.${a_script_name}
      else

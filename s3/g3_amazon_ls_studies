@@ -35,9 +35,13 @@ testing_ls_studies()
   ${a_testing_script} > log.${a_script_name} 2>&1
 
   if [ $? -ne 0 ] ; then
+     echo ''
+     echo ''
      echo "An error have appeared during execution "
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.${a_script_name}
      rm log.${a_script_name}
      exit -1
@@ -46,7 +50,11 @@ testing_ls_studies()
      if [ ${count} -gt 0 ] ; then 
         echo '----------------------------------- OK -----------------------------------------'
      else
+        echo ''
+        echo ''
         echo " ERROR : There is no '${a_study_name}' study in the s3 "
+        echo ''
+        echo ''
         rm log.${a_script_name}
         exit -1
      fi   

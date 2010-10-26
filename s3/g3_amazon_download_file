@@ -38,9 +38,13 @@ testing_download_file()
   ${a_testing_script} > log.${a_script_name} 2>&1
 
   if [ $? -ne 0 ]; then
+     echo ''
+     echo ''
      echo "An error have appeared during execution of"
      echo "${a_testing_script}" 
      echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.${a_script_name}
      rm log.${a_script_name}
      exit -1
@@ -48,8 +52,12 @@ testing_download_file()
      if [ -f ${an_output_dir}/${a_downloading_file} ]; then
         echo '----------------------------------- OK -----------------------------------------'
      else
+        echo ''
+        echo ''
         echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
         echo "--------------------------------------------------------------------------------"
+        echo ''
+        echo ''
         rm log.${a_script_name}
         exit -1
      fi

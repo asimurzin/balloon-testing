@@ -39,9 +39,13 @@ testing_ls_pipe_rm_files()
   a_testing_script="amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | amazon_upload_resume.py --debug 2>>log.prepare_data"
   a_study_name=`bash -c "${a_testing_script}"`
   if [ $? -ne 0 ]; then
+     echo ''
+     echo ''
      echo "An error have appeared during execution of "
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.prepare_data
      rm log.prepare_data
      exit -1
@@ -51,9 +55,13 @@ testing_ls_pipe_rm_files()
   `bash -c "${a_testing_script}"`
 
   if [ $? -ne 0 ]; then
+     echo ''
+     echo ''
      echo "An error have appeared during execution of"
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.${a_script_name}
      rm log.${a_script_name}
      rm log.prepare_data
@@ -71,7 +79,12 @@ testing_ls_pipe_rm_files()
         fi
      done
      if [ "${an_allright}" = "False" ]; then
+        echo ''
+        echo ''
         echo " ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 "
+        echo "--------------------------------------------------------------------------------"
+        echo ''
+        echo ''
         cat log.${a_script_name}
         rm log.${a_script_name}
         rm log.check_ls_pipe_rm_files

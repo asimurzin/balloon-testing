@@ -37,9 +37,13 @@ testing_rm_files()
   a_testing_script="amazon_rm.py --study-name=${a_study_name}  ${a_list_file_to_rm} --debug"
   ${a_testing_script} > log.${a_script_name} 2>&1
   if [ $? -ne 0 ] ; then
+     echo ''
+     echo ''
      echo "An error have appeared during execution of" 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.${a_script_name}
      rm log.${a_script_name}
      exit -1
@@ -56,8 +60,12 @@ testing_rm_files()
         fi 
      done
      if [ "${an_allright}" = "False" ]; then
+        echo ''
+        echo ''
         echo ' ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 '
         echo "--------------------------------------------------------------------------------"
+        echo ''
+        echo ''
         rm log.list_files
         cat log.${a_script_name}
         rm log.${a_script_name}
