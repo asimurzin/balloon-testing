@@ -21,12 +21,13 @@
 
 #-----------------------------------------------------------------------------------------
 #source common function
-. common.sh
+. old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
 testing_download_old_api_study()
 {
+  a_script_name=`basename $0`
   an_old_api_number=$1
   `remove_log_prepare_test_case`
   a_study_name=`prepare_testing_data ${an_old_api_number}`
@@ -34,13 +35,17 @@ testing_download_old_api_study()
   an_output_dir=${case_dir}.out
   an_abspath_files=`python -c "import os; print os.path.abspath(\"${case_dir}\")"`
 
-  echo "----------------- Testing amazon_download \"${an_old_api_number}\" api study --------------------"
-  amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --enable-fresh --debug > log.amazon_download_old_api_study 2>&1
+  echo "-- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" ---"
+  
+  a_testing_script="amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --enable-fresh --debug "
+  ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
 
   if [ $? -ne 0 ]; then
-     echo "An error have appeared during execution of amazon_dwonload.py" 
-     cat log.amazon_download_old_api_study
-     rm log.amazon_download_old_api_study
+     echo "An error have appeared during execution of " 
+     echo ${a_testing_script}
+     echo "--------------------------------------------------------------------------------"
+     cat log.${a_script_name}_${an_old_api_number}
+     rm log.${a_script_name}_${an_old_api_number}
      exit -1
   else
      a_list_filenames=`create_list_filenames_in_casedir`
@@ -55,7 +60,8 @@ testing_download_old_api_study()
      done
      if [ "${an_allright}" = "False" ]; then
         echo " ERROR : There is no '${a_bad_file}' file , in output folder  '${an_output_dir}'. "
-        rm log.amazon_download_old_api_study
+        echo "--------------------------------------------------------------------------------"
+        rm log.${a_script_name}_${an_old_api_number}
         exit -1     
      else
         echo '----------------------------------- OK -----------------------------------------'
@@ -67,7 +73,5 @@ testing_download_old_api_study()
 
 
 #-----------------------------------------------------------------------------------------
-for an_api in ${a_list_old_api}
-do
-    testing_download_old_api_study ${an_api}
-done
+run_old_api_script testing_download_old_api_study ${an_api}
+
