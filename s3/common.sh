@@ -116,7 +116,7 @@ run_script()
   a_script_name=`basename $0`
   a_fun_name=$1
   if [ -f log.${a_script_name} ]; then
-     echo "${a_script_name} already run: remove log.${a_script_name} to run"
+     echo "${a_script_name} already run: remove \"log.${a_script_name}\" to run"
      exit 0
   else
      ${a_fun_name}
