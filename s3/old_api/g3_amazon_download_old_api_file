@@ -37,12 +37,15 @@ testing_download_old_api_file()
    a_filename=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
    a_downloading_file=`python -c "import os; print os.path.abspath(\"${case_dir}/${a_filename}\")"`
    
-   echo "----- Running ${a_path_script}/${a_script_name} api_version=\"${an_old_api_number}\" -----"
+   echo "---- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" ----"
+   
    a_testing_script="amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --enable-fresh --debug"
    ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
 
    if [ $? -ne 0 ]; then
-      echo "An error have appeared during execution of ${a_testing_script}" 
+      echo "An error have appeared during execution of " 
+      echo ${a_testing_script}
+      echo "--------------------------------------------------------------------------------"
       cat log.${a_script_name}_${an_old_api_number}
       rm log.${a_script_name}_${an_old_api_number}
       exit -1
@@ -53,6 +56,8 @@ testing_download_old_api_file()
          echo ''
       else
          echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
+         echo "--------------------------------------------------------------------------------"
+         cat log.${a_script_name}_${an_old_api_number}
          rm log.${a_script_name}_${an_old_api_number}
          exit -1
       fi
