@@ -70,6 +70,15 @@ rm_studies()
 
 
 #-----------------------------------------------------------------------------------------
+rm_from_studies()
+{
+  a_study_name1=$1
+  a_study_name2=$2
+  cat studies | grep -v -e ${a_study_name1} -e ${a_study_name2} > studies
+}
+
+
+#-----------------------------------------------------------------------------------------
 study_name_starts_with()
 {
   echo testing
