@@ -37,9 +37,13 @@ testing_ls_old_api_files()
   ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
 
   if [ $? -ne 0 ] ; then
+     echo ''
+     echo ''
      echo "An error have appeared during execution of " 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.${a_script_name}_${an_old_api_number}
      rm log.${a_script_name}_${an_old_api_number}
      exit -1
@@ -56,8 +60,12 @@ testing_ls_old_api_files()
         fi
      done 
      if [ "${an_allright}" = "False" ]; then
+        echo ''
+        echo ''
         echo " ERROR : There is no '${a_not_exists_file}' file in the s3 "
         echo "--------------------------------------------------------------------------------"
+        echo ''
+        echo ''
         rm log.${a_script_name}_${an_old_api_number}
         exit -1
      else

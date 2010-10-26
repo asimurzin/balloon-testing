@@ -37,9 +37,13 @@ testing_ls_old_api_studies()
   ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
 
   if [ $? -ne 0 ] ; then
+     echo ''
+     echo ''
      echo "An error have appeared during execution of" 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.${a_script_name}_${an_old_api_number}
      rm log.${a_script_name}_${an_old_api_number}
      exit -1
@@ -50,8 +54,12 @@ testing_ls_old_api_studies()
         `remove_log_prepare_test_case`
         echo ''
      else
+        echo ''
+        echo ''
         echo " ERROR : There is no '${a_study_name}' study in the s3 "
         echo "--------------------------------------------------------------------------------"
+        echo ''
+        echo ''
         cat log.${a_script_name}_${an_old_api_number}
         rm log.${a_script_name}_${an_old_api_number}
         exit -1

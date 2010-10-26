@@ -41,9 +41,13 @@ testing_download_old_api_study()
   ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
 
   if [ $? -ne 0 ]; then
+     echo ''
+     echo ''
      echo "An error have appeared during execution of " 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.${a_script_name}_${an_old_api_number}
      rm log.${a_script_name}_${an_old_api_number}
      exit -1
@@ -59,8 +63,12 @@ testing_download_old_api_study()
         fi
      done
      if [ "${an_allright}" = "False" ]; then
+        echo ''
+        echo ''
         echo " ERROR : There is no '${a_bad_file}' file , in output folder  '${an_output_dir}'. "
         echo "--------------------------------------------------------------------------------"
+        echo ''
+        echo ''
         rm log.${a_script_name}_${an_old_api_number}
         exit -1     
      else
