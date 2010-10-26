@@ -21,12 +21,8 @@
 
 
 #-----------------------------------------------------------------------------------------
-for script in *;do
-  if [ ! -f $script ];then
-       continue
-  fi
-  if [ "x${script}" != "xclean" ] && [ "x${script}" != "xrun" ] && [ "x${script}" != "xREADME" ]; then
+a_list_script=`ls g*`
+for script in ${a_list_script};do
      ./$script
      echo ' '
-  fi
 done
