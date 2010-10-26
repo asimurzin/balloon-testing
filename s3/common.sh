@@ -20,7 +20,7 @@
 
 
 #------------------------------------------------------------------------------------------
-case_dir='case'
+a_case_dir_name='case'
 
 a_list_old_api="dummy 0.1 0.2"
 
@@ -84,15 +84,41 @@ create_study_name()
 
 
 #-----------------------------------------------------------------------------------------
+calc_path_to_case_dir()
+{
+  a_curdir=`python -c "import os; print os.path.basename( os.path.abspath(os.path.curdir) )"`
+  if [ "$a_curdir" == "old_api" ]; then
+     echo "../$a_case_dir_name" 
+  fi
+  if [ "$a_curdir" == "s3" ]; then
+     echo "$a_case_dir_name" 
+  fi
+}
+
+
+#-----------------------------------------------------------------------------------------
 calc_path_to_api()
 {
   an_api_number=$1
   if [ x${an_api_number} != x ]; then
-     echo ./balloon/r${an_api_number}/
+     echo "../../balloon/r${an_api_number}/"
   else
      echo ''
   fi
-  
+}
+
+
+#-----------------------------------------------------------------------------------------
+run_script()
+{
+  a_script_name=`basename $0`
+  a_fun_name=$1
+  if [ -f log.${a_script_name} ]; then
+     echo "${a_script_name} already run: remove log.${a_script_name} to run"
+     exit 0
+  else
+     ${a_fun_name}
+  fi
 }
 
 
@@ -101,6 +127,7 @@ prepare_testing_data()
 { 
   an_old_api_number=$1
   a_path_to_api=`calc_path_to_api $an_old_api_number`
+  
   a_list_filenames=`create_list_filenames_in_casedir`
 
   a_list_files=`create_list_case_files ${a_list_filenames}`
@@ -135,3 +162,5 @@ echo ${a_study_name}
 
 
 #-----------------------------------------------------------------------------------------
+case_dir=`calc_path_to_case_dir`
+
