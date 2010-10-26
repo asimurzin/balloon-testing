@@ -37,7 +37,7 @@ testing_download_file()
   ${a_testing_script} > log.${a_script_name} 2>&1
 
   if [ $? -ne 0 ]; then
-     echo "An error have appeared during execution of ${a_command}" 
+     echo "An error have appeared during execution of ${a_testing_script}" 
      echo "--------------------------------------------------------------------------------"
      cat log.${a_script_name}
      rm log.${a_script_name}
