@@ -22,28 +22,36 @@
 #-----------------------------------------------------------------------------------------
 #source common function
 . common.sh
-a_study_name=`prepare_testing_data`
 
 
 #-----------------------------------------------------------------------------------------
+a_script_name=`basename $0`
+if [ -f log.${a_script_name} ]; then
+   echo "${a_script_name} already run: remove log file to run"
+   exit 0
+fi
+
+
+#-----------------------------------------------------------------------------------------
+a_study_name=`prepare_testing_data`
 an_output_dir=${case_dir}.out
 a_list_filenames=`create_list_filenames_in_casedir`
 a_downloading_file=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
 
-echo '------------------------ Testing amazon_download file --------------------------'
-amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --enable-fresh --debug > log.amazon_download_file 2>&1
+echo "----------------------- Running ${a_script_name} ------------------------"
+amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --enable-fresh --debug > log.${a_script_name} 2>&1
 
 if [ $? -ne 0 ]; then
    echo "An error have appeared during execution of amazon_dwonload.py" 
-   cat log.amazon_download_file
-   rm log.amazon_download_file
+   cat log.${a_script_name}
+   rm log.${a_script_name}
    exit -1
 else
    if [ -f ${an_output_dir}/${a_downloading_file} ]; then
       echo '----------------------------------- OK -----------------------------------------'
    else
       echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
-      rm log.amazon_download_file
+      rm log.${a_script_name}
       exit -1
    fi
 fi
