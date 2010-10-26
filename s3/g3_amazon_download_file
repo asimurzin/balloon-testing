@@ -27,17 +27,19 @@
 #-----------------------------------------------------------------------------------------
 testing_download_file()
 {
+  a_script_name=`basename $0`
   a_study_name=`prepare_testing_data`
   an_output_dir=${case_dir}.out
   a_list_filenames=`create_list_filenames_in_casedir`
   a_downloading_file=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
 
-  echo "----------------------- Running ${a_script_name} ------------------------"
+  echo "--------------------- Running ${a_path_script}/${a_script_name} -----------------------"
   a_testing_script="amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --enable-fresh --debug"
   ${a_testing_script} > log.${a_script_name} 2>&1
 
   if [ $? -ne 0 ]; then
-     echo "An error have appeared during execution of ${a_testing_script}" 
+     echo "An error have appeared during execution of"
+     echo "${a_testing_script}" 
      echo "--------------------------------------------------------------------------------"
      cat log.${a_script_name}
      rm log.${a_script_name}
