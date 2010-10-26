@@ -23,6 +23,11 @@
 
 
 #----------------------------------------------------------------------------------------
+a_curdir_name=`python -c "import os; print os.path.basename( os.path.abspath( os.path.curdir ) )"`
+a_path_script="${a_path_script}/${a_curdir_name}"
+
+
+#----------------------------------------------------------------------------------------
 run_old_api_script()
 {
   a_script_name=`basename $0`
