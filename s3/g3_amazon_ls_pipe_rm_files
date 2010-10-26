@@ -36,21 +36,23 @@ testing_ls_pipe_rm_files()
 
 
   echo "------------------ Running \"${a_path_script}/${a_script_name}\" ---------------------"
-  a_study_name=`amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | amazon_upload_resume.py --debug 2>>log.prepare_data`
+  a_testing_script="amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | amazon_upload_resume.py --debug 2>>log.prepare_data"
+  a_study_name=`bash -c "${a_testing_script}"`
   if [ $? -ne 0 ]; then
      echo "An error have appeared during execution of "
-     echo "amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | amazon_upload_resume.py --debug 2>>log.prepare_data"
+     echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
      cat log.prepare_data
      rm log.prepare_data
      exit -1
   fi
 
-  `amazon_ls.py ${a_study_name} --debug 2>log.${a_script_name} | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.${a_script_name}`
+  a_testing_script="amazon_ls.py ${a_study_name} --debug 2>log.${a_script_name} | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.${a_script_name}"
+  `bash -c "${a_testing_script}"`
 
   if [ $? -ne 0 ]; then
      echo "An error have appeared during execution of"
-     echo "amazon_ls.py ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name} "
+     echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
      cat log.${a_script_name}
      rm log.${a_script_name}
