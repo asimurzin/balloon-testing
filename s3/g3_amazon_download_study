@@ -38,6 +38,7 @@ testing_download_study()
   if [ $? -ne 0 ]; then
      echo "An error have appeared during execution of" 
      echo ${a_testing_script}
+     echo "--------------------------------------------------------------------------------"
      cat log.${a_script_name}
      rm log.${a_script_name}
      exit -1
