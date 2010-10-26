@@ -73,5 +73,5 @@ testing_download_old_api_study()
 
 
 #-----------------------------------------------------------------------------------------
-run_old_api_script testing_download_old_api_study ${an_api}
+run_old_api_script testing_download_old_api_study
 
