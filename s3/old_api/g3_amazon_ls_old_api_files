@@ -21,30 +21,34 @@
 
 #-----------------------------------------------------------------------------------------
 #source common function
-. common.sh
+. old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
 testing_ls_old_api_files()
 {
+  a_script_name=`basename $0`
   an_old_api_number=$1
   `remove_log_prepare_test_case`
   a_study_name=`prepare_testing_data ${an_old_api_number}`
 
-  echo "-------------------- Testing amazon_ls \"${an_old_api_number}\" api files -----------------------"
-  amazon_ls.py ${a_study_name} --debug > log.amazon_ls_old_api_files 2>&1
+  echo "----- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" ------"
+  a_testing_script="amazon_ls.py ${a_study_name} --debug"
+  ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
 
   if [ $? -ne 0 ] ; then
-     echo "An error have appeared during execution of amazon_ls.py" 
-     cat log.amazon_ls_old_api_files
-     rm log.amazon_ls_old_api_files
+     echo "An error have appeared during execution of " 
+     echo ${a_testing_script}
+     echo "--------------------------------------------------------------------------------"
+     cat log.${a_script_name}_${an_old_api_number}
+     rm log.${a_script_name}_${an_old_api_number}
      exit -1
   else
      an_allright="True"
      a_list_filenames=`create_list_filenames_in_casedir`
      for a_filename in ${a_list_filenames}
      do
-        count_entrances=`fgrep -c ${a_filename} log.amazon_ls_old_api_files`
+        count_entrances=`fgrep -c ${a_filename} log.${a_script_name}_${an_old_api_number}`
         if [ ${count_entrances} -eq 0 ]; then
            an_allright="False"
            a_not_exists_file=${a_filename}
@@ -53,7 +57,8 @@ testing_ls_old_api_files()
      done 
      if [ "${an_allright}" = "False" ]; then
         echo " ERROR : There is no '${a_not_exists_file}' file in the s3 "
-        rm log.amazon_ls_old_api_files
+        echo "--------------------------------------------------------------------------------"
+        rm log.${a_script_name}_${an_old_api_number}
         exit -1
      else
         echo '----------------------------------- OK -----------------------------------------'
@@ -65,7 +70,5 @@ testing_ls_old_api_files()
 
 
 #-----------------------------------------------------------------------------------------
-for an_api in ${a_list_old_api}
-do
-   testing_ls_old_api_files ${an_api}
-done
+run_old_api_script testing_ls_old_api_files ${an_api}
+
