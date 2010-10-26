@@ -21,13 +21,14 @@
 
 #-----------------------------------------------------------------------------------------
 #source common function
-. common.sh
+. old_api.sh
 
 
 
 #-----------------------------------------------------------------------------------------
 testing_ls_pipe_rm_old_api_files()
 {
+  a_script_name=`basename $0`
   an_old_api_number=$1
   a_path_to_api=`calc_path_to_api $an_old_api_number`
   
@@ -36,22 +37,35 @@ testing_ls_pipe_rm_old_api_files()
   a_testing_filenames=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ], ' ', _list[ 1 ] " `
   a_testing_files=`create_list_case_files ${a_testing_filenames}`
 
-  echo "------------------ Testing amazon_ls | rm  \"${an_old_api_number}\" api files -------------------"
-  a_study_name=`${a_path_to_api}amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | ${a_path_to_api}amazon_upload_resume.py --debug 2>>log.prepare_data`
-
+  echo "- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" -"
+  
+  a_testing_script="${a_path_to_api}amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | ${a_path_to_api}amazon_upload_resume.py --debug 2>>log.prepare_data"
+  a_study_name=`bash -c "${a_testing_script}"`
   if [ $? -ne 0 ]; then
-     echo "An error have appeared during execution of 'amazon_upload_start.py | amazon_upload_resume.py ' " 
+     echo ''
+     echo ''
+     echo "An error have appeared during execution of " 
+     echo ${a_testing_script}
+     echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
      cat log.prepare_data
      rm log.prepare_data
      exit -1
   fi
 
-  `amazon_ls.py ${a_study_name} --debug 2>log.amazon_ls_pipe_rm_old_api_files | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.amazon_ls_pipe_rm_old_api_files`
-
+  a_testing_script="amazon_ls.py ${a_study_name} --debug 2>log.${a_script_name}_${an_old_api_number} | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.${a_script_name}_${an_old_api_number}"
+  `bash -c "${a_testing_script}"`
   if [ $? -ne 0 ]; then
-     echo "An error have appeared during execution of 'amazon_ls.py ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name}' " 
-     cat log.amazon_ls_pipe_rm_old_api_files
-     rm log.amazon_ls_pipe_rm_old_api_files
+     echo ''
+     echo ''
+     echo "An error have appeared during execution of " 
+     echo ${a_testing_script}
+     echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
+     cat log.${a_script_name}_${an_old_api_number}
+     rm log.${a_script_name}_${an_old_api_number}
      rm log.prepare_data
      exit -1
   else
@@ -67,9 +81,14 @@ testing_ls_pipe_rm_old_api_files()
         fi
      done
      if [ "${an_allright}" = "False" ]; then
+        echo ''
+        echo ''
         echo " ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 "
-        #cat log.amazon_ls_pipe_rm_old_api_files
-        rm log.amazon_ls_pipe_rm_old_api_files
+        echo "--------------------------------------------------------------------------------"
+        echo ''
+        echo ''
+        cat log.${a_script_name}_${an_old_api_number}
+        rm log.${a_script_name}_${an_old_api_number}
         rm log.check_ls_pipe_rm_files
         rm log.prepare_data
         exit -1
@@ -86,7 +105,5 @@ testing_ls_pipe_rm_old_api_files()
 
 
 #-----------------------------------------------------------------------------------------
-for an_api in ${a_list_old_api}
-do
-  testing_ls_pipe_rm_old_api_files ${an_api}
-done
+run_old_api_script testing_ls_pipe_rm_old_api_files
+

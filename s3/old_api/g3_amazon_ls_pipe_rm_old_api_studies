@@ -21,13 +21,14 @@
 
 #-----------------------------------------------------------------------------------------
 #source common function
-. common.sh
+. old_api.sh
 
 
 
 #-----------------------------------------------------------------------------------------
 testing_ls_pipe_rm_old_api_studies()
 {
+  a_script_name=`basename $0`
   an_old_api_number=$1
 
   a_study_name1=`prepare_testing_data ${an_old_api_number}`
@@ -36,34 +37,46 @@ testing_ls_pipe_rm_old_api_studies()
 
   a_begin_study_name=`study_name_starts_with`
 
-  echo "----------------- Testing amazon_ls | rm \"${an_old_api_number}\" api studies -------------------"
+  echo "- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" -"
   
-  amazon_ls.py --debug 2>log.ls_pipe_rm_old_api_studies | grep ${a_begin_study_name} | xargs amazon_rm_study.py --debug 2>>log.ls_pipe_rm_old_api_studies
+  a_testing_script="amazon_ls.py --debug 2>log.${a_script_name}_${an_old_api_number} | grep -e ${a_study_name1} -e ${a_study_name2} | xargs amazon_rm_study.py --debug 2>>log.${a_script_name}_${an_old_api_number}"
+  `bash -c "${a_testing_script}"`
 
   if [ $? -ne 0 ]; then
-     echo "An error have appeared during execution of 'amazon_ls.py | grep testing | xargs amazon_rm.py ' " 
-     rm log.ls_pipe_rm_old_api_studies
+     echo ''
+     echo ''
+     echo "An error have appeared during execution of  " 
+     echo ${a_testing_script}
+     echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
+     cat log.${a_script_name}_${an_old_api_number}
+     rm log.${a_script_name}_${an_old_api_number}
      exit -1
   else
      dummy=`amazon_ls.py --debug 2>log.check_ls_pipe_rm_studies`
-     count_entrances=`fgrep -c "${a_begin_study_name}" log.check_ls_pipe_rm_studies`
+     count_entrances=`fgrep -c -e ${a_study_name1} -e ${a_study_name2} log.check_ls_pipe_rm_studies`
      if [ ${count_entrances} -ne 0 ]; then
+        echo ''
+        echo ''
         echo " ERROR : There are studies named 'testing-..' in the s3 "
-        cat log.ls_pipe_rm_old_api_studies
-        rm log.ls_pipe_rm_old_api_studies
+        echo "--------------------------------------------------------------------------------"
+        echo ''
+        echo ''
+        cat log.${a_script_name}_${an_old_api_number}
+        rm log.${a_script_name}_${an_old_api_number}
+        exit -1
      else
         echo '----------------------------------- OK -----------------------------------------'
         echo ''
         rm log.check_ls_pipe_rm_studies
         `remove_log_prepare_test_case`
-        `rm_studies`
+        `rm_from_studies ${a_study_name1} ${a_study_name2}`
      fi
   fi
 }
 
 
 #-----------------------------------------------------------------------------------------
-for an_api in ${a_list_old_api}
-do
-    testing_ls_pipe_rm_old_api_studies ${an_api}
-done
+run_old_api_script testing_ls_pipe_rm_old_api_studies ${an_api}
+
