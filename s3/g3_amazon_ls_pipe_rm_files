@@ -26,57 +26,66 @@
 
 
 #-----------------------------------------------------------------------------------------
-an_output_dir=${case_dir}.out
-a_list_filenames=`create_list_filenames_in_casedir`
-a_testing_filenames=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ], ' ', _list[ 1 ] " `
-a_testing_files=`create_list_case_files ${a_testing_filenames}`
+testing_ls_pipe_rm_files()
+{
+  a_script_name=`basename $0`
+  an_output_dir=${case_dir}.out
+  a_list_filenames=`create_list_filenames_in_casedir`
+  a_testing_filenames=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ], ' ', _list[ 1 ] " `
+  a_testing_files=`create_list_case_files ${a_testing_filenames}`
 
 
-echo '------------------------ Testing amazon_ls | rm files --------------------------'
-a_study_name=`amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | amazon_upload_resume.py --debug 2>>log.prepare_data`
+  echo "------------------ Running \"${a_path_script}/${a_script_name}\" ---------------------"
+  a_study_name=`amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | amazon_upload_resume.py --debug 2>>log.prepare_data`
+  if [ $? -ne 0 ]; then
+     echo "An error have appeared during execution of "
+     echo "amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | amazon_upload_resume.py --debug 2>>log.prepare_data"
+     echo "--------------------------------------------------------------------------------"
+     cat log.prepare_data
+     rm log.prepare_data
+     exit -1
+  fi
 
-if [ $? -ne 0 ]; then
-   echo "An error have appeared during execution of 'amazon_upload_start.py | amazon_upload_resume.py ' " 
-   cat log.prepare_data
-   rm log.prepare_data
-   exit -1
-fi
+  `amazon_ls.py ${a_study_name} --debug 2>log.${a_script_name} | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.${a_script_name}`
 
-`amazon_ls.py ${a_study_name} --debug 2>log.amazon_ls_pipe_rm_files | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.amazon_ls_pipe_rm_files`
-
-if [ $? -ne 0 ]; then
-   echo "An error have appeared during execution of 'amazon_ls.py ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name}' " 
-   cat log.amazon_ls_pipe_rm_files
-   rm log.amazon_ls_pipe_rm_files
-   rm log.prepare_data
-   exit -1
-else
-   amazon_ls.py ${a_study_name} --debug > log.check_ls_pipe_rm_files 2>&1
-   an_allright="True"
-   for a_filename in ${a_testing_filenames}
-   do
-      count_entrances=`fgrep -c ${a_filename} log.check_ls_pipe_rm_files`
-      if [ ${count_entrances} -ne 0 ]; then
-         an_allright="False"
-         a_not_deleted_file=${a_filename}
-         break
-      fi
-   done
-   if [ "${an_allright}" = "False" ]; then
-      echo " ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 "
-      #cat log.amazon_ls_pipe_rm_files
-      rm log.amazon_ls_pipe_rm_files
-      rm log.check_ls_pipe_rm_files
-      rm log.prepare_data
-      exit -1
-   else
-      echo '----------------------------------- OK -----------------------------------------'
-      rm log.check_ls_pipe_rm_files
-      rm log.prepare_data
-      `amazon_rm_study.py ${a_study_name} > tmp.log 2>&1`
-      rm tmp.log
-   fi
-fi
+  if [ $? -ne 0 ]; then
+     echo "An error have appeared during execution of"
+     echo "amazon_ls.py ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name} "
+     echo "--------------------------------------------------------------------------------"
+     cat log.${a_script_name}
+     rm log.${a_script_name}
+     rm log.prepare_data
+     exit -1
+  else
+     amazon_ls.py ${a_study_name} --debug > log.check_ls_pipe_rm_files 2>&1
+     an_allright="True"
+     for a_filename in ${a_testing_filenames}
+     do
+        count_entrances=`fgrep -c ${a_filename} log.check_ls_pipe_rm_files`
+        if [ ${count_entrances} -ne 0 ]; then
+           an_allright="False"
+           a_not_deleted_file=${a_filename}
+           break
+        fi
+     done
+     if [ "${an_allright}" = "False" ]; then
+        echo " ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 "
+        cat log.${a_script_name}
+        rm log.${a_script_name}
+        rm log.check_ls_pipe_rm_files
+        rm log.prepare_data
+        exit -1
+     else
+        echo '----------------------------------- OK -----------------------------------------'
+        rm log.check_ls_pipe_rm_files
+        rm log.prepare_data
+        `amazon_rm_study.py ${a_study_name} > tmp.log 2>&1`
+        rm tmp.log
+     fi
+  fi
+}
 
 
+#-----------------------------------------------------------------------------------------
+run_script testing_ls_pipe_rm_files
 
