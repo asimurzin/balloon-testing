@@ -21,26 +21,31 @@
 
 #-----------------------------------------------------------------------------------------
 #source common function
-. common.sh
+. old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
 testing_rm_old_api_file()
 {
+   a_script_name=`basename $0`
    an_old_api_number=$1
    `remove_log_prepare_test_case`
    a_study_name=`prepare_testing_data ${an_old_api_number}` 
 
-  echo "-------------------- Testing amazon_rm \"${an_old_api_number}\" api files -----------------------"
+  echo "----- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" ------"
+  
   a_list_filenames=`create_list_filenames_in_casedir`
   a_list_files=`create_list_case_files ${a_list_filenames}`
   a_list_file_to_rm=`python -c "temp='${a_list_files}';_list=temp.split(' '); import os; print os.path.abspath(_list[ 1 ] ),' ',os.path.abspath(_list[ 0 ] )" `
 
-  amazon_rm.py --study-name=${a_study_name}  ${a_list_file_to_rm} --debug > log.amazon_rm_old_api_files 2>&1
+  a_testing_script="amazon_rm.py --study-name=${a_study_name}  ${a_list_file_to_rm} --debug"
+  ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
   if [ $? -ne 0 ] ; then
-     echo "An error have appeared during execution of amazon_rm.py" 
-     cat log.amazon_rm_old_api_files
-     rm log.amazon_rm_old_api_files
+     echo "An error have appeared during execution of " 
+     echo ${a_testing_script}
+     echo "--------------------------------------------------------------------------------"
+     cat log.${a_script_name}_${an_old_api_number}
+     rm log.${a_script_name}_${an_old_api_number}
      exit -1
   else
      amazon_ls.py ${a_study_name} --debug > log.list_files 2>&1
@@ -56,8 +61,10 @@ testing_rm_old_api_file()
      done
      if [ "${an_allright}" = "False" ]; then
         echo ' ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 '
+        echo "--------------------------------------------------------------------------------"
+        cat log.${a_script_name}_${an_old_api_number}
         rm log.list_files
-        rm log.amazon_rm_old_api_files
+        rm log.${a_script_name}_${an_old_api_number}
         exit -1
      else
         echo '----------------------------------- OK -----------------------------------------'
@@ -69,7 +76,5 @@ testing_rm_old_api_file()
 }
 
 #-----------------------------------------------------------------------------------------
-for an_api in ${a_list_old_api}
-do
-  testing_rm_old_api_file ${an_api}
-done
+run_old_api_script testing_rm_old_api_file
+
