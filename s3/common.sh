@@ -144,22 +144,37 @@ prepare_testing_data()
   a_list_files=`create_list_case_files ${a_list_filenames}`
   
   if [ ! -f 'log.prepare_test_case'  ]; then
+     echo "Prepare testing data...." >&2
      a_study_name=`create_study_name`
-     `${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files} > log.prepare_test_case 2>&1`
+     a_testing_script="${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files}"
+     `${a_testing_script} > log.prepare_test_case 2>&1`
      if [ -f studies ]; then
         echo ${a_study_name} >> studies
      else
         echo ${a_study_name} > studies
      fi 
      if [ $? -ne 0 ]; then
-        echo ' An error have appeared during execution of amazon_upload_start.py'
+        echo ''
+        echo ''
+        echo "An error have appeared during execution of"
+        echo "${a_testing_script}" 
+        echo "--------------------------------------------------------------------------------"
+        echo ''
+        echo ''
         cat log.prepare_test_case
         rm log.prepare_test_case
         exit -1
      else
-        `${a_path_to_api}amazon_upload_resume.py --study-name=${a_study_name} >>log.prepare_test_case 2>&1`
+        a_testing_script="${a_path_to_api}amazon_upload_resume.py --study-name=${a_study_name}"
+        `${a_testing_script} >>log.prepare_test_case 2>&1`
         if [ $? -ne 0 ]; then
-           echo ' An error have appeared during execution of amazon_upload_resume.py'
+           echo ''
+           echo ''
+           echo "An error have appeared during execution of"
+           echo "${a_testing_script}" 
+           echo "--------------------------------------------------------------------------------"
+           echo ''
+           echo ''
            cat log.prepare_test_case
            rm log.prepare_test_case
            exit -1
