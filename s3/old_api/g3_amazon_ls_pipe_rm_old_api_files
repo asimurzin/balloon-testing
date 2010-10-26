@@ -36,7 +36,7 @@ testing_ls_pipe_rm_old_api_files()
   a_list_filenames=`create_list_filenames_in_casedir`
   a_testing_filenames=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ], ' ', _list[ 1 ] " `
   a_testing_files=`create_list_case_files ${a_testing_filenames}`
-
+  echo "Prepare testing data...." >&2
   echo "- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" -"
   
   a_testing_script="${a_path_to_api}amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | ${a_path_to_api}amazon_upload_resume.py --debug 2>>log.prepare_data"

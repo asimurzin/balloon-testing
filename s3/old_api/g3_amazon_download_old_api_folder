@@ -33,7 +33,7 @@ testing_download_old_api_folder()
   
   a_study_name=`create_study_name`
   an_output_dir=${case_dir}.out
-
+  echo "Prepare testing data...." >&2
   dummy=`${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${case_dir} --debug 2>log.amazon_upload_folder | ${a_path_to_api}amazon_upload_resume.py --debug  2>>log.amazon_upload_folder`
   if [ $? -ne 0 ]; then
      echo ''

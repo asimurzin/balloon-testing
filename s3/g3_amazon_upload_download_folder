@@ -31,7 +31,7 @@ testing_upload_dwonload_folder()
   a_study_name=`create_study_name`
 
   an_output_dir=${case_dir}.out
-
+  echo "Prepare testing data...." >&2
   echo "-------- Running \"${a_path_script}/${a_script_name}\" upload folder -----------"
   
   a_testing_script="amazon_upload_start.py --study-name=${a_study_name} ${case_dir} --debug 2>log.${a_script_name} | amazon_upload_resume.py --debug  2>>log.${a_script_name}"
