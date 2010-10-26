@@ -22,26 +22,37 @@
 #-----------------------------------------------------------------------------------------
 #source common function
 . common.sh
-a_study_name=`prepare_testing_data`
 
 
 #-----------------------------------------------------------------------------------------
-echo '------------------------- Testing amazon_ls studies ----------------------------'
-amazon_ls.py --debug > log.amazon_ls_study 2>&1
+testing_ls_studies()
+{
+  a_script_name=`basename $0`
+  a_study_name=`prepare_testing_data`
 
-if [ $? -ne 0 ] ; then
-   echo "An error have appeared during execution of amazon_ls.py" 
-   cat log.amazon_ls_study
-   rm log.amazon_ls_study
-   exit -1
-else
-   count=`fgrep -c "${a_study_name}" log.amazon_ls_study`
-   if [ ${count} -gt 0 ] ; then 
-      echo '----------------------------------- OK -----------------------------------------'
-   else
-      echo " ERROR : There is no '${a_study_name}' study in the s3 "
-      rm log.amazon_ls_study
-      exit -1
-   fi   
-fi
+  echo "------------------ Running \"${a_path_script}/${a_script_name}\" ---------------------"
+  a_testing_script="amazon_ls.py --debug"
+  ${a_testing_script} > log.${a_script_name} 2>&1
 
+  if [ $? -ne 0 ] ; then
+     echo "An error have appeared during execution "
+     echo ${a_testing_script}
+     echo "--------------------------------------------------------------------------------"
+     cat log.${a_script_name}
+     rm log.${a_script_name}
+     exit -1
+  else
+     count=`fgrep -c "${a_study_name}" log.${a_script_name}`
+     if [ ${count} -gt 0 ] ; then 
+        echo '----------------------------------- OK -----------------------------------------'
+     else
+        echo " ERROR : There is no '${a_study_name}' study in the s3 "
+        rm log.${a_script_name}
+        exit -1
+     fi   
+  fi
+}
+
+
+#-----------------------------------------------------------------------------------------
+run_script testing_ls_studies
