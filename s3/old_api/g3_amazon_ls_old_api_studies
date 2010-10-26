@@ -61,6 +61,6 @@ testing_ls_old_api_studies()
 
 
 #-----------------------------------------------------------------------------------------
-run_old_api_script testing_ls_old_api_studies ${an_api}
+run_old_api_script testing_ls_old_api_studies
 
 

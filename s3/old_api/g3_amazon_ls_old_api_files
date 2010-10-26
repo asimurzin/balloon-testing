@@ -70,5 +70,5 @@ testing_ls_old_api_files()
 
 
 #-----------------------------------------------------------------------------------------
-run_old_api_script testing_ls_old_api_files ${an_api}
+run_old_api_script testing_ls_old_api_files
 
