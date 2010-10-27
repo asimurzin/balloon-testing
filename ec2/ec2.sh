@@ -30,21 +30,21 @@ an_image_id="ami-9c5aaff5"
 
 
 #----------------------------------------------------------------------------------------
-get_image_location_from_reservation()
+get_image_location()
 {
   echo $1
 }
 
 
 #----------------------------------------------------------------------------------------
-get_reservation__from_reservation()
+get_reservation_id()
 {
   echo $2
 }
 
 
 #----------------------------------------------------------------------------------------
-get_identity__from_reservation()
+get_identity_file()
 {
   echo $3
 }
@@ -55,7 +55,7 @@ create_reservation()
 {
      a_count_instances=$1
      echo 'Prepare reservation...' >&2
-     a_testing_script="amazon_reservation_run.py --instance-type=${an_instance_type} --image-id=${an_image_id} --min-count=${a_count_instances} "
+     a_testing_script="amazon_reservation_run.py --instance-type=${an_instance_type} --image-id=${an_image_id} --min-count=${a_count_instances} --debug"
      a_reservation=`${a_testing_script} 2>log.create_reservation`
      if [ $? -ne 0 ]; then
         echo ''
