@@ -52,7 +52,6 @@ testing_nfs_config()
      exit -1
   else
      echo '----------------------------------- OK -----------------------------------------'
-     echo "${a_testing_script}"
   fi
 }
 
