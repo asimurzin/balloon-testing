@@ -34,11 +34,15 @@ testing_download_old_api_folder()
   a_study_name=`create_study_name`
   an_output_dir=${case_dir}.out
   echo "Prepare testing data...." >&2
-  dummy=`${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${case_dir} --debug 2>log.amazon_upload_folder | ${a_path_to_api}amazon_upload_resume.py --debug  2>>log.amazon_upload_folder`
+  a_testing_script="${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${case_dir} --debug 2>log.amazon_upload_folder | ${a_path_to_api}amazon_upload_resume.py --debug  2>>log.amazon_upload_folder"
+  dummy=`bash -c "${a_testing_script}"`
   if [ $? -ne 0 ]; then
      echo ''
      echo ''
-     echo "An error have appeared during execution of ${a_path_to_api}amazon_upload_start.py | ${a_path_to_api}amazon_upload_resume.py" 
+     echo "--------------------------------------------------------------------------------"
+     echo "An error have appeared during execution of "
+     echo ${a_testing_script}
+     echo "--------------------------------------------------------------------------------"
      echo ''
      echo ''
      cat log.amazon_upload_folder
@@ -52,6 +56,7 @@ testing_download_old_api_folder()
   if [ $? -ne 0 ]; then
      echo ''
      echo ''
+     echo "--------------------------------------------------------------------------------"
      echo "An error have appeared during execution of" 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
@@ -69,9 +74,10 @@ testing_download_old_api_folder()
         rm log.tmp
         echo ''
      else
+        echo ''
+        echo ''
+        echo "--------------------------------------------------------------------------------"
         echo "ERROR: There are differences between '${case_dir}' and '${an_output_dir}/${an_abspath_files}': " 
-        echo ''
-        echo ''
         echo ${a_differences}
         echo "--------------------------------------------------------------------------------"
         echo ''
