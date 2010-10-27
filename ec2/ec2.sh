@@ -49,6 +49,14 @@ get_identity_file()
   echo $3
 }
 
+#----------------------------------------------------------------------------------------
+rm_from_file_reservations()
+{
+  a_count_instances=$1
+  a_reservation=$2
+  cat ${a_file_reservations}_${a_count_instances} | grep -v -e ${a_reservation} > ${a_file_reservations}_${a_count_instances}
+}
+
 
 #----------------------------------------------------------------------------------------
 create_reservation()
