@@ -1,0 +1,63 @@
+#!/bin/bash
+
+#--------------------------------------------------------------------------------------
+## Copyright 2010 Alexey Petrov
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+## Author : Andrey Simurzin
+##
+
+
+#-----------------------------------------------------------------------------------------
+#source common function
+. ./ec2.sh
+
+
+#-----------------------------------------------------------------------------------------
+testing_reservation_delete()
+{
+  a_script_name=`basename $0`
+  
+  a_count_instances=1
+  
+  a_reservation=`prepare_testing_reservation ${a_count_instances}`
+  
+  an_image_location=`get_image_location ${a_reservation}`
+  a_reservation_id=`get_reservation_id ${a_reservation}`
+  an_indentity_file=`get_identity_file ${a_reservation}`
+  
+  echo "----------------- Running \"${a_path_script}/${a_script_name}\" -------------------"
+  a_testing_script="amazon_reservation_delete.py --image-location=${an_image_location} --reservation-id=${a_reservation_id} --identity-file=${an_indentity_file} --debug"
+  dummy=`${a_testing_script} 2>log.${a_script_name}`
+  if [ $? -ne 0 ]; then
+     echo ''
+     echo ''
+     echo "--------------------------------------------------------------------------------"
+     echo "An error have appeared during execution of"
+     echo "${a_testing_script}" 
+     echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
+     cat log.${a_script_name}
+     rm log.${a_script_name}
+     exit -1
+  else
+     echo '----------------------------------- OK -----------------------------------------'
+     `rm_from_file_reservations ${a_count_instances} ${a_reservation}`
+  fi
+}
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+run_script testing_reservation_delete
