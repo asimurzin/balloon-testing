@@ -120,20 +120,6 @@ calc_path_to_api()
 
 
 #-----------------------------------------------------------------------------------------
-run_script()
-{
-  a_script_name=`basename $0`
-  a_fun_name=$1
-  if [ -f log.${a_script_name} ]; then
-     echo "${a_script_name} already run: remove \"log.${a_script_name}\" to run"
-     exit 0
-  else
-     ${a_fun_name}
-  fi
-}
-
-
-#-----------------------------------------------------------------------------------------
 prepare_testing_data()
 { 
   an_old_api_number=$1

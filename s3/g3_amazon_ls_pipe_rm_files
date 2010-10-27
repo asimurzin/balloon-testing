@@ -21,7 +21,7 @@
 
 #-----------------------------------------------------------------------------------------
 #source common function
-. common.sh
+. s3.sh
 #a_study_name=`prepare_testing_data`
 
 
