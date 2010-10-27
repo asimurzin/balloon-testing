@@ -37,6 +37,7 @@ testing_ls_files()
   if [ $? -ne 0 ] ; then
      echo ''
      echo ''
+     echo "--------------------------------------------------------------------------------"
      echo "An error have appeared during execution of " 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
@@ -60,9 +61,12 @@ testing_ls_files()
      if [ "${an_allright}" = "False" ]; then
         echo ''
         echo ''
+        echo "--------------------------------------------------------------------------------"
         echo " ERROR : There is no '${a_not_exists_file}' file in the s3 "
+        echo "--------------------------------------------------------------------------------"
         echo ''
         echo ''
+        cat log.${a_script_name}
         rm log.${a_script_name}
         exit -1
      else

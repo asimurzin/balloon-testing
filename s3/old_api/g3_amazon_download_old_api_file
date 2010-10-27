@@ -46,6 +46,7 @@ testing_download_old_api_file()
       echo "An error have appeared during execution of " 
       echo ''
       echo ''
+      echo "--------------------------------------------------------------------------------"
       echo ${a_testing_script}
       echo "--------------------------------------------------------------------------------"
       echo ''
@@ -61,6 +62,7 @@ testing_download_old_api_file()
       else
          echo ''
          echo ''
+         echo "--------------------------------------------------------------------------------"
          echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
          echo "--------------------------------------------------------------------------------"
          echo ''

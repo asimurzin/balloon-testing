@@ -40,6 +40,7 @@ testing_ls_pipe_rm_studies()
   if [ $? -ne 0 ]; then
      echo ''
      echo ''
+     echo "--------------------------------------------------------------------------------"
      echo "An error have appeared during execution of"
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
@@ -54,7 +55,9 @@ testing_ls_pipe_rm_studies()
      if [ ${count_entrances} -ne 0 ]; then
         echo ''
         echo ''
+        echo "--------------------------------------------------------------------------------"
         echo " ERROR : There is study named ${a_study_name1} or ${a_study_name2} ( may be both ) in the s3 "
+        echo "--------------------------------------------------------------------------------"
         echo ''
         echo ''
         cat log.${a_script_name}

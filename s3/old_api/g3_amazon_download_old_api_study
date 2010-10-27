@@ -43,6 +43,7 @@ testing_download_old_api_study()
   if [ $? -ne 0 ]; then
      echo ''
      echo ''
+     echo "--------------------------------------------------------------------------------"
      echo "An error have appeared during execution of " 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
@@ -65,6 +66,7 @@ testing_download_old_api_study()
      if [ "${an_allright}" = "False" ]; then
         echo ''
         echo ''
+        echo "--------------------------------------------------------------------------------"
         echo " ERROR : There is no '${a_bad_file}' file , in output folder  '${an_output_dir}'. "
         echo "--------------------------------------------------------------------------------"
         echo ''

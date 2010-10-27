@@ -45,6 +45,7 @@ testing_ls_pipe_rm_old_api_studies()
   if [ $? -ne 0 ]; then
      echo ''
      echo ''
+     echo "--------------------------------------------------------------------------------"
      echo "An error have appeared during execution of  " 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
@@ -59,7 +60,8 @@ testing_ls_pipe_rm_old_api_studies()
      if [ ${count_entrances} -ne 0 ]; then
         echo ''
         echo ''
-        echo " ERROR : There are studies named 'testing-..' in the s3 "
+        echo "--------------------------------------------------------------------------------"
+        echo " ERROR : There are study named ${a_study_name1} or ${a_study_name2} ( may be both ) in the s3 "
         echo "--------------------------------------------------------------------------------"
         echo ''
         echo ''

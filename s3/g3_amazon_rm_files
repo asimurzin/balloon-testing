@@ -62,6 +62,7 @@ testing_rm_files()
      if [ "${an_allright}" = "False" ]; then
         echo ''
         echo ''
+        echo "--------------------------------------------------------------------------------"
         echo ' ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 '
         echo "--------------------------------------------------------------------------------"
         echo ''

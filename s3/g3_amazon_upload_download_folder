@@ -38,6 +38,7 @@ testing_upload_dwonload_folder()
   if [ $? -ne 0 ]; then
      echo ''
      echo ''
+     echo "--------------------------------------------------------------------------------"
      echo "An error have appeared during execution of " 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
@@ -56,8 +57,9 @@ testing_upload_dwonload_folder()
      else
         echo ''
         echo ''
+        echo "--------------------------------------------------------------------------------"
         echo " ERROR : There is no uploading file '${case_dir}' , in the s3 "
-        echo '----------------------------------------------------------------------------'
+        echo "--------------------------------------------------------------------------------"
         echo ''
         echo ''
         cat log.${a_script_name}

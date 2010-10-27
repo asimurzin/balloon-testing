@@ -52,7 +52,9 @@ testing_ls_studies()
      else
         echo ''
         echo ''
+        echo "--------------------------------------------------------------------------------"
         echo " ERROR : There is no '${a_study_name}' study in the s3 "
+        echo "--------------------------------------------------------------------------------"
         echo ''
         echo ''
         rm log.${a_script_name}

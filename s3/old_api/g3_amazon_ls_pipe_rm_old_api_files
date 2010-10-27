@@ -44,6 +44,7 @@ testing_ls_pipe_rm_old_api_files()
   if [ $? -ne 0 ]; then
      echo ''
      echo ''
+     echo "--------------------------------------------------------------------------------"
      echo "An error have appeared during execution of " 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
@@ -59,6 +60,7 @@ testing_ls_pipe_rm_old_api_files()
   if [ $? -ne 0 ]; then
      echo ''
      echo ''
+     echo "--------------------------------------------------------------------------------"
      echo "An error have appeared during execution of " 
      echo ${a_testing_script}
      echo "--------------------------------------------------------------------------------"
@@ -83,6 +85,7 @@ testing_ls_pipe_rm_old_api_files()
      if [ "${an_allright}" = "False" ]; then
         echo ''
         echo ''
+        echo "--------------------------------------------------------------------------------"
         echo " ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 "
         echo "--------------------------------------------------------------------------------"
         echo ''
