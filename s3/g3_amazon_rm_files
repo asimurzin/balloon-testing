@@ -73,8 +73,10 @@ testing_rm_files()
         exit -1
      else
         echo '----------------------------------- OK -----------------------------------------'
-        rm log.list_files 
-        `remove_log_prepare_test_case`
+        rm log.list_files
+        `amazon_rm_study.py ${a_study_name} > tmp.log 2>&1`
+        rm tmp.log 
+        `rm_from_studies ${file_studies_starts}_ ${a_study_name}`
      fi
   fi
 }

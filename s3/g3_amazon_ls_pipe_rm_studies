@@ -29,8 +29,8 @@ testing_ls_pipe_rm_studies()
 {
   a_script_name=`basename $0`
   a_study_name1=`prepare_testing_data`
-  `remove_log_prepare_test_case`
-  a_study_name2=`prepare_testing_data`
+  `create_study`
+  a_study_name2=`get_study`
   a_begin_study_name=`study_name_starts_with`
 
   echo "----------------- Running \"${a_path_script}/${a_script_name}\" --------------------"
@@ -65,8 +65,8 @@ testing_ls_pipe_rm_studies()
      else
         echo '----------------------------------- OK -----------------------------------------'
         rm log.check_ls_pipe_rm_studies
-        `remove_log_prepare_test_case`
-        `rm_from_studies ${a_study_name1} ${a_study_name2}`
+        `rm_from_studies ${file_studies_starts}_ ${a_study_name1}`
+        `rm_from_studies ${file_studies_starts}_ ${a_study_name2}`
      fi
   fi
 }
