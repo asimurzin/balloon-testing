@@ -35,7 +35,7 @@ testing_openmpi_config()
   a_reservation_id=`get_reservation_id ${a_reservation}`
   an_indentity_file=`get_identity_file ${a_reservation}`
   
-  echo "------------------ Running \"${a_path_script}/${a_script_name}\" --------------------"
+  echo "------------------- Running \"${a_path_script}/${a_script_name}\" ---------------------"
   a_testing_script="amazon_openmpi_config.py --image-location=${an_image_location} --reservation-id=${a_reservation_id} --identity-file=${an_indentity_file} --debug"
   dummy=`${a_testing_script} 2>log.${a_script_name}`
   if [ $? -ne 0 ]; then
