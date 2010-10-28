@@ -29,7 +29,6 @@ testing_rm_old_api_file()
 {
    a_script_name=`basename $0`
    an_old_api_number=$1
-   `remove_log_prepare_test_case`
    a_study_name=`prepare_testing_data ${an_old_api_number}` 
 
   echo "----- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" ------"
@@ -80,7 +79,9 @@ testing_rm_old_api_file()
         echo '----------------------------------- OK -----------------------------------------'
         echo ''
         rm log.list_files 
-        `remove_log_prepare_test_case`
+        `amazon_rm_study.py ${a_study_name} > tmp.log 2>&1`
+        rm tmp.log 
+        `rm_from_studies ${file_studies_starts}_${an_old_api_number} ${a_study_name}`
      fi
   fi
 }

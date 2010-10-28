@@ -29,7 +29,6 @@ testing_download_old_api_study()
 {
   a_script_name=`basename $0`
   an_old_api_number=$1
-  `remove_log_prepare_test_case`
   a_study_name=`prepare_testing_data ${an_old_api_number}`
 
   an_output_dir=${case_dir}.out

@@ -32,8 +32,8 @@ testing_ls_pipe_rm_old_api_studies()
   an_old_api_number=$1
 
   a_study_name1=`prepare_testing_data ${an_old_api_number}`
-  `remove_log_prepare_test_case`
-  a_study_name2=`prepare_testing_data ${an_old_api_number}`
+  `create_study ${an_old_api_number}`
+  a_study_name2=`get_study ${an_old_api_number}`
 
   a_begin_study_name=`study_name_starts_with`
 
@@ -72,8 +72,8 @@ testing_ls_pipe_rm_old_api_studies()
         echo '----------------------------------- OK -----------------------------------------'
         echo ''
         rm log.check_ls_pipe_rm_studies
-        `remove_log_prepare_test_case`
-        `rm_from_studies ${a_study_name1} ${a_study_name2}`
+        `rm_from_studies ${file_studies_starts}_${an_old_api_number} ${a_study_name1}`
+        `rm_from_studies ${file_studies_starts}_${an_old_api_number} ${a_study_name2}`
      fi
   fi
 }
