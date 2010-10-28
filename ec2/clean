@@ -24,10 +24,32 @@
 
 
 #-----------------------------------------------------------------------------------------
+a_list_file_reservations=`ls reservations_* 2>log.tmp`
+for a_file_reservation in ${a_list_file_reservations}
+do
+  if [ -f  ${a_file_reservation} ]; then
+     a_reservation=`get_reservation ${a_file_reservation} `
+     if [ "x${a_reservation}" != "x" ];then
+        an_image_location=`get_image_location ${a_reservation}`
+        a_reservation_id=`get_reservation_id ${a_reservation}`
+        an_indentity_file=`get_identity_file ${a_reservation}`
+        amazon_reservation_delete.py --image-location=${an_image_location} --reservation-id=${a_reservation_id} --identity-file=${an_indentity_file} --debug
+        if [ $? -ne 0 ]; then
+           echo ''
+           echo "--------------------------------------------------------------------------------"
+           echo "An error have appeared during execution of"
+           echo "amazon_reservation_delete.py --image-location=${an_image_location} --reservation-id=${a_reservation_id} --identity-file=${an_indentity_file} --debug" 
+           echo "--------------------------------------------------------------------------------"
+           exit -1
+        fi
+    fi
+    rm  ${a_file_reservation}
+  fi
+done
+
 
 rm -f log.*
 rm -f *~
-rm -f reservations_*
-
+rm -rf damBreak.out*
 
 
