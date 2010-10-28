@@ -127,7 +127,6 @@ prepare_testing_reservation()
   an_image_id=$3
   echo ${a_count_instances} ${an_instance_type} ${an_image_id} >> log.tmp
   if [ ! -f reservations_${a_count_instances}_${an_instance_type}_${an_image_id} ]; then
-     echo ${a_count_instances} > log.tmp
      dummy=`create_reservation ${a_count_instances} ${an_instance_type} ${an_image_id}`
   else
      a_reservation=`get_reservation ${file_reservations_starts}_${a_count_instances}_${an_instance_type}_${an_image_id}`
