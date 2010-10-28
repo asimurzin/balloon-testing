@@ -26,6 +26,8 @@ a_list_old_api="dummy 0.1 0.2"
 
 a_path_script='s3'
 
+file_studies_starts=studies
+
 
 #------------------------------------------------------------------------------------------
 create_list_filenames_in_casedir()
@@ -56,25 +58,20 @@ remove_log_prepare_test_case()
 
 
 #-----------------------------------------------------------------------------------------
-get_studies()
+get_study()
 {
-  cat studies
-}
-
-
-#-----------------------------------------------------------------------------------------
-rm_studies()
-{
-  rm studies
+  an_old_api_number=$1
+  echo `sed '$!d' ${file_studies_starts}_${an_old_api_number}`
 }
 
 
 #-----------------------------------------------------------------------------------------
 rm_from_studies()
 {
-  a_study_name1=$1
-  a_study_name2=$2
-  cat studies | grep -v -e ${a_study_name1} -e ${a_study_name2} > studies
+  a_file_studies=$1
+  a_study_name1=$2
+  
+  cat ${a_file_studies} | grep -v -e ${a_study_name1} > ${a_file_studies}
 }
 
 
@@ -120,25 +117,30 @@ calc_path_to_api()
 
 
 #-----------------------------------------------------------------------------------------
-prepare_testing_data()
-{ 
+create_study()
+{
   an_old_api_number=$1
   a_path_to_api=`calc_path_to_api $an_old_api_number`
-  
   a_list_filenames=`create_list_filenames_in_casedir`
-
   a_list_files=`create_list_case_files ${a_list_filenames}`
-  
-  if [ ! -f 'log.prepare_test_case'  ]; then
-     echo "Prepare testing data...." >&2
-     a_study_name=`create_study_name`
-     a_testing_script="${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files}"
-     `${a_testing_script} > log.prepare_test_case 2>&1`
-     if [ -f studies ]; then
-        echo ${a_study_name} >> studies
-     else
-        echo ${a_study_name} > studies
-     fi 
+  echo "Prepare testing data...." >&2
+  a_study_name=`create_study_name`
+  a_testing_script="${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files}"
+  `${a_testing_script} > log.prepare_test_case 2>&1`
+  if [ $? -ne 0 ]; then
+     echo ''
+     echo ''
+     echo "An error have appeared during execution of"
+     echo "${a_testing_script}" 
+     echo "--------------------------------------------------------------------------------"
+     echo ''
+     echo ''
+     cat log.prepare_test_case
+     rm log.prepare_test_case
+     exit -1
+  else
+     a_testing_script="${a_path_to_api}amazon_upload_resume.py --study-name=${a_study_name}"
+     `${a_testing_script} >>log.prepare_test_case 2>&1`
      if [ $? -ne 0 ]; then
         echo ''
         echo ''
@@ -150,28 +152,29 @@ prepare_testing_data()
         cat log.prepare_test_case
         rm log.prepare_test_case
         exit -1
-     else
-        a_testing_script="${a_path_to_api}amazon_upload_resume.py --study-name=${a_study_name}"
-        `${a_testing_script} >>log.prepare_test_case 2>&1`
-        if [ $? -ne 0 ]; then
-           echo ''
-           echo ''
-           echo "An error have appeared during execution of"
-           echo "${a_testing_script}" 
-           echo "--------------------------------------------------------------------------------"
-           echo ''
-           echo ''
-           cat log.prepare_test_case
-           rm log.prepare_test_case
-           exit -1
-        fi
-      fi
-   else
-      a_study_name=`sed '$!d' studies`
-fi
-echo ${a_study_name}
+     fi
+     echo ${a_study_name} >> ${file_studies_starts}_${an_old_api_number}
+  fi
+  
 }
 
+
+#-----------------------------------------------------------------------------------------
+prepare_testing_data()
+{ 
+  an_old_api_number=$1
+
+  if [ ! -f ${file_studies_starts}_${an_old_api_number} ]; then
+     a_study_name=`create_study ${an_old_api_number}`
+  else
+     a_study_name=`get_study ${an_old_api_number}`
+     if [ "x${a_study_name}" == "x" ]; then
+        dummy=`create_study ${an_old_api_number}`
+     fi
+  fi
+  echo `get_study ${an_old_api_number}`
+}
+     
 
 #-----------------------------------------------------------------------------------------
 case_dir=`calc_path_to_case_dir`
