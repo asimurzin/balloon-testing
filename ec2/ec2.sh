@@ -63,7 +63,9 @@ create_reservation()
 {
      a_count_instances=$1
      echo 'Prepare reservation...' >&2
+          
      a_testing_script="amazon_reservation_run.py --instance-type=${an_instance_type} --image-id=${an_image_id} --min-count=${a_count_instances} --debug"
+     #a_testing_script="amazon_reservation_run.py  --min-count=${a_count_instances} --debug"
      a_reservation=`${a_testing_script} 2>log.create_reservation`
      if [ $? -ne 0 ]; then
         echo ''
