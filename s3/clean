@@ -24,12 +24,13 @@
 
 
 #-----------------------------------------------------------------------------------------
-if [ -f studies ]; then 
-   a_list_studies=`get_studies`
+an_old_api_verion=''
+if [ -f ${file_studies_starts}_${an_old_api_verion} ]; then 
+   a_list_studies=`cat ${file_studies_starts}_${an_old_api_verion}`
    if [ "x${a_list_studies}" != "x" ]; then
       amazon_rm_study.py ${a_list_studies}
    fi
-   rm studies
+   rm ${file_studies_starts}_${an_old_api_verion}
 fi
 rm -rf ${case_dir}.out
 rm -f log.*
