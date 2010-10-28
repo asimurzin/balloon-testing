@@ -25,7 +25,7 @@
 
 
 #-----------------------------------------------------------------------------------------
-testing_solver_run2()
+testing_balloon_ssh()
 {
   a_script_name=`basename $0`
   
@@ -79,4 +79,4 @@ testing_solver_run2()
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-run_script testing_solver_run2
+run_script testing_balloon_ssh
