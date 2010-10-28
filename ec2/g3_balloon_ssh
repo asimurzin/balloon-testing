@@ -31,7 +31,7 @@ testing_balloon_ssh()
   
   a_count_instances=1
   
-  a_reservation=`prepare_testing_reservation`
+  a_reservation=`prepare_testing_reservation ${count_instances} ${instance_type} ${image_id}`
   
   an_image_location=`get_image_location ${a_reservation}`
   a_reservation_id=`get_reservation_id ${a_reservation}`
@@ -59,7 +59,7 @@ testing_balloon_ssh()
   
   a_testing_script="balloon_ssh.py --identity-file=${an_indentity_file} --host-name=${a_host_name} --host-port=${a_host_port} --login-name=${a_login_name} --debug"
   
-  dummy=`${a_testing_script} 2>log.${a_script_name}`
+  dummy=`${a_testing_script} 2>>log.${a_script_name}`
   if [ $? -ne 0 ]; then
      echo ''
      echo ''

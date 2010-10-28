@@ -29,7 +29,7 @@ testing_openmpi_config()
 {
   a_script_name=`basename $0`
   
-  a_reservation=`prepare_testing_reservation`
+  a_reservation=`prepare_testing_reservation ${count_instances} ${instance_type} ${image_id}`
   
   an_image_location=`get_image_location ${a_reservation}`
   a_reservation_id=`get_reservation_id ${a_reservation}`

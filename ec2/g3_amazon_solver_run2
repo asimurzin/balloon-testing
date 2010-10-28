@@ -29,16 +29,14 @@ testing_solver_run2()
 {
   a_script_name=`basename $0`
   
-  a_count_instances=1
-  
-  a_reservation=`prepare_testing_reservation`
+  a_reservation=`prepare_testing_reservation ${count_instances} ${instance_type} ${image_id}`
   
   an_image_location=`get_image_location ${a_reservation}`
   a_reservation_id=`get_reservation_id ${a_reservation}`
   an_indentity_file=`get_identity_file ${a_reservation}`
   
   echo "--------------------- Running \"${a_path_script}/${a_script_name}\" ----------------------"
-  a_testing_script="amazon_solver_run2.py --case-dir=damBreak --image-location=${an_image_location} --reservation-id=${a_reservation_id} --identity-file=${an_indentity_file} --debug"
+  a_testing_script="amazon_solver_run2.py --case-dir=damBreak --image-location=${an_image_location} --reservation-id=${a_reservation_id} --identity-file=${an_indentity_file} --output-suffix=".out2" --debug"
   dummy=`${a_testing_script} 2>log.${a_script_name}`
   if [ $? -ne 0 ]; then
      echo ''

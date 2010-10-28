@@ -29,9 +29,7 @@ testing_reservation_delete()
 {
   a_script_name=`basename $0`
   
-  a_count_instances=1
-  
-  a_reservation=`prepare_testing_reservation ${a_count_instances}`
+  a_reservation=`prepare_testing_reservation ${count_instances} ${instance_type} ${image_id}`
   
   an_image_location=`get_image_location ${a_reservation}`
   a_reservation_id=`get_reservation_id ${a_reservation}`
@@ -54,7 +52,7 @@ testing_reservation_delete()
      exit -1
   else
      echo '----------------------------------- OK -----------------------------------------'
-     `rm_from_file_reservations ${a_count_instances} ${a_reservation}`
+     `rm_from_file_reservations ${count_instances} ${instance_type} ${image_id} ${a_reservation}`
   fi
 }
 

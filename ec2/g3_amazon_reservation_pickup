@@ -29,9 +29,7 @@ testing_reservation_pickup()
 {
   a_script_name=`basename $0`
   
-  a_count_instances=1
-  
-  a_reservation=`prepare_testing_reservation ${a_count_instances}`
+  a_reservation=`prepare_testing_reservation ${count_instances} ${instance_type} ${image_id}`
   
   echo "----------------- Running \"${a_path_script}/${a_script_name}\" -------------------"
   a_testing_script="amazon_reservation_pickup.py --debug"
