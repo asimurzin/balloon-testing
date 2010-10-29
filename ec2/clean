@@ -30,26 +30,25 @@ do
   if [ -f  ${a_file_reservation} ]; then
      a_reservation=`get_reservation ${a_file_reservation} `
      if [ "x${a_reservation}" != "x" ];then
-        an_image_location=`get_image_location ${a_reservation}`
-        a_reservation_id=`get_reservation_id ${a_reservation}`
-        an_indentity_file=`get_identity_file ${a_reservation}`
-        amazon_reservation_delete.py --image-location=${an_image_location} --reservation-id=${a_reservation_id} --identity-file=${an_indentity_file} --debug
+        amazon_reservation_delete.py --debug ${a_reservation}
         if [ $? -ne 0 ]; then
            echo ''
            echo "--------------------------------------------------------------------------------"
            echo "An error have appeared during execution of"
-           echo "amazon_reservation_delete.py --image-location=${an_image_location} --reservation-id=${a_reservation_id} --identity-file=${an_indentity_file} --debug" 
+           echo "amazon_reservation_delete.py --debug ${a_reservation}" 
            echo "--------------------------------------------------------------------------------"
-           exit -1
+           # exit -1
         fi
     fi
     rm  ${a_file_reservation}
   fi
 done
 
+#-----------------------------------------------------------------------------------------
 amazon_ls.py 2>log.txt | grep tmp- | xargs amazon_rm_study.py 2>>log.txt
 rm -f log.*
 rm -f *~
 rm -rf damBreak.out*
 
 
+#-----------------------------------------------------------------------------------------
