@@ -53,7 +53,7 @@ testing_ls_pipe_rm_files()
   fi
 
   a_testing_script="amazon_ls.py ${a_study_name} --debug 2>log.${a_script_name} | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.${a_script_name}"
-  bash -c "${a_testing_script}"
+  bash -c "${a_testing_script}" > /dev/null
 
   if [ $? -ne 0 ]; then
      echo ''
