@@ -31,8 +31,6 @@ testing_reservation_list()
   
   a_reservation=`prepare_testing_reservation ${count_instances} ${instance_type} ${image_id}`
   
-  a_reservation_id=`get_reservation_id ${a_reservation}`
-   
   echo "------------------ Running \"${a_path_script}/${a_script_name}\" --------------------"
   a_testing_script="amazon_reservation_list.py --debug"
   ${a_testing_script} >log.${a_script_name} 2>&1
@@ -48,23 +46,8 @@ testing_reservation_list()
      cat log.${a_script_name}
      rm log.${a_script_name}
      exit -1
-  else
-     count_entrances=`fgrep -c ${a_reservation_id} log.${a_script_name}`
-     if [ ${count_entrances} -eq 0 ]; then
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo " ERROR : There is no '${a_reservation_id}' reservation in the ec2 "
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        cat log.${a_script_name}
-        rm log.${a_script_name}
-        exit -1
-     else
-       echo '----------------------------------- OK -----------------------------------------'
-     fi
   fi
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 
