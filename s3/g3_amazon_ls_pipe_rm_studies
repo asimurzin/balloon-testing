@@ -36,7 +36,7 @@ testing_ls_pipe_rm_studies()
   echo "----------------- Running \"${a_path_script}/${a_script_name}\" --------------------"
 
   a_testing_script="amazon_ls.py --debug 2>log.${a_script_name} | grep -e ${a_study_name1} -e ${a_study_name2} | xargs amazon_rm_study.py --debug 2>>log.${a_script_name}"
-  `bash -c "${a_testing_script}"`
+  bash -c "${a_testing_script}" > /dev/null
   if [ $? -ne 0 ]; then
      echo ''
      echo ''
