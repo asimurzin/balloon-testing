@@ -55,7 +55,8 @@ a_number_processors=`python -c "print ${a_number_nodes} * ${a_slots}"`
 weights=`python -c "print tuple( [ 1 for an_id in range( ${a_number_processors} ) ] )"`
 processorWeights=`echo ${weights} | sed -e "s%,%%g"`
 
-cat > ./system/decomposeParDict <<EOF
+if [ ${a_number_processors} -gt 1 ] ; then
+    cat > ./system/decomposeParDict <<EOF
 FoamFile
 {
     version     2.0;
@@ -72,10 +73,13 @@ scotchCoeffs
 }
 EOF
 
-runApplication decomposePar
+    runApplication decomposePar
 
-mpirun --hostfile ~/.openmpi_hostfile -x LD_LIBRARY_PATH -x PATH -x WM_PROJECT_DIR -x MPI_BUFFER_SIZE \
-    -np ${a_number_processors} ${application} -case . -parallel < /dev/null > log.${application} 2>&1
+    mpirun --hostfile ~/.openmpi_hostfile -x LD_LIBRARY_PATH -x PATH -x WM_PROJECT_DIR -x MPI_BUFFER_SIZE \
+	-np ${a_number_processors} ${application} -case . -parallel < /dev/null > log.${application} 2>&1
+else
+    ${application} -case . < /dev/null > log.${application} 2>&1
+fi
 
 # This step can be perfomed afterwards, when the resulting data will be trasfered back
 # runApplication reconstructPar 
