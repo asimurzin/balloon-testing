@@ -28,9 +28,9 @@ file_reservations_starts='reservations'
 
 count_instances=1
 
-instance_type="m1.small"
+instance_type="m1.large"
 
-image_id="ami-30906759"
+image_id="ami-3a877053"
 
 
 #----------------------------------------------------------------------------------------
