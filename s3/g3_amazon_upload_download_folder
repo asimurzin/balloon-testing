@@ -69,7 +69,7 @@ testing_upload_dwonload_folder()
   fi
 
   echo "------ Running \"${a_path_script}/${a_script_name}\" to download folder --------"
-  a_testing_script="amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --debug --enable-fresh"
+  a_testing_script="amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --debug --fresh"
   ${a_testing_script} >> log.${a_script_name}  2>&1
   
   if [ $? -ne 0 ]; then

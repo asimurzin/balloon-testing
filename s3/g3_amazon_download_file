@@ -34,7 +34,7 @@ testing_download_file()
   a_downloading_file=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
 
   echo "-------------------- Running \"${a_path_script}/${a_script_name}\" ----------------------"
-  a_testing_script="amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --enable-fresh --debug"
+  a_testing_script="amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh --debug"
   ${a_testing_script} > log.${a_script_name} 2>&1
 
   if [ $? -ne 0 ]; then
