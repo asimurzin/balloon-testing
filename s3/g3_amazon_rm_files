@@ -61,6 +61,8 @@ test()
       rm tmp.log 
       rm_from_studies ${file_studies_starts}_ ${a_study_name}
   fi
+
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 

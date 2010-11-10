@@ -64,6 +64,8 @@ test()
       amazon_rm_study.py ${a_study_name} > tmp.log 2>&1
       rm tmp.log
   fi
+
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 
