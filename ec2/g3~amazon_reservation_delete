@@ -30,7 +30,7 @@ test()
   echo "********************************************************************************"
   echo $0
 
-  a_reservation=`prepare_testing_reservation ${instance_type}`
+  prepare_reservation ${instance_type} && a_reservation=`get_result`
   process_script "amazon_reservation_delete.py --debug ${a_reservation}"
 
   echo '----------------------------------- OK -----------------------------------------'

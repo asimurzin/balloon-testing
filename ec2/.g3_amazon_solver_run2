@@ -30,7 +30,7 @@ test()
   echo "********************************************************************************"
   echo $0
 
-  a_reservation=`prepare_testing_reservation ${instance_type}`
+  prepare_reservation ${instance_type} && a_reservation=`get_result`
   process_script "echo ${a_reservation} | balloon-openmpi-config --debug"
   process_script "echo ${a_reservation} | balloon-nfs-config --debug"
 

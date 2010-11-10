@@ -30,7 +30,7 @@ test()
   echo "********************************************************************************"
   echo $0
 
-  prepare_testing_reservation ${instance_type} > /dev/null
+  prepare_reservation ${instance_type} > /dev/null
   process_script "amazon_reservation_list.py --debug"
 
   echo '----------------------------------- OK -----------------------------------------'
