@@ -20,67 +20,52 @@
 
 
 #-----------------------------------------------------------------------------------------
-#source common function
-. s3.sh
+cd ${0%/*} || exit 1 # run from this directory
+source ./s3.sh
 
 
 #-----------------------------------------------------------------------------------------
-testing_rm_files()
+test()
 {
-  a_script_name=`basename $0`
-  a_study_name=`prepare_testing_data`
+  echo "********************************************************************************"
+  echo $0
 
-  echo "---------------------- Running \"${a_path_script}/${a_script_name}\" -------------------------"
+  a_script_name=`basename $0`
+  prepare_testing_data && a_study_name=`get_result`
   a_list_filenames=`create_list_filenames_in_casedir`
   a_list_file_to_rm=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 1 ],' ',_list[ 0 ]" `
 
-  a_testing_script="amazon_rm.py --study-name=${a_study_name}  ${a_list_file_to_rm} --debug"
-  ${a_testing_script} > log.${a_script_name} 2>&1
-  if [ $? -ne 0 ] ; then
-     echo ''
-     echo ''
-     echo "An error have appeared during execution of" 
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}
-     rm log.${a_script_name}
-     exit -1
+  process_script "amazon_rm.py --study-name=${a_study_name} ${a_list_file_to_rm} --debug" 
+
+  amazon_ls.py ${a_study_name} --debug > log.list_files 2>&1
+  an_allright="True"
+  for a_file in ${a_list_file_to_rm} ; do
+      count_entrances=`fgrep -c ${a_file}  log.list_files `
+      if [ ${count_entrances} -ne 0 ]; then
+          an_allright="False"
+          a_not_deleted_file=${a_filename}
+          break
+      fi 
+  done
+  rm log.list_files
+
+  if [ "${an_allright}" = "False" ]; then
+      cat log.${a_script_name}
+      rm log.${a_script_name}
+      echo "--------------------------------------------------------------------------------"
+      echo ' ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 '
+      echo "--------------------------------------------------------------------------------"
+      exit -1
   else
-     amazon_ls.py ${a_study_name} --debug > log.list_files 2>&1
-     an_allright="True"
-     for a_file in ${a_list_file_to_rm}
-     do
-        count_entrances=`fgrep -c ${a_file}  log.list_files `
-        if [ ${count_entrances} -ne 0 ]; then
-           an_allright="False"
-           a_not_deleted_file=${a_filename}
-           break
-        fi 
-     done
-     if [ "${an_allright}" = "False" ]; then
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo ' ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 '
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        rm log.list_files
-        cat log.${a_script_name}
-        rm log.${a_script_name}
-        exit -1
-     else
-        echo '----------------------------------- OK -----------------------------------------'
-        rm log.list_files
-        `amazon_rm_study.py ${a_study_name} > tmp.log 2>&1`
-        rm tmp.log 
-        `rm_from_studies ${file_studies_starts}_ ${a_study_name}`
-     fi
+      amazon_rm_study.py ${a_study_name} > tmp.log 2>&1
+      rm tmp.log 
+      rm_from_studies ${file_studies_starts}_ ${a_study_name}
   fi
 }
 
 
 #-----------------------------------------------------------------------------------------
-run_script testing_rm_files
+run_script test
+
+
+#-----------------------------------------------------------------------------------------
