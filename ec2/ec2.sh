@@ -59,7 +59,7 @@ get_result()
 
 
 #----------------------------------------------------------------------------------------
-rm_from_file_reservations()
+unregister_reservation()
 {
   an_instance_type=${1}
   a_reservation=${2}
