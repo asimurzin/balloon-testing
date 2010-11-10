@@ -22,25 +22,48 @@
 #----------------------------------------------------------------------------------------
 #source common function
 . ../common.sh
-a_path_script='ec2'
 
 file_reservations_starts='reservations'
 
-count_instances=1
-
 instance_type="m1.large"
 
-image_id="ami-3a877053"
+
+#----------------------------------------------------------------------------------------
+process_script()
+{
+    a_testing_script=${1} 
+
+    a_script_name=`basename $0`
+    if [ $# -gt 1 ] ; then
+	a_script_name=${2}
+    fi
+
+    echo "================================================================================"
+    echo "${a_testing_script}" 
+    export a_result=`bash -c "${a_testing_script} 2>>log.${a_script_name}"`
+    if [ $? -ne 0 ]; then
+	echo "---------------------------------- ERROR----------------------------------------"
+	cat log.${a_script_name}
+	rm log.${a_script_name}
+	echo '----------------------------------- KO -----------------------------------------'
+	exit -1
+    fi
+}
+
+
+#----------------------------------------------------------------------------------------
+get_result()
+{
+    echo ${a_result}
+}
 
 
 #----------------------------------------------------------------------------------------
 rm_from_file_reservations()
 {
-  a_count_instances=$1
-  an_instance_type=$2
-  an_image_id=$3
-  a_reservation=$4
-  a_file_reservations=${file_reservations_starts}_${a_count_instances}_${an_instance_type}_${an_image_id}
+  an_instance_type=${1}
+  a_reservation=${2}
+  a_file_reservations=${file_reservations_starts}_${an_instance_type}
   cat ${a_file_reservations} | grep -v -e ${a_reservation} > ${a_file_reservations}
 }
 
@@ -48,12 +71,10 @@ rm_from_file_reservations()
 #----------------------------------------------------------------------------------------
 create_reservation()
 {
-     a_count_instances=$1
-     an_instance_type=$2
-     an_image_id=$3
+     an_instance_type=${1}
      echo 'Prepare reservation...' >&2
           
-     a_testing_script="amazon_reservation_run.py --instance-type=${an_instance_type} --image-id=${an_image_id} --min-count=${a_count_instances} --debug"
+     a_testing_script="amazon_reservation_run.py --instance-type=${an_instance_type} --debug"
      a_reservation=`${a_testing_script} 2>log.create_reservation`
      if [ $? -ne 0 ]; then
         echo ''
@@ -68,7 +89,7 @@ create_reservation()
         rm log.create_reservation
         exit -1
      else
-        echo ${a_reservation} >> ${file_reservations_starts}_${a_count_instances}_${an_instance_type}_${an_image_id}
+        echo ${a_reservation} >> ${file_reservations_starts}_${an_instance_type}
      fi
 }
         
@@ -76,7 +97,7 @@ create_reservation()
 #----------------------------------------------------------------------------------------
 get_reservation()
 {  
-   a_file_reservations=$1
+   a_file_reservations=${1}
    echo `sed '$!d' ${a_file_reservations}`
 }
 
@@ -84,18 +105,16 @@ get_reservation()
 #----------------------------------------------------------------------------------------
 prepare_testing_reservation()
 {
-  a_count_instances=$1
-  an_instance_type=$2
-  an_image_id=$3
-  echo ${a_count_instances} ${an_instance_type} ${an_image_id} >> log.tmp
-  if [ ! -f reservations_${a_count_instances}_${an_instance_type}_${an_image_id} ]; then
-     dummy=`create_reservation ${a_count_instances} ${an_instance_type} ${an_image_id}`
+  an_instance_type=${1}
+  echo ${an_instance_type} >> log.tmp
+  if [ ! -f reservations_${an_instance_type} ]; then
+     create_reservation ${an_instance_type}
   else
-     a_reservation=`get_reservation ${file_reservations_starts}_${a_count_instances}_${an_instance_type}_${an_image_id}`
+     a_reservation=`get_reservation ${file_reservations_starts}_${an_instance_type}`
      if [ "x${a_reservation}" == "x" ]; then
-        dummy=`create_reservation ${a_count_instances} ${an_instance_type} ${an_image_id}`
+       create_reservation ${an_instance_type}
      fi
   fi
-  echo `get_reservation ${file_reservations_starts}_${a_count_instances}_${an_instance_type}_${an_image_id}`
+  echo `get_reservation ${file_reservations_starts}_${an_instance_type}`
 }
 

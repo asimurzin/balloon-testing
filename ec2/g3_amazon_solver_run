@@ -20,35 +20,27 @@
 
 
 #-----------------------------------------------------------------------------------------
-#source common function
-. ./ec2.sh
+cd ${0%/*} || exit 1 # run from this directory
+source ./ec2.sh
 
 
 #-----------------------------------------------------------------------------------------
 testing_solver_run()
 {
-  a_script_name=`basename $0`
-  
-  a_reservation=`prepare_testing_reservation ${count_instances} ${instance_type} ${image_id}`
-  
-  echo "--------------------- Running \"${a_path_script}/${a_script_name}\" -----------------------"
-  a_testing_script="amazon_solver_run.py --debug --case-dir=damBreak --output-suffix=.out1 ${a_reservation}"
-  dummy=`${a_testing_script} 2>log.${a_script_name}`
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of"
-     echo "${a_testing_script}" 
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}
-     rm log.${a_script_name}
-     exit -1
-  else
-     echo '----------------------------------- OK -----------------------------------------'
-  fi
+  echo "********************************************************************************"
+  echo $0
+
+  a_reservation=`prepare_testing_reservation ${instance_type}`
+  process_script "echo ${a_reservation} | balloon-openmpi-config --debug"
+  process_script "echo ${a_reservation} | balloon-nfs-config --debug"
+
+  process_script "echo ${a_reservation} | balloon-instance-extract --debug" && an_instance=`get_result`
+  process_script "echo ${an_instance} | balloon-deploy-credentials --debug"
+  process_script "echo ${an_instance} | balloon-deploy --debug --production"
+
+  process_script "amazon_solver_run.py --debug --case-dir=damBreak --output-suffix=.out1 ${a_reservation}" ${a_script_name}
+
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 
