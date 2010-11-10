@@ -1,15 +1,19 @@
 #!/bin/bash -x
 
 #--------------------------------------------------------------------------------------
-a_cur_dir=${0%/*}
-cd ${a_cur_dir} || exit 1    # run from this directory
+cd ${0%/*} || exit 1    # run from this directory
+
 source ${WM_PROJECT_DIR}/bin/tools/RunFunctions # source tutorial run functions
 
-a_number_nodes=${1}
+a_number_nodes=${1}; shift
+
+an_openmpi_hostfile=${1}; shift
 
 
 #--------------------------------------------------------------------------------------
 # Get application name
+a_cur_dir=`pwd`
+
 export FOAM_USER_APPBIN=${a_cur_dir}
 export PATH=${FOAM_USER_APPBIN}:${PATH}
 
@@ -38,15 +42,17 @@ setDamBreakFine ()
     mv temp.$$ ${blockMeshDict}
     sed \
     -e s/"\(deltaT[ \t]*\) 0.001;"/"\1 5e-04;"/g \
-    -e s/"\(endTime[ \t]*\) 1;"/"\1 0.4;"/g \
+    -e s/"\(endTime[ \t]*\) 0.9;"/"\1 0.4;"/g \
     ${controlDict} > temp.$$
     mv temp.$$ ${controlDict}
 }
 setDamBreakFine
 
 runApplication blockMesh
+balloon-data-upload ./constant ./log.blockMesh $*
 
 runApplication setFields
+balloon-data-upload ./0 ./log.setFields $*
 
 
 #--------------------------------------------------------------------------------------
@@ -55,8 +61,7 @@ a_number_processors=`python -c "print ${a_number_nodes} * ${a_slots}"`
 weights=`python -c "print tuple( [ 1 for an_id in range( ${a_number_processors} ) ] )"`
 processorWeights=`echo ${weights} | sed -e "s%,%%g"`
 
-if [ ${a_number_processors} -gt 1 ] ; then
-    cat > ./system/decomposeParDict <<EOF
+cat > ./system/decomposeParDict <<EOF
 FoamFile
 {
     version     2.0;
@@ -73,16 +78,15 @@ scotchCoeffs
 }
 EOF
 
-    runApplication decomposePar
+runApplication decomposePar
+balloon-data-upload ./system ./log.decomposePar $*
 
-    mpirun --hostfile ~/.openmpi_hostfile -x LD_LIBRARY_PATH -x PATH -x WM_PROJECT_DIR -x MPI_BUFFER_SIZE \
-	-np ${a_number_processors} ${application} -case . -parallel < /dev/null > log.${application} 2>&1
-else
-    ${application} -case . < /dev/null > log.${application} 2>&1
-fi
 
-# This step can be perfomed afterwards, when the resulting data will be trasfered back
-# runApplication reconstructPar 
+#--------------------------------------------------------------------------------------
+balloon-timestamps-upload "mpirun --hostfile ${an_openmpi_hostfile} -x LD_LIBRARY_PATH -x PATH -x WM_PROJECT_DIR -x MPI_BUFFER_SIZE -np ${a_number_processors} ${application} -case . -parallel" \
+    --solver-log="log.${application}" $*
+
+balloon-data-upload ./log.${application} ./log.reconstructPar $*
 
 
 #--------------------------------------------------------------------------------------
