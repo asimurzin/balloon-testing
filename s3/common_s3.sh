@@ -70,8 +70,8 @@ get_study()
 #-----------------------------------------------------------------------------------------
 rm_from_studies()
 {
-  a_file_studies=$1
-  a_study_name1=$2
+  a_file_studies=${1}
+  a_study_name1=${2}
   
   cat ${a_file_studies} | grep -v -e ${a_study_name1} > ${a_file_studies}
 }

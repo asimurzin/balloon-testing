@@ -25,50 +25,36 @@ source ./s3.sh
 
 
 #-----------------------------------------------------------------------------------------
-testing_ls_pipe_rm_studies()
+test()
 {
+  echo "********************************************************************************"
+  echo $0
+
   a_script_name=`basename $0`
-  a_study_name1=`prepare_testing_data`
-  `create_study`
-  a_study_name2=`get_study`
+  prepare_testing_data && a_study_name1=`get_result`
+  create_study && a_study_name2=`get_result`
   a_begin_study_name=`study_name_starts_with`
-
-  echo "----------------- Running \"${a_path_script}/${a_script_name}\" --------------------"
-
+  
   process_script "amazon_ls.py --debug | grep -e ${a_study_name1} -e ${a_study_name2} | xargs amazon_rm_study.py --debug"
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of"
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}
-     rm log.${a_script_name}
-     exit -1
+
+  bash -c "amazon_ls.py --debug 2>log.check_ls_pipe_rm_studies 1>/dev/null"
+  count_entrances=`fgrep -c -e ${a_study_name1} -e ${a_study_name2} log.check_ls_pipe_rm_studies`
+  rm log.check_ls_pipe_rm_studies
+  if [ ${count_entrances} -ne 0 ]; then
+      cat log.${a_script_name}
+      rm log.${a_script_name}
+      echo "--------------------------------------------------------------------------------"
+      echo " ERROR : There is study named ${a_study_name1} or ${a_study_name2} ( may be both ) in the s3 "
+      echo "--------------------------------------------------------------------------------"
+      exit -1
   else
-     dummy=`amazon_ls.py --debug 2>log.check_ls_pipe_rm_studies`
-     count_entrances=`fgrep -c -e ${a_study_name1} -e ${a_study_name2} log.check_ls_pipe_rm_studies`
-     if [ ${count_entrances} -ne 0 ]; then
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo " ERROR : There is study named ${a_study_name1} or ${a_study_name2} ( may be both ) in the s3 "
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        cat log.${a_script_name}
-        rm log.${a_script_name}
-     else
-        echo '----------------------------------- OK -----------------------------------------'
-        rm log.check_ls_pipe_rm_studies
-        `rm_from_studies ${file_studies_starts}_ ${a_study_name1}`
-        `rm_from_studies ${file_studies_starts}_ ${a_study_name2}`
-     fi
+      rm_from_studies ${file_studies_starts}_ ${a_study_name1}
+      rm_from_studies ${file_studies_starts}_ ${a_study_name2}
   fi
 }
 
 #-----------------------------------------------------------------------------------------
-run_script testing_ls_pipe_rm_studies
+run_script test
+
+
+#-----------------------------------------------------------------------------------------

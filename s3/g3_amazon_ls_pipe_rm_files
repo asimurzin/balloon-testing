@@ -27,15 +27,14 @@ source ./s3.sh
 #-----------------------------------------------------------------------------------------
 test()
 {
+  echo "********************************************************************************"
+  echo $0
+
   a_script_name=`basename $0`
   an_output_dir=${case_dir}.out
   a_list_filenames=`create_list_filenames_in_casedir`
   a_testing_filenames=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ], ' ', _list[ 1 ] " `
   a_testing_files=`create_list_case_files ${a_testing_filenames}`
-
-
-  echo "********************************************************************************"
-  echo $0
 
   process_script "balloon-study-book --debug | amazon_upload_start.py ${a_testing_files} --debug | amazon_upload_resume.py --debug" 
   a_study_name=`get_result`
