@@ -19,17 +19,45 @@
 ##
 
 
+#----------------------------------------------------------------------------------------
+process_script()
+{
+    a_script_name=`basename $0`
+    a_testing_script=$*
+
+    echo "================================================================================"
+    echo "${a_testing_script}" 
+    a_testing_script=`echo ${a_testing_script} | sed -e "s%|%2>>log.${a_script_name} |%g"`
+    export a_result=`bash -c "${a_testing_script} 2>>log.${a_script_name}"`
+    if [ $? -ne 0 ]; then
+	echo "---------------------------------- ERROR----------------------------------------"
+	cat log.${a_script_name}
+	rm log.${a_script_name}
+	echo '----------------------------------- KO -----------------------------------------'
+	exit -1
+    fi
+}
+
+
+#----------------------------------------------------------------------------------------
+get_result()
+{
+    echo ${a_result}
+}
+
+
 #------------------------------------------------------------------------------------------
 run_script()
 {
-  a_script_name=`basename $0`
-  a_fun_name=$1
-  if [ -f log.${a_script_name} ]; then
-     echo "${a_script_name} already run: remove \"log.${a_script_name}\" to run"
-     exit 0
-  else
-     ${a_fun_name}
-  fi
+    a_test_log_name=./log.`basename ${0}`
+    if [ -f ${a_test_log_name} ]; then
+	a_script_name=${0}; 
+	a_user_log_name=`dirname ${0}`/log.`basename ${0}`
+	echo "rm ${a_user_log_name} # before run '${a_script_name}'"
+	exit 0
+    else
+	a_function=${1}; ${a_function}
+    fi
 }
 
 
@@ -55,3 +83,5 @@ runRecursive()
   done
 }
 
+
+#-----------------------------------------------------------------------------------------
