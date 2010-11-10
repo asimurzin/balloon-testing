@@ -20,91 +20,54 @@
 
 
 #-----------------------------------------------------------------------------------------
-#source common function
-. s3.sh
+cd ${0%/*} || exit 1 # run from this directory
+source ./s3.sh
 
 
 #-----------------------------------------------------------------------------------------
-testing_upload_dwonload_folder()
+test()
 {
-  a_script_name=`basename $0`
-  a_study_name=`create_study_name`
+  echo "********************************************************************************"
+  echo $0
 
+  a_script_name=`basename $0`
   an_output_dir=${case_dir}.out
-  echo "-------- Running \"${a_path_script}/${a_script_name}\" upload folder -----------"
-  
-  a_testing_script="amazon_upload_start.py --study-name=${a_study_name} ${case_dir} --debug 2>log.${a_script_name} | amazon_upload_resume.py --debug  2>>log.${a_script_name}"
-  dummy=`bash -c "${a_testing_script}"`
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of " 
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}
-     rm log.${a_script_name}
-     exit -1
-  else
-     dummy=`amazon_ls.py ${a_study_name} --debug >log.check_upload_folder 2>&1`
-     count_entrances=`fgrep -c ${case_dir} log.check_upload_folder`
-     if [ ${count_entrances} -ne 0 ]; then
-        echo '----------------------------------- OK -----------------------------------------'
-        rm log.check_upload_folder
-        echo '----------------------------------------------------------------------------' > log.${a_script_name}
-     else
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo " ERROR : There is no uploading file '${case_dir}' , in the s3 "
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        cat log.${a_script_name}
-        rm log.${a_script_name}
-        exit -1
-     fi
+  prepare_testing_data && a_study_name1=`get_result`
+
+  process_script "balloon-study-book --debug --study-name=${a_study_name} | amazon_upload_start.py ${case_dir} --debug | amazon_upload_resume.py --debug"
+
+  amazon_ls.py ${a_study_name} --debug >log.check_upload_folder 2>&1
+  count_entrances=`fgrep -c ${case_dir} log.check_upload_folder`
+  rm log.check_upload_folder
+  if [ ${count_entrances} -eq 0 ]; then
+      cat log.${a_script_name}
+      rm log.${a_script_name}
+      echo "--------------------------------------------------------------------------------"
+      echo " ERROR : There is no uploading file '${case_dir}' , in the s3 "
+      echo "--------------------------------------------------------------------------------"
+      exit -1
   fi
 
-  echo "------ Running \"${a_path_script}/${a_script_name}\" to download folder --------"
-  a_testing_script="amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --debug --fresh"
-  ${a_testing_script} >> log.${a_script_name}  2>&1
-  
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "An error have appeared during execution of" 
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}
-     rm log.${a_script_name}
-     exit -1
+  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --debug --fresh"
+
+  a_differences=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}/${case_dir}`
+  if [ "x${a_differences}" == "x" ]; then
+      amazon_rm_study.py ${a_study_name} > log.tmp 2>&1
+      rm log.tmp
   else
-     a_differences=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}/${case_dir}`
-     if [ "x${a_differences}" == "x" ]; then
-        echo '----------------------------------- OK -----------------------------------------'   
-        dummy=`amazon_rm_study.py ${a_study_name} > log.tmp 2>&1`
-        rm log.tmp
-     else
-        echo ''
-        echo ''
-        echo "ERROR: There are differences between '${case_dir}' and '${an_output_dir}/${case_dir}': " 
-        echo ${a_differences}
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        cat log.${a_script_name}
-        rm log.${a_script_name}
-        exit -1
-     fi
+      cat log.${a_script_name}
+      rm log.${a_script_name}
+      echo "--------------------------------------------------------------------------------"
+      echo "ERROR: There are differences between '${case_dir}' and '${an_output_dir}/${case_dir}': " 
+      echo ${a_differences}
+      echo "--------------------------------------------------------------------------------"
+      exit -1
   fi
 }
 
 
+#-----------------------------------------------------------------------------------------
+run_script test
+
 
 #-----------------------------------------------------------------------------------------
-run_script testing_upload_dwonload_folder
