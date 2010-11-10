@@ -30,8 +30,8 @@ test()
   echo "********************************************************************************"
   echo $0
 
-  prepare_reservation ${instance_type} && a_reservation=`get_result`
-  process_script "echo ${a_reservation} | balloon-instance-extract --debug"
+  a_reservation=`prepare_testing_reservation ${instance_type}`
+  process_script "amazon_reservation_delete.py --debug ${a_reservation}"
 
   echo '----------------------------------- OK -----------------------------------------'
 }
@@ -42,4 +42,3 @@ run_script test
 
 
 #-----------------------------------------------------------------------------------------
-

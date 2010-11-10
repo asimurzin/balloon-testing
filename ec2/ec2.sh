@@ -72,25 +72,9 @@ rm_from_file_reservations()
 create_reservation()
 {
      an_instance_type=${1}
-     echo 'Prepare reservation...' >&2
-          
-     a_testing_script="amazon_reservation_run.py --instance-type=${an_instance_type} --debug"
-     a_reservation=`${a_testing_script} 2>log.create_reservation`
-     if [ $? -ne 0 ]; then
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo "An error have appeared during execution of"
-        echo "${a_testing_script}" 
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        cat log.create_reservation
-        rm log.create_reservation
-        exit -1
-     else
-        echo ${a_reservation} >> ${file_reservations_starts}_${an_instance_type}
-     fi
+     process_script "amazon_reservation_run.py --instance-type=${an_instance_type} --debug" && a_reservation=`get_result`
+
+     echo ${a_reservation} >> ${file_reservations_starts}_${an_instance_type}
 }
         
 
@@ -98,12 +82,12 @@ create_reservation()
 get_reservation()
 {  
    a_file_reservations=${1}
-   echo `sed '$!d' ${a_file_reservations}`
+   echo `sed '$!d' ${a_file_reservations} 2>/dev/null`
 }
 
 
 #----------------------------------------------------------------------------------------
-prepare_testing_reservation()
+prepare_reservation()
 {
   an_instance_type=${1}
   echo ${an_instance_type} >> log.tmp
@@ -115,6 +99,6 @@ prepare_testing_reservation()
        create_reservation ${an_instance_type}
      fi
   fi
-  echo `get_reservation ${file_reservations_starts}_${an_instance_type}`
+  export a_result=`get_reservation ${file_reservations_starts}_${an_instance_type}`
 }
 
