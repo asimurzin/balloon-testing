@@ -20,52 +20,36 @@
 
 
 #-----------------------------------------------------------------------------------------
-#source common function
-. s3.sh
+cd ${0%/*} || exit 1 # run from this directory
+source ./s3.sh
 
 
 #-----------------------------------------------------------------------------------------
-testing_download_file()
+test()
 {
+  echo "********************************************************************************"
+  echo $0
+
   a_script_name=`basename $0`
-  a_study_name=`prepare_testing_data`
   an_output_dir=${case_dir}.out
+  prepare_testing_data && a_study_name=`get_result`
   a_list_filenames=`create_list_filenames_in_casedir`
   a_downloading_file=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
 
-  echo "-------------------- Running \"${a_path_script}/${a_script_name}\" ----------------------"
-  a_testing_script="amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh --debug"
-  ${a_testing_script} > log.${a_script_name} 2>&1
-
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of"
-     echo "${a_testing_script}" 
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}
-     rm log.${a_script_name}
-     exit -1
-  else
-     if [ -f ${an_output_dir}/${a_downloading_file} ]; then
-        echo '----------------------------------- OK -----------------------------------------'
-     else
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        rm log.${a_script_name}
-        exit -1
-     fi
-  fi  
+  process_script "amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh --debug" 
+  if [ ! -f ${an_output_dir}/${a_downloading_file} ]; then
+      cat log.${a_script_name}
+      rm log.${a_script_name}
+      echo "--------------------------------------------------------------------------------"
+      echo " ERROR : There is no downloading file '${a_downloading_file}' , in '${an_output_dir}' folder "
+      echo "--------------------------------------------------------------------------------"
+      exit -1
+  fi
 }
 
 
-#-----------------------------------------------------------------------------------------------------------------------
-run_script testing_download_file
+#-----------------------------------------------------------------------------------------
+run_script test
+
+
+#-----------------------------------------------------------------------------------------

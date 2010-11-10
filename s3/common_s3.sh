@@ -20,6 +20,8 @@
 
 
 #------------------------------------------------------------------------------------------
+source ../common.sh
+
 a_case_dir_name='case'
 
 a_list_old_api="dummy 0.1 0.2"
@@ -60,7 +62,7 @@ remove_log_prepare_test_case()
 #-----------------------------------------------------------------------------------------
 get_study()
 {
-  an_old_api_number=$1
+  an_old_api_number=${1}
   echo `sed '$!d' ${file_studies_starts}_${an_old_api_number}`
 }
 
@@ -96,10 +98,10 @@ calc_path_to_case_dir()
 {
   a_curdir=`python -c "import os; print os.path.basename( os.path.abspath(os.path.curdir) )"`
   if [ "$a_curdir" == "old_api" ]; then
-     echo "../$a_case_dir_name" 
+     echo "../${a_case_dir_name}" 
   fi
   if [ "$a_curdir" == "s3" ]; then
-     echo "$a_case_dir_name" 
+     echo "${a_case_dir_name}" 
   fi
 }
 
@@ -119,63 +121,45 @@ calc_path_to_api()
 #-----------------------------------------------------------------------------------------
 create_study()
 {
-  an_old_api_number=$1
+  an_old_api_number=${1}
   a_path_to_api=`calc_path_to_api $an_old_api_number`
   a_list_filenames=`create_list_filenames_in_casedir`
   a_list_files=`create_list_case_files ${a_list_filenames}`
-  echo "Prepare testing data...." >&2
   a_study_name=`create_study_name`
-  a_testing_script="${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files}"
-  `${a_testing_script} > log.prepare_test_case 2>&1`
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "An error have appeared during execution of"
-     echo "${a_testing_script}" 
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.prepare_test_case
-     rm log.prepare_test_case
-     exit -1
-  else
-     a_testing_script="${a_path_to_api}amazon_upload_resume.py --study-name=${a_study_name}"
-     `${a_testing_script} >>log.prepare_test_case 2>&1`
-     if [ $? -ne 0 ]; then
-        echo ''
-        echo ''
-        echo "An error have appeared during execution of"
-        echo "${a_testing_script}" 
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        cat log.prepare_test_case
-        rm log.prepare_test_case
-        exit -1
-     fi
-     echo ${a_study_name} >> ${file_studies_starts}_${an_old_api_number}
+
+  a_testing_script="${a_path_to_api}amazon_upload_start.py --debug --study-name=${a_study_name} ${a_list_files}"
+  if [ "${a_path_to_api}x" == "x" ] ; then
+      a_testing_script="balloon-study-book --debug --study-name=${a_study_name} | amazon_upload_start.py --debug ${a_list_files}"
   fi
-  
+
+  process_script "${a_testing_script} | ${a_path_to_api}amazon_upload_resume.py" 
+
+  echo ${a_study_name} >> ${file_studies_starts}_${an_old_api_number}
+
+  export a_result=${a_study_name}
 }
 
 
 #-----------------------------------------------------------------------------------------
 prepare_testing_data()
 { 
-  an_old_api_number=$1
+  an_old_api_number=${1}
 
   if [ ! -f ${file_studies_starts}_${an_old_api_number} ]; then
-     a_study_name=`create_study ${an_old_api_number}`
+     create_study ${an_old_api_number} && a_study_name=`get_result`
   else
      a_study_name=`get_study ${an_old_api_number}`
      if [ "x${a_study_name}" == "x" ]; then
-        dummy=`create_study ${an_old_api_number}`
+        create_study ${an_old_api_number}
      fi
   fi
-  echo `get_study ${an_old_api_number}`
+
+  export a_result=`get_study ${an_old_api_number}`
 }
      
 
 #-----------------------------------------------------------------------------------------
 case_dir=`calc_path_to_case_dir`
 
+
+#-----------------------------------------------------------------------------------------
