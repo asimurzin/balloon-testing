@@ -17,11 +17,14 @@
 ##
 ## Author : Andrey Simurzin
 ##
-#----------------------------------------------------------------------------------------
-#source common function
-. ../../common.sh
-. ../common_s3.sh
 
+
+#----------------------------------------------------------------------------------------
+if [ "${__LEVEL_0__}x" == 'x' ] ; then
+    export __LEVEL_0__=../..
+    export __LEVEL_1__=..
+fi
+source ${__LEVEL_1__}/common_s3.sh
 
 
 #----------------------------------------------------------------------------------------
@@ -32,16 +35,18 @@ a_path_script="${a_path_script}/${a_curdir_name}"
 #----------------------------------------------------------------------------------------
 run_old_api_script()
 {
-  a_script_name=`basename $0`
-  a_fun_name=$1
-  
-  for an_api in ${a_list_old_api}
-  do
-    if [ ! -f log.${a_script_name}_${an_api} ]; then
-       ${a_fun_name} ${an_api}
-    else
-       echo "${a_script_name} api_version=\"${an_api}\" already run : remove \"log.${a_script_name}_${an_api}\" to run"
-       continue
-    fi
-  done
+    for an_api in ${a_list_old_api} ; do
+	a_test_log_name=log.`basename ${0}`_${an_api}
+	if [ -f ./${a_test_log_name} ]; then
+	    a_script_name=${0}; 
+	    a_user_log_name=`dirname ${0}`/${a_test_log_name}
+	    echo "rm ${a_user_log_name} # before run '${a_script_name}' for '${an_api}' API"
+	    continue
+	else
+	    a_function=${1}; ${a_function} ${an_api}
+	fi
+    done
 }
+
+
+#----------------------------------------------------------------------------------------

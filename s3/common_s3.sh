@@ -20,7 +20,10 @@
 
 
 #------------------------------------------------------------------------------------------
-source ../common.sh
+if [ "${__LEVEL_0__}x" == 'x' ] ; then
+    export __LEVEL_0__=..
+fi
+source ${__LEVEL_0__}/common.sh
 
 a_case_dir_name='case'
 
