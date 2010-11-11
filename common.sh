@@ -22,17 +22,23 @@
 #----------------------------------------------------------------------------------------
 process_script()
 {
-    a_script_name=`basename $0`
-    a_testing_script=$*
+    a_script_name=`basename ${0}`
+
+    a_testing_script=${1}
+
+    a_log_file_name="./log.${a_script_name}"
+    if [ $# -ge 2 ] ; then 
+	a_log_file_name="${a_log_file_name}_${2}"
+    fi
 
     echo "================================================================================"
     echo "${a_testing_script}" 
-    a_testing_script=`echo ${a_testing_script} | sed -e "s%|%2>>log.${a_script_name} |%g"`
-    export a_result=`bash -c "${a_testing_script} 2>>log.${a_script_name}"`
+    a_testing_script=`echo ${a_testing_script} | sed -e "s%|%2>>${a_log_file_name} |%g"`
+    export __PROCESS_SCRIPT_RESULT__=`bash -c "${a_testing_script} 2>>${a_log_file_name}"`
     if [ $? -ne 0 ]; then
 	echo "---------------------------------- ERROR----------------------------------------"
-	cat log.${a_script_name}
-	rm log.${a_script_name}
+	cat ${a_log_file_name}
+	rm ${a_log_file_name}
 	echo '----------------------------------- KO -----------------------------------------'
 	exit -1
     fi
@@ -42,7 +48,29 @@ process_script()
 #----------------------------------------------------------------------------------------
 get_result()
 {
-    echo ${a_result}
+    echo ${__PROCESS_SCRIPT_RESULT__}
+}
+
+
+#----------------------------------------------------------------------------------------
+process_error()
+{
+    a_script_name=`basename ${0}`
+
+    an_error_message=${1}
+
+    a_log_file_name="./log.${a_script_name}"
+    if [ $# -ge 2 ] ; then 
+	a_log_file_name="${a_log_file_name}_${2}"
+    fi
+
+    echo "---------------------------------- ERROR----------------------------------------"
+    cat ${a_log_file_name}
+    rm ${a_log_file_name}
+    echo "--------------------------------------------------------------------------------"
+    echo ${an_error_message}
+    echo '----------------------------------- KO -----------------------------------------'
+    exit -1
 }
 
 
