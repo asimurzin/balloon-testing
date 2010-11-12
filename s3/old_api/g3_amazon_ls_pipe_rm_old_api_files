@@ -20,93 +20,46 @@
 
 
 #-----------------------------------------------------------------------------------------
-#source common function
-. old_api.sh
-
+cd ${0%/*} || exit 1 # run from this directory
+source ./old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
-testing_ls_pipe_rm_old_api_files()
+test()
 {
+  echo "********************************************************************************"
+  echo $0 "'${1}'"
+
   a_script_name=`basename $0`
-  an_old_api_number=$1
-  a_path_to_api=`calc_path_to_api $an_old_api_number`
-  
-  an_output_dir=${case_dir}.out
-  a_list_filenames=`create_list_filenames_in_casedir`
-  a_testing_filenames=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ], ' ', _list[ 1 ] " `
-  a_testing_files=`create_list_case_files ${a_testing_filenames}`
-  echo "Prepare testing data...." >&2
-  echo "- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" -"
-  
-  a_testing_script="${a_path_to_api}amazon_upload_start.py ${a_testing_files} --debug 2>log.prepare_data | ${a_path_to_api}amazon_upload_resume.py --debug 2>>log.prepare_data"
-  a_study_name=`bash -c "${a_testing_script}"`
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of " 
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.prepare_data
-     rm log.prepare_data
-     exit -1
+  an_old_api_number=${1}
+  prepare_new_testing_data ${an_old_api_number} && a_study_name=`get_result`
+
+  process_script "amazon_ls.py ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name}" ${an_old_api_number}
+
+  amazon_ls.py ${a_study_name} > log.check_ls_pipe_rm_files 2>&1
+  an_allright="True"
+  for a_filename in ${a_testing_filenames} ; do
+      count_entrances=`fgrep -c ${a_filename} log.check_ls_pipe_rm_files`
+      if [ ${count_entrances} -ne 0 ]; then
+          an_allright="False"
+          a_not_deleted_file=${a_filename}
+          break
+      fi
+  done
+  rm log.check_ls_pipe_rm_files
+
+  if [ "${an_allright}" = "False" ]; then
+      process_error "The '${a_not_deleted_file}' file have not been removed from the S3" ${an_old_api_number}
   fi
 
-  a_testing_script="amazon_ls.py ${a_study_name} --debug 2>log.${a_script_name}_${an_old_api_number} | xargs amazon_rm.py --study-name=${a_study_name} --debug 2>>log.${a_script_name}_${an_old_api_number}"
-  bash -c "${a_testing_script}" > /dev/null
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of " 
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}_${an_old_api_number}
-     rm log.${a_script_name}_${an_old_api_number}
-     rm log.prepare_data
-     exit -1
-  else
-     amazon_ls.py ${a_study_name} --debug > log.check_ls_pipe_rm_files 2>&1
-     an_allright="True"
-     for a_filename in ${a_testing_filenames}
-     do
-        count_entrances=`fgrep -c ${a_filename} log.check_ls_pipe_rm_files`
-        if [ ${count_entrances} -ne 0 ]; then
-           an_allright="False"
-           a_not_deleted_file=${a_filename}
-           break
-        fi
-     done
-     if [ "${an_allright}" = "False" ]; then
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo " ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 "
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        cat log.${a_script_name}_${an_old_api_number}
-        rm log.${a_script_name}_${an_old_api_number}
-        rm log.check_ls_pipe_rm_files
-        rm log.prepare_data
-        exit -1
-     else
-        echo '----------------------------------- OK -----------------------------------------'
-        echo ''
-        rm log.check_ls_pipe_rm_files
-        rm log.prepare_data
-        `amazon_rm_study.py ${a_study_name} > tmp.log 2>&1`
-        rm tmp.log
-     fi
-  fi
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 
 #-----------------------------------------------------------------------------------------
-run_old_api_script testing_ls_pipe_rm_old_api_files
+run_old_api_script test 
+
+
+#-----------------------------------------------------------------------------------------
+
 
