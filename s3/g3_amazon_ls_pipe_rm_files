@@ -36,12 +36,12 @@ test_hook()
   a_testing_filenames=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ], ' ', _list[ 1 ] " `
   a_testing_files=`create_list_case_files ${a_testing_filenames}`
 
-  process_script "balloon-study-book --debug | amazon_upload_start.py ${a_testing_files} --debug | amazon_upload_resume.py --debug" 
+  process_script "balloon-study-book | amazon_upload_start.py ${a_testing_files} | amazon_upload_resume.py" 
   a_study_name=`get_result`
 
-  process_script "amazon_ls.py ${a_study_name} --debug | xargs amazon_rm.py --study-name=${a_study_name} --debug"
+  process_script "amazon_ls.py ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name}"
 
-  amazon_ls.py ${a_study_name} --debug > log.check_ls_pipe_rm_files 2>&1
+  amazon_ls.py ${a_study_name} > log.check_ls_pipe_rm_files 2>&1
   an_allright="True"
   for a_filename in ${a_testing_filenames} ; do
       count_entrances=`fgrep -c ${a_filename} log.check_ls_pipe_rm_files`

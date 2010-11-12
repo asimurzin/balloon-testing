@@ -33,7 +33,7 @@ test_hook()
   a_script_name=`basename $0`
   prepare_testing_data && a_study_name=`get_result`
 
-  process_script "amazon_ls.py ${a_study_name} --debug" 
+  process_script "amazon_ls.py ${a_study_name}" 
 
   an_allright="True"
   a_list_filenames=`create_list_filenames_in_casedir`

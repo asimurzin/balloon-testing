@@ -34,7 +34,7 @@ test_hook()
   an_output_dir=${case_dir}.out
   prepare_testing_data && a_study_name=`get_result`
 
-  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh --debug" 
+  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh" 
 
   a_list_filenames=`create_list_filenames_in_casedir`
   an_allright="True"

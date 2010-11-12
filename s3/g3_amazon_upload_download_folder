@@ -34,9 +34,9 @@ test_hook()
   an_output_dir=${case_dir}.out
   prepare_testing_data && a_study_name1=`get_result`
 
-  process_script "balloon-study-book --debug --study-name=${a_study_name} | amazon_upload_start.py ${case_dir} --debug | amazon_upload_resume.py --debug"
+  process_script "balloon-study-book --study-name=${a_study_name} | amazon_upload_start.py ${case_dir} | amazon_upload_resume.py"
 
-  amazon_ls.py ${a_study_name} --debug >log.check_upload_folder 2>&1
+  amazon_ls.py ${a_study_name} >log.check_upload_folder 2>&1
   count_entrances=`fgrep -c ${case_dir} log.check_upload_folder`
   rm log.check_upload_folder
   if [ ${count_entrances} -eq 0 ]; then
@@ -48,7 +48,7 @@ test_hook()
       exit -1
   fi
 
-  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --debug --fresh"
+  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh"
 
   a_differences=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}/${case_dir}`
   if [ "x${a_differences}" == "x" ]; then
