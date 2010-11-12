@@ -20,6 +20,10 @@
 
 
 #----------------------------------------------------------------------------------------
+export __BALLOON_DEBUG_ENABLE__="X" # To enable debug mode (undocumented feature, just for testing)
+
+
+#----------------------------------------------------------------------------------------
 process_script()
 {
     a_script_name=`basename ${0}`
@@ -34,8 +38,8 @@ process_script()
     echo "================================================================================"
     echo "${a_testing_script}" 
     a_testing_script=`echo ${a_testing_script} | sed -e "s%|%2>>${a_log_file_name} |%g"`
-    export __PROCESS_SCRIPT_RESULT__=`bash -c "${a_testing_script} 2>>${a_log_file_name}"`
-    if [ $? -ne 0 ]; then
+    export __PROCESS_SCRIPT_RESULT__=`bash -c "${a_testing_script} 2>>${a_log_file_name} || echo X"`
+    if [ "${__PROCESS_SCRIPT_RESULT__}x" == 'Xx' ]; then
 	echo "---------------------------------- ERROR----------------------------------------"
 	cat ${a_log_file_name}
 	rm ${a_log_file_name}
