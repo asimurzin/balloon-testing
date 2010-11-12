@@ -68,6 +68,6 @@ prepare_reservation()
        create_reservation ${an_instance_type}
      fi
   fi
-  export a_result=`get_reservation ${file_reservations_starts}_${an_instance_type}`
+  export __PROCESS_SCRIPT_RESULT__=`get_reservation ${file_reservations_starts}_${an_instance_type}`
 }
 
