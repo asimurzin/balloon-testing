@@ -31,7 +31,7 @@ test_hook()
   echo $0
 
   prepare_reservation ${instance_type} > /dev/null
-  process_script "amazon_reservation_pickup.py --debug"
+  process_script "amazon_reservation_pickup.py"
 
   echo '----------------------------------- OK -----------------------------------------'
 }
