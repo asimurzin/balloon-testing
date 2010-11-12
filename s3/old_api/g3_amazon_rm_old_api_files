@@ -20,72 +20,48 @@
 
 
 #-----------------------------------------------------------------------------------------
-#source common function
-. old_api.sh
+cd ${0%/*} || exit 1 # run from this directory
+source ./old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
-testing_rm_old_api_file()
+test_hook()
 {
-   a_script_name=`basename $0`
-   an_old_api_number=$1
-   a_study_name=`prepare_testing_data ${an_old_api_number}` 
-
-  echo "----- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" ------"
+  echo "********************************************************************************"
+  echo $0 "'${1}'"
+  
+  a_script_name=`basename $0`
+  an_old_api_number=${1}
+  prepare_testing_data ${an_old_api_number} && a_study_name1=`get_result`
   
   a_list_filenames=`create_list_filenames_in_casedir`
   a_list_files=`create_list_case_files ${a_list_filenames}`
   a_list_file_to_rm=`python -c "temp='${a_list_files}';_list=temp.split(' '); import os; print os.path.abspath(_list[ 1 ] ),' ',os.path.abspath(_list[ 0 ] )" `
 
-  a_testing_script="amazon_rm.py --study-name=${a_study_name}  ${a_list_file_to_rm} --debug"
-  ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
-  if [ $? -ne 0 ] ; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of " 
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}_${an_old_api_number}
-     rm log.${a_script_name}_${an_old_api_number}
-     exit -1
-  else
-     amazon_ls.py ${a_study_name} --debug > log.list_files 2>&1
-     an_allright="True"
-     for a_file in ${a_list_file_to_rm}
-     do
-        count_entrances=`fgrep -c ${a_file}  log.list_files `
-        if [ ${count_entrances} -ne 0 ]; then
-           an_allright="False"
-           a_not_deleted_file=${a_filename}
-           break
-        fi
-     done
-     if [ "${an_allright}" = "False" ]; then
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo ' ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 '
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        cat log.${a_script_name}_${an_old_api_number}
-        rm log.list_files
-        rm log.${a_script_name}_${an_old_api_number}
-        exit -1
-     else
-        echo '----------------------------------- OK -----------------------------------------'
-        echo ''
-        rm log.list_files 
-        `amazon_rm_study.py ${a_study_name} > tmp.log 2>&1`
-        rm tmp.log 
-        `rm_from_studies ${file_studies_starts}_${an_old_api_number} ${a_study_name}`
-     fi
+  process_script "amazon_rm.py --study-name=${a_study_name} ${a_list_file_to_rm}" ${an_old_api_number}
+
+  amazon_ls.py ${a_study_name} --debug > log.list_files 2>&1
+  an_allright="True"
+  for a_file in ${a_list_file_to_rm} ; do
+      count_entrances=`fgrep -c ${a_file}  log.list_files `
+      if [ ${count_entrances} -ne 0 ]; then
+          an_allright="False"
+          a_not_deleted_file=${a_filename}
+          break
+      fi
+  done
+  rm log.list_files
+
+  if [ "${an_allright}" = "False" ]; then
+      process_error "The '${a_not_deleted_file}' file have not been removed from the S3" ${an_old_api_number}
   fi
+
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
-#-----------------------------------------------------------------------------------------
-run_old_api_script testing_rm_old_api_file
 
+#-----------------------------------------------------------------------------------------
+run_old_api_script test_hook
+
+
+#-----------------------------------------------------------------------------------------
