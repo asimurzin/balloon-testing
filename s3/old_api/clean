@@ -34,7 +34,8 @@ for an_old_api_verion in ${a_list_old_api};do
      rm ${file_studies_starts}_${an_old_api_verion}
   fi
 done
-rm -rf ${a_case_dir_name}.out log.* *~
+
+rm -rf ${a_case_dir_name}.out *~ log.*
 
 
 #-----------------------------------------------------------------------------------------

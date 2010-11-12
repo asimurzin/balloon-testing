@@ -42,7 +42,7 @@ test_hook()
   a_list_filenames=`create_list_filenames_in_casedir`
   an_allright="True"
   for a_file in ${a_list_filenames} ; do
-      if [ ! -f ${an_output_dir}/${an_abspath_files}/${a_file} ]; then
+      if [ ! -e ${an_output_dir}/${an_abspath_files}/${a_file} ]; then
           an_allright="False"
           a_bad_file=${a_file}
           break

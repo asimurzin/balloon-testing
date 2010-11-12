@@ -40,11 +40,13 @@ test_hook()
    
   an_abspath_files=`python -c "import os; print os.path.abspath(\"${case_dir}\")"`
   a_differences=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}${an_abspath_files}`
-  if [ ! "x${a_differences}" == "x" ]; then
+  if [ "x${a_differences}" != "x" ]; then
       process_error "There are differences between '${case_dir}' and '${an_output_dir}${an_abspath_files}':\n${a_differences}" ${an_old_api_number}
+  else
+      unregister_study ${file_studies_starts}_${an_old_api_number} ${a_study_name}
   fi
 
-  echo '----------------------------------- OK -----------------------------------------'   
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 

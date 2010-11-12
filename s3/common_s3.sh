@@ -38,6 +38,7 @@ file_studies_starts=studies
 create_list_filenames_in_casedir()
 {
   a_list_filenames=`(cd ${case_dir} && ls -I *~ )`
+
   echo $a_list_filenames
 }
 
@@ -47,10 +48,10 @@ create_list_case_files()
 {
   a_list_filenames=$*
   a_list_files=''
-  for a_filename in ${a_list_filenames}
-  do
+  for a_filename in ${a_list_filenames} ; do
      a_list_files+=" ${case_dir}/${a_filename}"
   done
+
   echo ${a_list_files}
 }
 
@@ -59,12 +60,13 @@ create_list_case_files()
 get_study()
 {
   an_old_api_number=${1}
+
   echo `sed '$!d' ${file_studies_starts}_${an_old_api_number}`
 }
 
 
 #-----------------------------------------------------------------------------------------
-rm_from_studies()
+unregister_study()
 {
   a_file_studies=${1}
   a_study_name1=${2}

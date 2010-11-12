@@ -50,6 +50,9 @@ test_hook()
 
   if [ "${an_allright}" = "False" ]; then
       process_error "The '${a_not_deleted_file}' file have not been removed from the S3" ${an_old_api_number}
+  else
+      amazon_rm_study.py ${a_study_name} > /dev/null 2>&1
+      unregister_study ${file_studies_starts}_${an_old_api_number} ${a_study_name}
   fi
 
   echo '----------------------------------- OK -----------------------------------------'
