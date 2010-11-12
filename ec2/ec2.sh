@@ -41,7 +41,7 @@ unregister_reservation()
 create_reservation()
 {
      an_instance_type=${1}
-     process_script "amazon_reservation_run.py --instance-type=${an_instance_type} --debug" && a_reservation=`get_result`
+     process_script "amazon_reservation_run.py --instance-type=${an_instance_type}" && a_reservation=`get_result`
 
      echo ${a_reservation} >> ${file_reservations_starts}_${an_instance_type}
 }

@@ -24,7 +24,7 @@ a_test_folder=`dirname ${0}`
 a_list_script=`ls ${a_test_folder}/g*`
 for a_script in ${a_list_script} ; do
      ${a_script}
-     echo ' '
+     echo $?
 done
 
 
