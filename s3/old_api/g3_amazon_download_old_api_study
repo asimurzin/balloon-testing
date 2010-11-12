@@ -20,67 +20,47 @@
 
 
 #-----------------------------------------------------------------------------------------
-#source common function
-. old_api.sh
+cd ${0%/*} || exit 1 # run from this directory
+source ./old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
-testing_download_old_api_study()
+test()
 {
+  echo "********************************************************************************"
+  echo $0 "'${1}'"
+
   a_script_name=`basename $0`
-  an_old_api_number=$1
-  a_study_name=`prepare_testing_data ${an_old_api_number}`
+  an_old_api_number=${1}
+  prepare_testing_data ${an_old_api_number} && a_study_name=`get_result`
 
   an_output_dir=${case_dir}.out
   an_abspath_files=`python -c "import os; print os.path.abspath(\"${case_dir}\")"`
 
-  echo "-- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" ---"
-  
-  a_testing_script="amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh --debug "
-  ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
+  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh" ${an_old_api_number}
 
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of " 
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}_${an_old_api_number}
-     rm log.${a_script_name}_${an_old_api_number}
-     exit -1
-  else
-     a_list_filenames=`create_list_filenames_in_casedir`
-     an_allright="True"
-     for a_file in ${a_list_filenames}
-     do
-        if [ ! -f ${an_output_dir}/${an_abspath_files}/${a_file} ]; then
-           an_allright="False"
-           a_bad_file=${a_file}
-           break
-        fi
-     done
-     if [ "${an_allright}" = "False" ]; then
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo " ERROR : There is no '${a_bad_file}' file , in output folder  '${an_output_dir}'. "
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        rm log.${a_script_name}_${an_old_api_number}
-        exit -1     
-     else
-        echo '----------------------------------- OK -----------------------------------------'
-        `remove_log_prepare_test_case`
-        echo ''
-     fi
+  a_list_filenames=`create_list_filenames_in_casedir`
+  an_allright="True"
+  for a_file in ${a_list_filenames} ; do
+      if [ ! -f ${an_output_dir}/${an_abspath_files}/${a_file} ]; then
+          an_allright="False"
+          a_bad_file=${a_file}
+          break
+      fi
+  done
+
+  if [ "${an_allright}" = "False" ]; then
+      process_error "There is no '${a_bad_file}' file, in output folder '${an_output_dir}'" ${an_old_api_number}
   fi
+
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 
 #-----------------------------------------------------------------------------------------
-run_old_api_script testing_download_old_api_study
+run_old_api_script test
+
+
+#-----------------------------------------------------------------------------------------
+
 
