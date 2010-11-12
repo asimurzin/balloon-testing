@@ -157,7 +157,7 @@ prepare_testing_data()
      fi
   fi
 
-  export a_result=`get_study ${an_old_api_number}`
+  export __PROCESS_SCRIPT_RESULT__=`get_study ${an_old_api_number}`
 }
      
 
