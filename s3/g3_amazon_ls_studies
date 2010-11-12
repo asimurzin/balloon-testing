@@ -31,18 +31,13 @@ test_hook()
   echo $0
 
   a_script_name=`basename $0`
-  prepare_testing_data && a_study_name1=`get_result`
+  prepare_testing_data && a_study_name=`get_result`
 
   process_script "amazon_ls.py"
 
   count=`fgrep -c "${a_study_name}" log.${a_script_name}`
   if [ ${count} -eq 0 ] ; then 
-      cat log.${a_script_name}
-      rm log.${a_script_name}
-      echo "--------------------------------------------------------------------------------"
-      echo " ERROR : There is no '${a_study_name}' study in the s3 "
-      echo "--------------------------------------------------------------------------------"
-      exit -1
+      process_error "There is no '${a_study_name}' study in the S3"
   fi
 
   echo '----------------------------------- OK -----------------------------------------'

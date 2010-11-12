@@ -31,7 +31,7 @@ test_hook()
   echo $0
 
   a_script_name=`basename $0`
-  prepare_testing_data && a_study_name=`get_result`
+  prepare_new_testing_data && a_study_name=`get_result`
   a_list_filenames=`create_list_filenames_in_casedir`
   a_list_file_to_rm=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 1 ],' ',_list[ 0 ]" `
 
@@ -40,7 +40,7 @@ test_hook()
   amazon_ls.py ${a_study_name} > log.list_files 2>&1
   an_allright="True"
   for a_file in ${a_list_file_to_rm} ; do
-      count_entrances=`fgrep -c ${a_file}  log.list_files `
+      count_entrances=`fgrep -c ${a_file} log.list_files `
       if [ ${count_entrances} -ne 0 ]; then
           an_allright="False"
           a_not_deleted_file=${a_filename}
@@ -50,16 +50,10 @@ test_hook()
   rm log.list_files
 
   if [ "${an_allright}" = "False" ]; then
-      cat log.${a_script_name}
-      rm log.${a_script_name}
-      echo "--------------------------------------------------------------------------------"
-      echo ' ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 '
-      echo "--------------------------------------------------------------------------------"
-      exit -1
+      process_error "The '${a_not_deleted_file}' file have not been removed from the S3"
   else
-      amazon_rm_study.py ${a_study_name} > tmp.log 2>&1
-      rm tmp.log 
-      rm_from_studies ${file_studies_starts}_ ${a_study_name}
+      amazon_rm_study.py ${a_study_name} > /dev/null 2>&1
+      unregister_study ${file_studies_starts}_ ${a_study_name}
   fi
 
   echo '----------------------------------- OK -----------------------------------------'

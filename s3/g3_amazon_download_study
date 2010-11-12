@@ -39,7 +39,7 @@ test_hook()
   a_list_filenames=`create_list_filenames_in_casedir`
   an_allright="True"
   for a_file in ${a_list_filenames} ; do
-      if [ ! -f ${an_output_dir}/${a_file} ]; then
+      if [ ! -e ${an_output_dir}/${a_file} ]; then
           an_allright="False"
           a_bad_file=${a_file}
           break
@@ -47,12 +47,7 @@ test_hook()
   done
      
   if [ "${an_allright}" = "False" ]; then
-      cat log.${a_script_name}
-      rm log.${a_script_name}
-      echo "--------------------------------------------------------------------------------"
-      echo " ERROR : There is no '${a_bad_file}' file , in output folder  '${an_output_dir}'. "
-      echo "--------------------------------------------------------------------------------"
-      exit -1     
+      process_error "There is no '${a_bad_file}' file, in output folder '${an_output_dir}'"
   fi
 
   echo '----------------------------------- OK -----------------------------------------'

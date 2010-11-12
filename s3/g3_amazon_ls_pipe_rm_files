@@ -34,10 +34,8 @@ test_hook()
   an_output_dir=${case_dir}.out
   a_list_filenames=`create_list_filenames_in_casedir`
   a_testing_filenames=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ], ' ', _list[ 1 ] " `
-  a_testing_files=`create_list_case_files ${a_testing_filenames}`
 
-  process_script "balloon-study-book | amazon_upload_start.py ${a_testing_files} | amazon_upload_resume.py" 
-  a_study_name=`get_result`
+  prepare_new_testing_data ${an_old_api_number} && a_study_name=`get_result`
 
   process_script "amazon_ls.py ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name}"
 
@@ -54,15 +52,10 @@ test_hook()
   rm log.check_ls_pipe_rm_files
 
   if [ "${an_allright}" = "False" ]; then
-      cat log.${a_script_name}
-      rm log.${a_script_name}
-      echo "--------------------------------------------------------------------------------"
-      echo " ERROR : The '${a_not_deleted_file}' file have not been removed from the s3 "
-      echo "--------------------------------------------------------------------------------"
-      exit -1
+      process_error "The '${a_not_deleted_file}' file have not been removed from the S3"
   else
-      amazon_rm_study.py ${a_study_name} > tmp.log 2>&1
-      rm tmp.log
+      amazon_rm_study.py ${a_study_name} > /dev/null 2>&1
+      unregister_study ${file_studies_starts}_ ${a_study_name}
   fi
 
   echo '----------------------------------- OK -----------------------------------------'

@@ -33,9 +33,8 @@ if [ -f ${file_studies_starts}_${an_old_api_verion} ]; then
    fi
    rm ${file_studies_starts}_${an_old_api_verion}
 fi
-rm -rf ${case_dir}.out
-rm -f log.*
-rm -f *~
+
+rm -rf ${case_dir}.out *~ log.*
 
 
 #-----------------------------------------------------------------------------------------
