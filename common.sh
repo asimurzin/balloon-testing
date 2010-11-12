@@ -73,7 +73,7 @@ process_error()
     cat ${a_log_file_name}
     rm ${a_log_file_name}
     echo "--------------------------------------------------------------------------------"
-    printf ${an_error_message}
+    printf "${an_error_message}\n"
     echo '----------------------------------- KO -----------------------------------------'
     exit -1
 }
