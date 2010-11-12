@@ -130,12 +130,12 @@ create_study()
   a_list_files=`create_list_case_files ${a_list_filenames}`
   a_study_name=`create_study_name`
 
-  a_testing_script="${a_path_to_api}amazon_upload_start.py --debug --study-name=${a_study_name} ${a_list_files}"
+  a_testing_script="${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files}"
   if [ "${a_path_to_api}x" == "x" ] ; then
-      a_testing_script="balloon-study-book --debug --study-name=${a_study_name} | amazon_upload_start.py --debug ${a_list_files}"
+      a_testing_script="balloon-study-book --study-name=${a_study_name} | amazon_upload_start.py ${a_list_files}"
   fi
 
-  process_script "${a_testing_script} | ${a_path_to_api}amazon_upload_resume.py" 
+  process_script "${a_testing_script} | ${a_path_to_api}amazon_upload_resume.py" ${an_old_api_number}
 
   echo ${a_study_name} >> ${file_studies_starts}_${an_old_api_number}
 
@@ -144,16 +144,25 @@ create_study()
 
 
 #-----------------------------------------------------------------------------------------
+prepare_new_testing_data()
+{ 
+  an_old_api_number=${1}
+
+  create_study ${an_old_api_number} 
+}
+     
+
+#-----------------------------------------------------------------------------------------
 prepare_testing_data()
 { 
   an_old_api_number=${1}
 
   if [ ! -f ${file_studies_starts}_${an_old_api_number} ]; then
-     create_study ${an_old_api_number} && a_study_name=`get_result`
+     prepare_new_testing_data ${an_old_api_number}
   else
      a_study_name=`get_study ${an_old_api_number}`
      if [ "x${a_study_name}" == "x" ]; then
-        create_study ${an_old_api_number}
+        prepare_new_testing_data ${an_old_api_number}
      fi
   fi
 
