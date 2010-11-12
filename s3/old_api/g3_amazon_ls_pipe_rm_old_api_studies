@@ -20,65 +20,37 @@
 
 
 #-----------------------------------------------------------------------------------------
-#source common function
-. old_api.sh
-
+cd ${0%/*} || exit 1 # run from this directory
+source ./old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
-testing_ls_pipe_rm_old_api_studies()
+test_hook()
 {
+  echo "********************************************************************************"
+  echo $0 "'${1}'"
+
   a_script_name=`basename $0`
-  an_old_api_number=$1
+  an_old_api_number=${1}
+  prepare_testing_data ${an_old_api_number} && a_study_name1=`get_result`
+  prepare_new_testing_data ${an_old_api_number} && a_study_name2=`get_result`
 
-  a_study_name1=`prepare_testing_data ${an_old_api_number}`
-  `create_study ${an_old_api_number}`
-  a_study_name2=`get_study ${an_old_api_number}`
+  process_script "amazon_ls.py | grep -e ${a_study_name1} -e ${a_study_name2} | xargs amazon_rm_study.py" ${an_old_api_number}
 
-  a_begin_study_name=`study_name_starts_with`
+  amazon_ls.py --debug 2>log.check_ls_pipe_rm_studies
+  count_entrances=`fgrep -c -e ${a_study_name1} -e ${a_study_name2} log.check_ls_pipe_rm_studies`
+  rm log.check_ls_pipe_rm_studies
 
-  echo "- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" -"
-  
-  a_testing_script="amazon_ls.py --debug 2>log.${a_script_name}_${an_old_api_number} | grep -e ${a_study_name1} -e ${a_study_name2} | xargs amazon_rm_study.py --debug 2>>log.${a_script_name}_${an_old_api_number}"
-  bash -c "${a_testing_script}" > /dev/null
-
-  if [ $? -ne 0 ]; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of  " 
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}_${an_old_api_number}
-     rm log.${a_script_name}_${an_old_api_number}
-     exit -1
-  else
-     dummy=`amazon_ls.py --debug 2>log.check_ls_pipe_rm_studies`
-     count_entrances=`fgrep -c -e ${a_study_name1} -e ${a_study_name2} log.check_ls_pipe_rm_studies`
-     if [ ${count_entrances} -ne 0 ]; then
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo " ERROR : There are study named ${a_study_name1} or ${a_study_name2} ( may be both ) in the s3 "
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        cat log.${a_script_name}_${an_old_api_number}
-        rm log.${a_script_name}_${an_old_api_number}
-        exit -1
-     else
-        echo '----------------------------------- OK -----------------------------------------'
-        echo ''
-        rm log.check_ls_pipe_rm_studies
-        `rm_from_studies ${file_studies_starts}_${an_old_api_number} ${a_study_name1}`
-        `rm_from_studies ${file_studies_starts}_${an_old_api_number} ${a_study_name2}`
-     fi
+  if [ ${count_entrances} -ne 0 ]; then
+      process_error "There are study named ${a_study_name1} or ${a_study_name2} (may be both) in the S3" ${an_old_api_number}
   fi
+  
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 
 #-----------------------------------------------------------------------------------------
-run_old_api_script testing_ls_pipe_rm_old_api_studies ${an_api}
+run_old_api_script test_hook 
 
+
+#-----------------------------------------------------------------------------------------
