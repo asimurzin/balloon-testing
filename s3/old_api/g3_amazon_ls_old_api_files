@@ -20,64 +20,44 @@
 
 
 #-----------------------------------------------------------------------------------------
-#source common function
-. old_api.sh
+cd ${0%/*} || exit 1 # run from this directory
+source ./old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
-testing_ls_old_api_files()
+test()
 {
+  echo "********************************************************************************"
+  echo $0 "'${1}'"
+
   a_script_name=`basename $0`
-  an_old_api_number=$1
-  a_study_name=`prepare_testing_data ${an_old_api_number}`
+  an_old_api_number=${1}
+  prepare_testing_data ${an_old_api_number} && a_study_name=`get_result`
 
-  echo "----- Running \"${a_path_script}/${a_script_name}\" api_version=\"${an_old_api_number}\" ------"
-  a_testing_script="amazon_ls.py ${a_study_name} --debug"
-  ${a_testing_script} > log.${a_script_name}_${an_old_api_number} 2>&1
+  process_script "amazon_ls.py ${a_study_name}" ${an_old_api_number}
 
-  if [ $? -ne 0 ] ; then
-     echo ''
-     echo ''
-     echo "--------------------------------------------------------------------------------"
-     echo "An error have appeared during execution of " 
-     echo ${a_testing_script}
-     echo "--------------------------------------------------------------------------------"
-     echo ''
-     echo ''
-     cat log.${a_script_name}_${an_old_api_number}
-     rm log.${a_script_name}_${an_old_api_number}
-     exit -1
-  else
-     an_allright="True"
-     a_list_filenames=`create_list_filenames_in_casedir`
-     for a_filename in ${a_list_filenames}
-     do
-        count_entrances=`fgrep -c ${a_filename} log.${a_script_name}_${an_old_api_number}`
-        if [ ${count_entrances} -eq 0 ]; then
-           an_allright="False"
-           a_not_exists_file=${a_filename}
-           break
-        fi
-     done 
-     if [ "${an_allright}" = "False" ]; then
-        echo ''
-        echo ''
-        echo "--------------------------------------------------------------------------------"
-        echo " ERROR : There is no '${a_not_exists_file}' file in the s3 "
-        echo "--------------------------------------------------------------------------------"
-        echo ''
-        echo ''
-        rm log.${a_script_name}_${an_old_api_number}
-        exit -1
-     else
-        echo '----------------------------------- OK -----------------------------------------'
-        `remove_log_prepare_test_case`
-        echo ''
-     fi
+  an_allright="True"
+  a_list_filenames=`create_list_filenames_in_casedir`
+  for a_filename in ${a_list_filenames} ; do
+      count_entrances=`fgrep -c ${a_filename} log.${a_script_name}_${an_old_api_number}`
+      if [ ${count_entrances} -eq 0 ]; then
+          an_allright="False"
+          a_not_exists_file=${a_filename}
+          break
+      fi
+  done 
+
+  if [ "${an_allright}" = "False" ]; then
+      process_error "There is no '${a_not_exists_file}' file in the S3" ${an_old_api_number}
   fi
+
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 
 #-----------------------------------------------------------------------------------------
-run_old_api_script testing_ls_old_api_files
+run_old_api_script test
+
+
+#-----------------------------------------------------------------------------------------
 
