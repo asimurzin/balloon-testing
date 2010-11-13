@@ -25,15 +25,17 @@ source ./old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
-for an_old_api_verion in ${a_list_old_api};do
-  if [ -f ${file_studies_starts}_${an_old_api_verion} ]; then 
-     a_list_studies=`cat ${file_studies_starts}_${an_old_api_verion}`
-     if [ "x${a_list_studies}" != "x" ]; then
-        amazon_rm_study.py ${a_list_studies}
-     fi
+a_list_studies=''
+for an_old_api_verion in ${a_list_old_api} ; do
+  if [ -f ${file_studies_starts}_${an_old_api_verion} ] ; then 
+     a_list_studies="`cat ${file_studies_starts}_${an_old_api_verion}` ${a_list_studies}"
      rm ${file_studies_starts}_${an_old_api_verion}
   fi
 done
+
+if [ "x${a_list_studies}" != "x" ] ; then
+    amazon_rm_study.py ${a_list_studies} # to use muti-threading capabilities
+fi
 
 rm -rf ${a_case_dir_name}.out *~ log.*
 
