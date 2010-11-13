@@ -37,7 +37,7 @@ test_hook()
 
   process_script "amazon_ls.py | grep -e ${a_study_name1} -e ${a_study_name2} | xargs amazon_rm_study.py" ${an_old_api_number}
 
-  amazon_ls.py --debug 2>log.check_ls_pipe_rm_studies > /dev/null
+  amazon_ls.py 2>log.check_ls_pipe_rm_studies > /dev/null
   count_entrances=`fgrep -c -e ${a_study_name1} -e ${a_study_name2} log.check_ls_pipe_rm_studies`
   rm log.check_ls_pipe_rm_studies
 
