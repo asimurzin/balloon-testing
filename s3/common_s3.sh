@@ -33,6 +33,8 @@ a_path_script='s3'
 
 file_studies_starts=studies
 
+s3locations="ap-southeast-1 EU us-west-1"
+
 
 #------------------------------------------------------------------------------------------
 create_list_filenames_in_casedir()
