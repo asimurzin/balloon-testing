@@ -38,7 +38,7 @@ test_hook()
    a_list_filenames=`create_list_filenames_in_casedir`
    a_filename=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
    
-   if [ ${an_old_api_number} \> "0.2" ]; then
+   if [ ${an_old_api_number} \> "0.2" ] && [ ${an_old_api_number} != "dummy" ]; then
       a_downloading_file=${a_filename}
    else
        a_downloading_file=`python -c "import os; print os.path.abspath(\"${case_dir}/${a_filename}\")"`

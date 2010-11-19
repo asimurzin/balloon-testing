@@ -40,7 +40,7 @@ test_hook()
    
   an_abspath_files=`python -c "import os; print os.path.abspath(\"${case_dir}\")"`
   
-  if [ ${an_old_api_number} \> "0.2" ]; then
+  if [ ${an_old_api_number} \> "0.2" ] && [ ${an_old_api_number} != "dummy" ]; then
       a_diffing_dir=${an_output_dir}
   else
       a_diffing_dir=${an_output_dir}${an_abspath_files}
