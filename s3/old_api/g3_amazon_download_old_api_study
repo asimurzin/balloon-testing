@@ -39,10 +39,17 @@ test_hook()
 
   process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh" ${an_old_api_number}
 
+  
+  if [ ${an_old_api_number} \> "0.2" ]; then
+     an_out_files_dir=${an_output_dir}
+  else
+     an_out_files_dir=${an_output_dir}/${an_abspath_files}/${a_file}
+  fi
+  
   a_list_filenames=`create_list_filenames_in_casedir`
   an_allright="True"
   for a_file in ${a_list_filenames} ; do
-      if [ ! -e ${an_output_dir}/${an_abspath_files}/${a_file} ]; then
+      if [ ! -e ${an_out_files_dir} ]; then
           an_allright="False"
           a_bad_file=${a_file}
           break
@@ -50,9 +57,9 @@ test_hook()
   done
 
   if [ "${an_allright}" = "False" ]; then
-      process_error "There is no '${a_bad_file}' file, in output folder '${an_output_dir}'" ${an_old_api_number}
+      process_error "There is no '${a_bad_file}' file, in output folder '${an_out_files_dir}'" ${an_old_api_number}
   fi
-
+  rm -rf ${an_output_dir}
   echo '----------------------------------- OK -----------------------------------------'
 }
 
