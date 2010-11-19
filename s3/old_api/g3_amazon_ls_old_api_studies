@@ -34,9 +34,9 @@ test_hook()
   an_old_api_number=${1}
   prepare_testing_data ${an_old_api_number} && a_study_name=`get_result`
 
-  process_script "amazon_ls.py" ${an_old_api_number}
+  process_script "amazon_ls.py" ${an_old_api_number} && a_result=`get_result`
 
-  count=`fgrep -c "${a_study_name}" log.${a_script_name}_${an_old_api_number}`
+  count=`echo ${a_result} | grep -c "${a_study_name}"`
   if [ ${count} -eq 0 ] ; then 
       process_error "There is no '${a_study_name}' study in the S3" ${an_old_api_number}
   fi
