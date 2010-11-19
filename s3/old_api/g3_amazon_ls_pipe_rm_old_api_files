@@ -38,6 +38,7 @@ test_hook()
 
   amazon_ls.py ${a_study_name} > log.check_ls_pipe_rm_files 2>&1
   an_allright="True"
+  a_testing_filenames=`create_list_filenames_in_casedir`
   for a_filename in ${a_testing_filenames} ; do
       count_entrances=`fgrep -c ${a_filename} log.check_ls_pipe_rm_files`
       if [ ${count_entrances} -ne 0 ]; then
