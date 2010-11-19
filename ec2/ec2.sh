@@ -26,7 +26,7 @@ file_reservations_starts='reservations'
 
 instance_type="m1.large"
 
-__BALLOON_DEPLOY_URL__="http://pypi.python.org/packages/source/b/balloon/balloon-0.07-alfa.tar.gz"
+__BALLOON_DEPLOY_URL__="http://pypi.python.org/packages/source/b/balloon/balloon-0.06-alfa.tar.gz"
 
 
 #----------------------------------------------------------------------------------------
