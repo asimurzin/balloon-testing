@@ -27,7 +27,7 @@ source ${__LEVEL_0__}/common.sh
 
 a_case_dir_name='case'
 
-a_list_old_api="dummy 0.1 0.2"
+a_list_old_api="dummy 0.1 0.2 0.3"
 
 a_path_script='s3'
 
