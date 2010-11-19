@@ -1,0 +1,157 @@
+#--------------------------------------------------------------------------------------
+Installation Instructions
+#--------------------------------------------------------------------------------------
+
+Copyright 2010 Alexey Petrov
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+See http://sourceforge.net/apps/mediawiki/balloon-foam
+
+
+#--------------------------------------------------------------------------------------
+Pre-requisites
+#--------------------------------------------------------------------------------------
+
+To start work with 'balloon'functionality user need to have an AWS Amazon account and 
+be registered for EC2 and S3 services.
+
+The only software prerequisite user need to have to be able to install 'balloon' 
+it is at least least Python 2.3.5, or if you are on a 64-bit platform, Python 2.4.
+Note that installation procudere normally works by downloading files from the internet. 
+If you are behind an NTLM-based firewall that prevents Python programs from accessing 
+the net directly, you may wish to first install and use the APS proxy server, 
+which lets you get past such firewalls in the same way that your web browser(s) do.
+All other dependencies will be checked, uploaded and installed automatically. 
+
+At any case it, to secure your installation make sure that most important  binary packages
+are installed in the following way:
+
+-  SUSE Linux:
+   sudo zypper install gcc make
+   sudo zypper install python-devel
+   sudo zypper install python-setuptools
+
+-  Ubuntu Linux
+   sudo apt-get install gcc make
+   sudo apt-get install python-all-dev
+   sudo apt-get install python-setuptools
+
+The installation procedure was tested with direct connection to the internet under:
+
+-  SLES 11 SP1 i586 & Python 2.6
+
+-  Ubuntu 9.06 x86_64 & Python 2.6
+
+
+#--------------------------------------------------------------------------------------
+Installation Steps
+#--------------------------------------------------------------------------------------
+
+'balloon' installation procedure relies on 'easy_install' Python 'setuptools'.
+1. Once you have 'easy_install' script on your machine 'balloon' can be installed 
+   in single step:
+
+   sudo easy_install balloon
+
+If something wrong try perform installation in more strightforward way:
+
+1. Download the latest version of 'balloon' package from sourceforge
+   ( 'http://sourceforge.net/projects/balloon-foam/files' ), for example:
+
+   wget http://garr.dl.sourceforge.net/project/balloon-foam/balloon_src-X.YY.tar.gz
+
+2. Unpuck the downloaded package:
+   
+   tar -xzf balloon_src-X.YY.tar.gz
+
+3. Check whether corresponding system installation folder exists and create it, if no:
+
+   /usr/local/lib/python<version>/dist-packages # Ubutu
+or
+   /usr/local/lib/python<version>/site-packages # SLES
+
+where <version> can be defined in the following way:
+
+   python -c "import sys; print sys.version[ : 3 ]"
+
+4. Run the installation procedure:
+
+   cd balloon_src-X.YY && sudo ./setup.py install
+
+
+#--------------------------------------------------------------------------------------
+Environment Setup
+#--------------------------------------------------------------------------------------
+
+The only environment variables user need to setup in his environemnt is AWS security 
+credentails, for example:
+
+    export AWS_ACCESS_KEY_ID=YYVUYVIUBIBI
+    export AWS_SECRET_ACCESS_KEY=BBKBBOUjbkj/BBOUBOBJKBjbjbboubuBUB
+
+
+#--------------------------------------------------------------------------------------
+Installation Check
+#--------------------------------------------------------------------------------------
+
+To check Amazon EC2 (cloud servers) related functionality run:
+   
+   amazon_reservation_run.py | amazon_reservation_delete.py
+
+To check Amazon S3 (cloud files) related functionality run:
+
+   amazon_upload_start.py <test folder or file> | amazon_upload_resume.py | amazon_download.py
+
+As result, in your current folder a new folder will appear (something like "tmp-6cba44d5-d09e-477e-b88b-2aecd9257f7a")
+
+To remove the uploaded files from the cloud user can run:
+
+   amazon_ls.py | grep tmp | xargs amazon_rm_study.py
+
+If you have downloaded 'balloon' source, it is possible to run even more complex example:
+
+   amazon_reservation_run.py | amazon_openmpi_config.py | amazon_nfs_config.py | amazon_solver_run.py --case-dir="./balloon_src-X.YY/damBreak"
+
+   amazon_ls.py | grep tmp | xargs amazon_rm_study.py
+   
+   amazon_reservations_delete.py
+
+
+#--------------------------------------------------------------------------------------
+Package Upgrading
+#--------------------------------------------------------------------------------------
+
+Upgrading of the 'balloon' package can be done in the following steps
+
+1. To ensure that Python doesn't continue to search for this package you're planning to remove. 
+
+   easy_install -m balloon
+
+2. Removing by hands existing 'balloon' installation:
+
+   sudo rm -fr /usr/local/lib/python<version>/dist-packages/balloon-X.YY-py<version>.egg
+or
+   sudo rm -fr /usr/local/lib/python<version>/site-packages/balloon-X.YY-py<version>.egg
+
+where <version> can be defined in the following way:
+
+   python -c "import sys; print sys.version[ : 3 ]"
+
+3. Installing the balloon by 'easy_install'. (Once you have sucessfully installed 'balloon', 
+   proper 'easy_install' functionality should be automatically installed, as well.)
+
+   sudo easy_install balloon
+
+
+#--------------------------------------------------------------------------------------
