@@ -34,7 +34,7 @@ test_hook()
   an_output_dir=${case_dir}.out
   prepare_testing_data && a_study_name=`get_result`
 
-  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh" 
+  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh --remove" 
 
   a_list_filenames=`create_list_filenames_in_casedir`
   an_allright="True"
@@ -49,6 +49,15 @@ test_hook()
   if [ "${an_allright}" = "False" ]; then
       process_error "There is no '${a_bad_file}' file, in output folder '${an_output_dir}'"
   fi
+  
+  a_studies=`amazon_ls.py 2>/dev/null`
+  count_entrances=`echo ${a_studies} | grep -c -e ${a_study_name}`
+  
+   if [ ${count_entrances} -ne 0 ]; then
+      process_error "There is study named ${a_study_name} in the S3"
+  else
+      unregister_study ${file_studies_starts}_ ${a_study_name}
+  fi 
 
   echo '----------------------------------- OK -----------------------------------------'
 }

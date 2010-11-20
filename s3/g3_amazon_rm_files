@@ -37,17 +37,16 @@ test_hook()
 
   process_script "amazon_rm.py --study-name=${a_study_name} ${a_list_file_to_rm}" 
 
-  amazon_ls.py ${a_study_name} > log.list_files 2>&1
+  a_results=`amazon_ls.py ${a_study_name} 2>&1`
   an_allright="True"
   for a_file in ${a_list_file_to_rm} ; do
-      count_entrances=`fgrep -c ${a_file} log.list_files `
+      count_entrances=`echo ${a_results} | grep -c ${a_file}`
       if [ ${count_entrances} -ne 0 ]; then
           an_allright="False"
-          a_not_deleted_file=${a_filename}
+          a_not_deleted_file=${a_file}
           break
       fi 
   done
-  rm log.list_files
 
   if [ "${an_allright}" = "False" ]; then
       process_error "The '${a_not_deleted_file}' file have not been removed from the S3"

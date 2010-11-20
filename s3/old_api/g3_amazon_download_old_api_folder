@@ -39,11 +39,18 @@ test_hook()
   process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh" ${an_old_api_number}
    
   an_abspath_files=`python -c "import os; print os.path.abspath(\"${case_dir}\")"`
-  a_differences=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}${an_abspath_files}`
+  
+  if [ ${an_old_api_number} \> "0.2" ] && [ ${an_old_api_number} != "dummy" ]; then
+      a_diffing_dir=${an_output_dir}
+  else
+      a_diffing_dir=${an_output_dir}${an_abspath_files}
+  fi
+  a_differences=`diff -r -q -i -x "*~" ${case_dir} ${a_diffing_dir}`
   if [ "x${a_differences}" != "x" ]; then
-      process_error "There are differences between '${case_dir}' and '${an_output_dir}${an_abspath_files}':\n${a_differences}" ${an_old_api_number}
+      process_error "There are differences between '${case_dir}' and '${a_diffing_dir}':\n${a_differences}" ${an_old_api_number}
   else
       unregister_study ${file_studies_starts}_${an_old_api_number} ${a_study_name}
+      rm -rf ${an_output_dir}
   fi
 
   echo '----------------------------------- OK -----------------------------------------'

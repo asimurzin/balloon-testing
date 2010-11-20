@@ -36,9 +36,8 @@ test_hook()
   a_study_name=`create_study_name`
   process_script "balloon-study-book --study-name=${a_study_name} | amazon_upload_start.py ${case_dir} | amazon_upload_resume.py"
 
-  amazon_ls.py ${a_study_name} >log.check_upload_folder 2>&1
-  count_entrances=`fgrep -c ${case_dir} log.check_upload_folder`
-  rm log.check_upload_folder
+  a_results=`amazon_ls.py ${a_study_name} 2>&1`
+  count_entrances=`echo ${a_results} | grep -c ${case_dir}`
 
   if [ ${count_entrances} -eq 0 ]; then
       process_error "There is no uploading file '${case_dir}', in the S3"

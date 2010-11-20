@@ -37,10 +37,9 @@ test_hook()
   
   process_script "amazon_ls.py | grep -e ${a_study_name1} -e ${a_study_name2} | xargs amazon_rm_study.py"
 
-  bash -c "amazon_ls.py 2>log.check_ls_pipe_rm_studies 1>/dev/null"
-  count_entrances=`fgrep -c -e ${a_study_name1} -e ${a_study_name2} log.check_ls_pipe_rm_studies`
-  rm log.check_ls_pipe_rm_studies
-
+  a_results=`amazon_ls.py 2>&1`
+  count_entrances=`echo $a_results | grep -c -e ${a_study_name1} -e ${a_study_name2}`
+  
   if [ ${count_entrances} -ne 0 ]; then
       process_error "There is study named ${a_study_name1} or ${a_study_name2} (may be both) in the S3"
   else
