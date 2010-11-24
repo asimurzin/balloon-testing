@@ -32,9 +32,12 @@ __BALLOON_DEPLOY_URL__="http://pypi.python.org/packages/source/b/balloon/balloon
 #----------------------------------------------------------------------------------------
 unregister_reservation()
 {
-  an_instance_type=${1}
-  a_reservation=${2}
-  a_file_reservations=${file_reservations_starts}_${an_instance_type}
+  a_reservation=${1}
+  an_instance_type=${2}
+  a_region=${3}
+  an_image_id=${4}
+  
+  a_file_reservations=${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}
   cat ${a_file_reservations} | grep -v -e ${a_reservation} > ${a_file_reservations}
 }
 
@@ -43,9 +46,11 @@ unregister_reservation()
 create_reservation()
 {
      an_instance_type=${1}
+     a_region=${2}
+     an_image_id=${3}
      process_script "amazon_reservation_run.py --instance-type=${an_instance_type}" && a_reservation=`get_result`
-
-     echo ${a_reservation} >> ${file_reservations_starts}_${an_instance_type}
+     a_file_reservation=${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}
+     echo ${a_reservation} >> ${a_file_reservation}
 }
         
 
@@ -61,15 +66,17 @@ get_reservation()
 prepare_reservation()
 {
   an_instance_type=${1}
+  a_region=${2}
+  an_image_id=${3}
   echo ${an_instance_type} >> log.tmp
-  if [ ! -f reservations_${an_instance_type} ]; then
-     create_reservation ${an_instance_type}
+  if [ ! -f reservations_${an_instance_type}_${a_region}_${an_image_id} ]; then
+     create_reservation ${an_instance_type} ${a_region} ${an_image_id}
   else
-     a_reservation=`get_reservation ${file_reservations_starts}_${an_instance_type}`
+     a_reservation=`get_reservation ${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}`
      if [ "x${a_reservation}" == "x" ]; then
-       create_reservation ${an_instance_type}
+       create_reservation ${an_instance_type} ${a_region} ${an_image_id}
      fi
   fi
-  export __PROCESS_SCRIPT_RESULT__=`get_reservation ${file_reservations_starts}_${an_instance_type}`
+  export __PROCESS_SCRIPT_RESULT__=`get_reservation ${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}`
 }
 
