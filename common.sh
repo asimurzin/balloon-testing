@@ -38,7 +38,9 @@ process_script()
     echo "================================================================================"
     echo "${a_testing_script}" 
     a_testing_script=`echo ${a_testing_script} | sed -e "s%|%2>>${a_log_file_name} |%g"`
-    export __PROCESS_SCRIPT_RESULT__=`bash -c "${a_testing_script} 2>>${a_log_file_name} || echo X"`
+    a_testing_script=`echo ${a_testing_script} | sed -e "s%)% 2>>${a_log_file_name})%g"`
+    a_testing_script="${a_testing_script} 2>>${a_log_file_name} || echo X"
+    export __PROCESS_SCRIPT_RESULT__=`bash -c "${a_testing_script}"`
     if [ "${__PROCESS_SCRIPT_RESULT__}x" == 'Xx' ]; then
 	echo "---------------------------------- ERROR----------------------------------------"
 	cat ${a_log_file_name}
@@ -82,11 +84,12 @@ process_error()
 #------------------------------------------------------------------------------------------
 run_script()
 {
-    a_test_log_name=./log.`basename ${0}`
-    if [ -f ${a_test_log_name} ]; then
+    a_test_log_name=log.`basename ${0}`
+    a_test_log_names=`ls | grep ${a_test_log_name}`
+    if [ "${a_test_log_names}x" != "x" ]; then
 	a_script_name=${0}; 
-	a_user_log_name=`dirname ${0}`/log.`basename ${0}`
-	echo "rm ${a_user_log_name} # before run '${a_script_name}'"
+	a_user_log_name=`dirname ${0}`/${a_test_log_name}
+	echo "rm ${a_user_log_name}* # before run '${a_script_name}'"
 	exit 0
     else
 	a_function=${1}; ${a_function}
