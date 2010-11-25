@@ -36,8 +36,10 @@ create_study_in_location()
   
   a_study_name=`create_study_name`
   
-  a_testing_script="balloon-study-book --study-name=${a_study_name} --s3location=${a_s3location} | amazon_upload_start.py ${a_list_files} | amazon_upload_resume.py"
-  process_script "${a_testing_script}"
+  export __BALLOON_S3_LOCATION__=${a_s3location}
+
+  a_testing_script="balloon-study-book --study-name=${a_study_name} | amazon_upload_start.py ${a_list_files} | amazon_upload_resume.py"
+  process_script "${a_testing_script}" ${a_s3location}
 }
 
 
@@ -57,12 +59,12 @@ test_hook()
      a_list_filenames=`create_list_filenames_in_casedir`
      a_downloading_file=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
 
-     process_script "amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh" 
+     process_script "amazon_download.py --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh" ${a_s3location}
      if [ ! -e ${an_output_dir}/${a_downloading_file} ]; then
-        process_error "There is no downloading file '${a_downloading_file}', in '${an_output_dir}' folder"
+        process_error "There is no downloading file '${a_downloading_file}', in '${an_output_dir}' folder" ${a_s3location}
      fi
   
-     process_script "amazon_rm_study.py ${a_study_name}"
+     process_script "amazon_rm_study.py ${a_study_name}" ${a_s3location}
   
      echo '----------------------------------- OK -----------------------------------------'
   done

@@ -98,7 +98,7 @@ calc_path_to_case_dir()
 {
   a_curdir=`python -c "import os; print os.path.basename( os.path.abspath(os.path.curdir) )"`
   if [ "$a_curdir" == "old_api" ]; then
-     echo "../${a_case_dir_name}" 
+     echo "${a_case_dir_name}" 
   fi
   if [ "$a_curdir" == "s3" ]; then
      echo "${a_case_dir_name}" 
