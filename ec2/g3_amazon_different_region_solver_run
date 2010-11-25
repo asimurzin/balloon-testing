@@ -1,0 +1,67 @@
+#!/bin/bash
+
+#--------------------------------------------------------------------------------------
+## Copyright 2010 Alexey Petrov
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+## Author : Andrey Simurzin
+##
+
+
+#-----------------------------------------------------------------------------------------
+cd ${0%/*} || exit 1 # run from this directory
+source ./ec2.sh
+
+
+#-----------------------------------------------------------------------------------------
+test_hook()
+{
+  echo "********************************************************************************"
+  echo $0
+
+  for a_region in ${ec2_regions};do
+     echo "Testing ${a_region} "
+    
+     an_image_id=`python -c "from balloon.pickup import TRegionConfigHelper; print TRegionConfigHelper(\"${a_region}\").image_id()"`
+    
+     a_s3location=`python -c "from balloon.pickup import TRegionConfigHelper; print TRegionConfigHelper(\"${a_region}\").s3location()"`
+    
+     export __BALLOON_IMAGE_LOCATION__=${a_region}
+    
+     export __BALLOON_S3_LOCATION__=${a_s3location}
+
+     prepare_reservation ${instance_type} ${a_region} ${an_image_id} && a_reservation=`get_result`
+     
+     process_script "echo ${a_reservation} | balloon-openmpi-config | balloon-nfs-config"
+     
+     process_script "echo ${a_reservation} | balloon-instance-extract" && an_instance=`get_result`
+     
+     process_script "echo ${an_instance} | balloon-deploy-credentials | balloon-deploy --production --url='${__BALLOON_DEPLOY_URL__}'"
+     
+     process_script "echo ${a_reservation} | amazon_solver_run.py --case-dir=damBreak --output-suffix=.out1"
+     
+     process_script "amazon_reservation_delete.py ${a_reservation}"
+    
+     unregister_reservation ${a_reservation} ${instance_type} ${a_region} ${an_image_id}
+
+  echo '----------------------------------- OK -----------------------------------------'
+  done
+}
+
+ 
+#-----------------------------------------------------------------------------------------
+run_script test_hook
+
+
+#-----------------------------------------------------------------------------------------
