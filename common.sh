@@ -38,7 +38,9 @@ process_script()
     echo "================================================================================"
     echo "${a_testing_script}" 
     a_testing_script=`echo ${a_testing_script} | sed -e "s%|%2>>${a_log_file_name} |%g"`
-    export __PROCESS_SCRIPT_RESULT__=`bash -c "${a_testing_script} 2>>${a_log_file_name} || echo X"`
+    a_testing_script=`echo ${a_testing_script} | sed -e "s%)% 2>>${a_log_file_name})%g"`
+    a_testing_script="${a_testing_script} 2>>${a_log_file_name} || echo X"
+    export __PROCESS_SCRIPT_RESULT__=`bash -c "${a_testing_script}"`
     if [ "${__PROCESS_SCRIPT_RESULT__}x" == 'Xx' ]; then
 	echo "---------------------------------- ERROR----------------------------------------"
 	cat ${a_log_file_name}
