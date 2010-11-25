@@ -28,6 +28,8 @@ instance_type="m1.large"
 
 __BALLOON_DEPLOY_URL__="http://pypi.python.org/packages/source/b/balloon/balloon-0.05-alfa.tar.gz"
 
+ec2_regions='ap-southeast-1 eu-west-1'
+
 
 #----------------------------------------------------------------------------------------
 unregister_reservation()
@@ -48,7 +50,13 @@ create_reservation()
      an_instance_type=${1}
      a_region=${2}
      an_image_id=${3}
-     process_script "amazon_reservation_run.py --instance-type=${an_instance_type}" && a_reservation=`get_result`
+     
+     an_option=''
+     
+     if [ "x${an_image_id}" != "x" ]; then
+        an_option="${an_option} --image-id=${an_image_id}"
+     fi
+     process_script "amazon_reservation_run.py --instance-type=${an_instance_type} ${an_option}" && a_reservation=`get_result`
      a_file_reservation=${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}
      echo ${a_reservation} >> ${a_file_reservation}
 }
