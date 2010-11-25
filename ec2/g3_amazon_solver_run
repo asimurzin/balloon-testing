@@ -31,13 +31,15 @@ test_hook()
   echo $0
 
   prepare_reservation ${instance_type} && a_reservation=`get_result`
-  process_script "echo ${a_reservation} | balloon-openmpi-config | balloon-nfs-config"
+  process_script "echo '${a_reservation}' | balloon-openmpi-config | balloon-nfs-config"
 
-  process_script "echo ${a_reservation} | balloon-instance-extract" && an_instance=`get_result`
+  process_script "echo '${a_reservation}' | balloon-instance-extract" && an_instance=`get_result`
   process_script "echo ${an_instance} | balloon-deploy-credentials | balloon-deploy --production --url='${__BALLOON_DEPLOY_URL__}'"
 
-  process_script "echo ${a_reservation} | amazon_solver_run.py --case-dir=damBreak --output-suffix=.out1"
-
+  # process_script "balloon-study-book | tee >(balloon-results-consume --output-dir='damBreak.out') | balloon-solver-start <(echo '${a_reservation}') --case-dir='damBreak'"
+  # Because of 'tee' utility runs its subprocesses in asynchronic way, to assure the accomplishement of the whole porcess tree, 
+  # 'pipe' notion is used (mkfifo creates a named 'pipe')
+  process_script "mkfifo $$ && balloon-study-book | tee >(balloon-results-consume --output-dir='damBreak.out' >$$) | balloon-solver-start <(echo '${a_reservation}') --case-dir='damBreak' | cat $$ && rm $$"
   echo '----------------------------------- OK -----------------------------------------'
 }
 
