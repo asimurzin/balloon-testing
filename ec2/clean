@@ -29,7 +29,15 @@ a_list_file_reservations=`ls reservations_* 2>log.tmp`
 for a_file_reservation in ${a_list_file_reservations} ; do
     if [ -f  ${a_file_reservation} ]; then
 	a_reservation=`get_reservation ${a_file_reservation} `
+	
 	if [ "x${a_reservation}" != "x" ];then
+	    a_region=`echo ${a_file_reservation} | awk "-F_" '{print $3}'`
+            export __BALLOON_IMAGE_LOCATION__=''
+	    
+	    if [ "x${a_region}" != "x" ]; then
+               export __BALLOON_IMAGE_LOCATION__=${a_region}
+	    fi
+	    
 	    process_script "amazon_reservation_delete.py ${a_reservation}"
 	fi
 	rm  ${a_file_reservation}
