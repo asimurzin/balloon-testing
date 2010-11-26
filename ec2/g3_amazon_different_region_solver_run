@@ -32,15 +32,15 @@ test_hook()
 
   for a_region in ${ec2_regions};do
      echo "Testing ${a_region} "
-    
-     an_image_id=`python -c "from balloon.pickup import TRegionConfigHelper; print TRegionConfigHelper(\"${a_region}\").image_id()"`
-    
-     a_s3location=`python -c "from balloon.pickup import TRegionConfigHelper; print TRegionConfigHelper(\"${a_region}\").s3location()"`
-    
+     
+     a_params=`params_in_region ${a_region}`
+     a_s3location=`echo $a_params | awk "-F:" '{print $1}'`
+     an_image_id=`echo $a_params | awk "-F:" '{print $2}'`
+     
      export __BALLOON_IMAGE_LOCATION__=${a_region}
-    
+     
      export __BALLOON_S3_LOCATION__=${a_s3location}
-
+     
      prepare_reservation ${instance_type} ${a_region} ${an_image_id} && a_reservation=`get_result`
      
      process_script "echo ${a_reservation} | balloon-openmpi-config | balloon-nfs-config"

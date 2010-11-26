@@ -32,6 +32,32 @@ ec2_regions='ap-southeast-1 eu-west-1'
 
 
 #----------------------------------------------------------------------------------------
+params_in_region()
+{
+   a_region=$1
+   
+   case ${a_region} in
+   eu-west-1)
+      echo 'EU':'ami-12ffca66'
+   ;;
+   us-east-1)
+      echo '':'ami-1cdb2c75'
+   ;;
+   us-west-1)
+      echo 'us-west-1':'ami-24500061'
+   ;;
+   ap-southeast-1)
+      echo 'ap-southeast-1':'ami-0c6d135e'
+   ;;
+   *) 
+      echo '':''
+   ;;
+   esac
+}
+
+
+#----------------------------------------------------------------------------------------
+
 unregister_reservation()
 {
   a_reservation=${1}
