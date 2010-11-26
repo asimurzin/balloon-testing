@@ -43,13 +43,13 @@ test_hook()
 
      prepare_reservation ${instance_type} ${a_region} ${an_image_id} && a_reservation=`get_result`
      
-     process_script "echo ${a_reservation} | balloon-openmpi-config | balloon-nfs-config"
+     process_script "echo '${a_reservation}' | ~balloon-openmpi-config | ~balloon-nfs-config"
      
-     process_script "echo ${a_reservation} | balloon-instance-extract" && an_instance=`get_result`
+     process_script "echo '${a_reservation}' | ~balloon-instance-extract" && an_instance=`get_result`
      
-     process_script "echo ${an_instance} | balloon-deploy-credentials | balloon-deploy --production --url='${__BALLOON_DEPLOY_URL__}'"
+     process_script "echo ${an_instance} | ~balloon-deploy-credentials | ~balloon-deploy --production --url='${__BALLOON_DEPLOY_URL__}'"
      
-     process_script "echo ${a_reservation} | amazon_solver_run.py --case-dir=damBreak --output-suffix=.out1"
+     process_script "mkfifo $$ && balloon-study-book | tee >(balloon-solver-process --output-dir='damBreak.out' >$$) | balloon-solver-start <(echo '${a_reservation}') --case-dir='damBreak' | cat $$ && rm $$"
      
      process_script "amazon_reservation_delete.py ${a_reservation}"
     
