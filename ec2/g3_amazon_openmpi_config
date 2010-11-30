@@ -31,7 +31,7 @@ test_hook()
   echo $0
 
   prepare_reservation ${instance_type} && a_reservation=`get_result`
-  process_script "echo ${a_reservation} | ~balloon-openmpi-config"
+  process_script "echo ${a_reservation} | balloon-openmpi-config"
 
   echo '----------------------------------- OK -----------------------------------------'
 }
