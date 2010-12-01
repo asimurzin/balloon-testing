@@ -26,7 +26,7 @@ file_reservations_starts='reservations'
 
 instance_type="m1.large"
 
-__BALLOON_DEPLOY_URL__="http://pypi.python.org/packages/source/b/balloon/balloon-0.04-alfa.tar.gz"
+__BALLOON_DEPLOY_URL__="http://pypi.python.org/packages/source/b/balloon/balloon-0.03-alfa.tar.gz"
 
 ec2_regions='ap-southeast-1 eu-west-1'
 
@@ -88,3 +88,5 @@ prepare_reservation()
   export __PROCESS_SCRIPT_RESULT__=`get_reservation ${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}`
 }
 
+
+#----------------------------------------------------------------------------------------
