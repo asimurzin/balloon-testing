@@ -32,7 +32,7 @@ test_hook()
 
   prepare_reservation ${instance_type} && a_reservation=`get_result`
   process_script "echo ${a_reservation} | balloon-instance-extract" && an_instance=`get_result`
-  process_script "echo ${an_instance} | balloon_ssh.py"
+  process_script "echo ${an_instance} | balloon-ssh"
 
   echo '----------------------------------- OK -----------------------------------------'
 }
