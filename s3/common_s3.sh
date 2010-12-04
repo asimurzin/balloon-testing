@@ -111,7 +111,7 @@ calc_path_to_api()
 {
   an_api_number=$1
   if [ x${an_api_number} != x ]; then
-     echo "../../balloon/r${an_api_number}/"
+     echo "../../cloudflu/r${an_api_number}/"
   else
      echo ''
   fi
@@ -129,7 +129,7 @@ create_study()
 
   a_testing_script="${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files}"
   if [ "${a_path_to_api}x" == "x" ] ; then
-      a_testing_script="balloon-study-book --study-name=${a_study_name} | amazon_upload_start.py ${a_list_files}"
+      a_testing_script="cloudflu-study-book --study-name=${a_study_name} | amazon_upload_start.py ${a_list_files}"
   fi
 
   process_script "${a_testing_script} | ${a_path_to_api}amazon_upload_resume.py" ${an_old_api_number}

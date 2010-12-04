@@ -31,8 +31,8 @@ test_hook()
   echo $0
 
   prepare_reservation ${instance_type} && a_reservation=`get_result`
-  process_script "echo ${a_reservation} | balloon-instance-extract" && an_instance=`get_result`
-  process_script "echo ${an_instance} | balloon-ssh"
+  process_script "echo ${a_reservation} | cloudflu-instance-extract" && an_instance=`get_result`
+  process_script "echo ${an_instance} | cloudflu-ssh"
 
   echo '----------------------------------- OK -----------------------------------------'
 }

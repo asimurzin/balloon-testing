@@ -1,0 +1,233 @@
+#--------------------------------------------------------------------------------------
+README
+#--------------------------------------------------------------------------------------
+
+Copyright 2010 Alexey Petrov
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+See http://sourceforge.net/apps/mediawiki/balloon-foam
+
+
+#--------------------------------------------------------------------------------------
+Introduction
+#--------------------------------------------------------------------------------------
+
+'balloon' is a library that aims to provide unlimited 'cloud computing' commodities
+for CFD engineers that use OpenFOAM in they daily work. For more detail information see
+
+   http://sourceforge.net/apps/mediawiki/balloon-foam
+
+Below the 'balloon' crash course will be presented.
+
+
+#--------------------------------------------------------------------------------------
+'Balloon' Crash Course
+#--------------------------------------------------------------------------------------
+
+To start work with 'balloon' functionality user need to have an AWS Amazon account and 
+be registered for EC2 and S3 services.
+
+The only environment variables user need to setup in his environemnt is AWS security 
+credentails, for example:
+
+    export AWS_ACCESS_KEY_ID=YYVUYVIUBIBI
+    export AWS_SECRET_ACCESS_KEY=BBKBBOUjbkj/BBOUBOBJKBjbjbboubuBUB
+
+Amazon EC2 service allows user to aquire unlimited amount of computing power.
+
+
+#--------------------------------------------------------------------------------------
+I - Acquiring Cluster
+#--------------------------------------------------------------------------------------
+
+'amazon_reservation_run.py' script is responsible for this first and most important step.
+If user already has correct environment, then this script can be run without any parameter,
+just type:
+
+   amazon_reservation_run.py
+
+By default it launches Ubuntu 10.04 64bit machine 
+
+   - Intel(R) Xeon(R) CPU E5410 @ 2.33GHz (8 virtual cores) & 7 GB RAM & 1690 GB HDD
+
+This instance will already have preintalled software and ready to use environment to 
+compile and run OpenFOAM-1.7.1 solvers.
+
+To ask about avaiable options and see corresponding defult values user can type:
+
+   amazon_reservation_run.py --help
+
+For example, user can acquire for more than one instance in the following way:
+
+   amazon_reservation_run.py --min-count=32
+
+Once run the reservation could be easily accessed by the following command:
+
+   amazon_reservation_pickup.py
+
+which pickups the first available reservation. If user wants to be more precise
+he can use of the resrvations printed by following scipt:
+
+   amazon_reservation_list.py 
+
+in the following way:
+
+   amazon_reservation_pickup.py --reservation-id=<user choice>
+
+
+#--------------------------------------------------------------------------------------
+II - Cluster Configuration
+#--------------------------------------------------------------------------------------
+
+To be able to run OpenFOAM solvers on cluster the reserved (on previous step) instances
+need to be finally configured to be able to see and effectively communicate to each other.
+This step could be perfomed in the foillowing way:
+
+   amazon_reservation_run.py | amazon_openmpi_config.py | amazon_nfs_config.py 
+
+or, if user have already run reservation
+
+   amazon_reservation_pickup.py | amazon_openmpi_config.py | amazon_nfs_config.py 
+
+As you can see, the 'balloon' scripts could be easily combined to streamline specific 
+user requests (user need not to remember and pass all the necessary parameters by himself).
+
+
+#--------------------------------------------------------------------------------------
+III - Solver Run
+#--------------------------------------------------------------------------------------
+
+To run a solver (whether one of the standard one or user defined) user need to type 
+the following command pipe-line:
+
+   amazon_reservation_run.py | amazon_openmpi_config.py | amazon_nfs_config.py  | amazon_solver_run.py --case-dir=<user solver case>
+
+or, even shorter, if user have already run and configured the reservation
+
+   amazon_reservation_pickup.py  | amazon_solver_run.py --case-dir=<user solver case>
+
+as result, the solver case will be 
+  
+1. Uploaded to the cloud
+
+2. Automatically decomposed (to use the whole cluster computation power)
+
+3. Run in parallel mode
+
+4. The calculation results will be packed and downloaded back to the user.
+
+The resulting output folder will be named after <user solver case> by adding '.out' suffix.
+Note that user can control the output solver case suffix though the '--output-suffix' option.
+
+Important that user can run as many solver cases on the same cluster as he wants.
+
+
+#--------------------------------------------------------------------------------------
+IV - Standard Case
+#--------------------------------------------------------------------------------------
+
+'balloon' sources contains an example of real OpenFOAM solver case.
+To be able to run a solver case it should satisfy the following minor requirements.
+
+1. Solver case should contain an excutable file named - 'Allrun'. 
+   Which is defined as an entry point for the case specific functionality.
+
+2. Accept one command-line argument and iterpret it as number of cluster nodes:
+
+   a_number_nodes=${1}
+
+2. Include the following standard procedure for generation of 'decomposeParDict':
+
+   a_slots=`python -c "import os; print os.sysconf( 'SC_NPROCESSORS_ONLN' )"`
+   a_number_processors=`python -c "print ${a_number_nodes} * ${a_slots}"`
+   weights=`python -c "print tuple( [ 1 for an_id in range( ${a_number_processors} ) ] )"`
+   processorWeights=`echo ${weights} | sed -e "s%,%%g"`
+
+   cat > ./system/decomposeParDict <<EOF
+   FoamFile
+   {
+      version     2.0;
+      format      ascii;
+      class       dictionary;
+      location    "system";
+      object      decomposeParDict;
+   }
+   numberOfSubdomains ${a_number_processors};
+   method scotch;
+   scotchCoeffs
+   {
+      processorWeights ${processorWeights};
+   }
+   EOF
+
+All other details are left on the user.
+
+
+#--------------------------------------------------------------------------------------
+V - Custom Case
+#--------------------------------------------------------------------------------------
+
+User can run his own solver (written in C++) as well.
+The requrements for this 'user specific solver case' in general are the same as for 'simple' one.
+For this specific case user additionally need.
+
+1. Include his C++ solver defintion into the target case folder.
+
+2. Rredefine special FOAM_USER_APPBIN & FOAM_USER_LIBBIN OpenFOAM environment variables to point out
+   on the case folder:
+
+   export FOAM_USER_APPBIN=${a_cur_dir}
+   export PATH=${FOAM_USER_APPBIN}:${PATH}
+
+   export FOAM_USER_LIBBIN=${a_cur_dir}
+   export LD_LIBRARY_PATH=${FOAM_USER_LIBBIN}:${LD_LIBRARY_PATH}
+
+where ${a_cur_dir} can be defined as:
+   
+   a_cur_dir=${0%/*}
+
+3. Include calling corresponding compilation procedure into the 'Allrun' script.
+
+
+#--------------------------------------------------------------------------------------
+VI - Resources Cleanup
+#--------------------------------------------------------------------------------------
+
+To release all the acquired clusters user can simply execute:
+
+   amazon_reservations_delete.py
+
+To make it more precisely, user can combine the following command pipe-line:
+
+   amazon_reservation_pickup.py --reservation-id=<user choice> | amazon_reservation_delete.py
+
+To release the data stored in the cloud user can run the following command pipe-line:
+
+   amazon_ls.py | xargs amazon_rm_study.py
+
+
+#--------------------------------------------------------------------------------------
+VII - Conclusion
+#--------------------------------------------------------------------------------------
+
+That is in short the all user need to know to access and effectively start to use the 
+unlimeted cloud computing resources. See you at  
+
+   https://sourceforge.net/projects/balloon-foam
+
+Note: use '--debug=true' option to see more detail information about what is going on 
+in the running scripts.
+
+
+#--------------------------------------------------------------------------------------
