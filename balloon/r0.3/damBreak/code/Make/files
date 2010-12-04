@@ -1,3 +1,0 @@
-interFoam.C
-
-SEXE = $(FOAM_USER_APPBIN)/interFoam.balloon
