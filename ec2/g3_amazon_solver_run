@@ -34,7 +34,7 @@ test_hook()
   process_script "echo '${a_reservation}' | balloon-openmpi-config | balloon-nfs-config"
 
   process_script "echo '${a_reservation}' | balloon-instance-extract" && an_instance=`get_result`
-  process_script "echo ${an_instance} | balloon-credentials-deploy | balloon-deploy --production --url='${__BALLOON_DEPLOY_URL__}'"
+  process_script "echo ${an_instance} | balloon-credentials-deploy | balloon-deploy --production --url='${__CLOUDFLU_DEPLOY_URL__}'"
 
   # process_script "balloon-study-book | tee >(balloon-solver-process --output-dir='damBreak.out') | balloon-solver-start <(echo '${a_reservation}') --case-dir='damBreak'"
   # Because of 'tee' utility runs its subprocesses in asynchronic way, to assure the accomplishement of the whole porcess tree, 

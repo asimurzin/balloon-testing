@@ -20,7 +20,7 @@
 
 
 #----------------------------------------------------------------------------------------
-export __BALLOON_DEBUG_ENABLE__="X" # To enable debug mode (undocumented feature, just for testing)
+export __CLOUDFLU_DEBUG_ENABLE__="X" # To enable debug mode (undocumented feature, just for testing)
 
 
 #----------------------------------------------------------------------------------------

@@ -37,9 +37,9 @@ test_hook()
      a_s3location=`echo $a_params | awk "-F:" '{print $1}'`
      an_image_id=`echo $a_params | awk "-F:" '{print $2}'`
      
-     export __BALLOON_IMAGE_LOCATION__=${a_region}
+     export __CLOUDFLU_IMAGE_LOCATION__=${a_region}
      
-     export __BALLOON_S3_LOCATION__=${a_s3location}
+     export __CLOUDFLU_S3_LOCATION__=${a_s3location}
      
      prepare_reservation ${instance_type} ${a_region} ${an_image_id} && a_reservation=`get_result`
      
@@ -47,7 +47,7 @@ test_hook()
      
      process_script "echo '${a_reservation}' | balloon-instance-extract" && an_instance=`get_result`
      
-     process_script "echo ${an_instance} | balloon-credentials-deploy | balloon-deploy --production --url='${__BALLOON_DEPLOY_URL__}'"
+     process_script "echo ${an_instance} | balloon-credentials-deploy | balloon-deploy --production --url='${__CLOUDFLU_DEPLOY_URL__}'"
      
      process_script "mkfifo $$ && balloon-study-book | tee >(balloon-solver-process --output-dir='damBreak.out' >$$) | balloon-solver-start <(echo '${a_reservation}') --case-dir='damBreak' | cat $$ && rm $$"
      

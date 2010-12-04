@@ -32,10 +32,10 @@ for a_file_reservation in ${a_list_file_reservations} ; do
 	
 	if [ "x${a_reservation}" != "x" ];then
 	    a_region=`echo ${a_file_reservation} | awk "-F_" '{print $3}'`
-            export __BALLOON_IMAGE_LOCATION__=''
+            export __CLOUDFLU_IMAGE_LOCATION__=''
 	    
 	    if [ "x${a_region}" != "x" ]; then
-               export __BALLOON_IMAGE_LOCATION__=${a_region}
+               export __CLOUDFLU_IMAGE_LOCATION__=${a_region}
 	    fi
 	    
 	    process_script "amazon_reservation_delete.py ${a_reservation}"

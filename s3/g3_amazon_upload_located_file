@@ -23,7 +23,7 @@
 cd ${0%/*} || exit 1 # run from this directory
 source ./s3.sh
 
-export __BALLOON_ARG_LIST_SEPARATOR__=':' #( only for testing )
+export __CLOUDFLU_ARG_LIST_SEPARATOR__=':' #( only for testing )
 
 #-----------------------------------------------------------------------------------------
 test_hook()
