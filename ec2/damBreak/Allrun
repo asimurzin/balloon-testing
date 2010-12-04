@@ -49,10 +49,10 @@ setDamBreakFine ()
 setDamBreakFine
 
 runApplication blockMesh
-balloon-study-upload ./constant ./log.blockMesh $*
+cloudflu-study-upload ./constant ./log.blockMesh $*
 
 runApplication setFields
-balloon-study-upload ./0 ./log.setFields $*
+cloudflu-study-upload ./0 ./log.setFields $*
 
 
 #--------------------------------------------------------------------------------------
@@ -79,14 +79,14 @@ scotchCoeffs
 EOF
 
 runApplication decomposePar
-balloon-study-upload ./system ./log.decomposePar $*
+cloudflu-study-upload ./system ./log.decomposePar $*
 
 
 #--------------------------------------------------------------------------------------
-balloon-timestamps-upload "mpirun --hostfile ${an_openmpi_hostfile} -x LD_LIBRARY_PATH -x PATH -x WM_PROJECT_DIR -x MPI_BUFFER_SIZE -np ${a_number_processors} ${application} -case . -parallel" \
+cloudflu-timestamps-upload "mpirun --hostfile ${an_openmpi_hostfile} -x LD_LIBRARY_PATH -x PATH -x WM_PROJECT_DIR -x MPI_BUFFER_SIZE -np ${a_number_processors} ${application} -case . -parallel" \
     --solver-log="log.${application}" $*
 
-balloon-study-upload ./log.${application} ./log.reconstructPar $*
+cloudflu-study-upload ./log.${application} ./log.reconstructPar $*
 
 
 #--------------------------------------------------------------------------------------
