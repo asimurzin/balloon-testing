@@ -34,7 +34,7 @@ test_hook()
   an_output_dir=${case_dir}.out
 
   a_study_name=`create_study_name`
-  process_script "cloudflu-study-book --study-name=${a_study_name} | cloudflu-upload-start ${case_dir} | amazon_upload_resume.py"
+  process_script "cloudflu-study-book --study-name=${a_study_name} | cloudflu-upload-start ${case_dir} | cloudflu-upload-resume"
 
   a_results=`amazon_ls.py ${a_study_name} 2>&1`
   count_entrances=`echo ${a_results} | grep -c ${case_dir}`

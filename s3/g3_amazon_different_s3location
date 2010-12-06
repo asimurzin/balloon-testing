@@ -38,7 +38,7 @@ create_study_in_location()
   
   export __CLOUDFLU_S3_LOCATION__=${a_s3location}
 
-  a_testing_script="cloudflu-study-book --study-name=${a_study_name} | cloudflu-upload-start ${a_list_files} | amazon_upload_resume.py"
+  a_testing_script="cloudflu-study-book --study-name=${a_study_name} | cloudflu-upload-start ${a_list_files} | cloudflu-upload-resume"
   process_script "${a_testing_script}" ${a_s3location}
 }
 

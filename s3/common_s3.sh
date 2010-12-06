@@ -132,7 +132,7 @@ create_study()
       a_testing_script="cloudflu-study-book --study-name=${a_study_name} | cloudflu-upload-start ${a_list_files}"
   fi
 
-  process_script "${a_testing_script} | ${a_path_to_api}amazon_upload_resume.py" ${an_old_api_number}
+  process_script "${a_testing_script} | ${a_path_to_api}cloudflu-upload-resume" ${an_old_api_number}
 
   echo ${a_study_name} >> ${file_studies_starts}_${an_old_api_number}
 
