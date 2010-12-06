@@ -127,9 +127,9 @@ create_study()
   a_list_files=`create_list_case_files ${a_list_filenames}`
   a_study_name=`create_study_name`
 
-  a_testing_script="${a_path_to_api}amazon_upload_start.py --study-name=${a_study_name} ${a_list_files}"
+  a_testing_script="${a_path_to_api}cloudflu-upload-start --study-name=${a_study_name} ${a_list_files}"
   if [ "${a_path_to_api}x" == "x" ] ; then
-      a_testing_script="cloudflu-study-book --study-name=${a_study_name} | amazon_upload_start.py ${a_list_files}"
+      a_testing_script="cloudflu-study-book --study-name=${a_study_name} | cloudflu-upload-start ${a_list_files}"
   fi
 
   process_script "${a_testing_script} | ${a_path_to_api}amazon_upload_resume.py" ${an_old_api_number}
