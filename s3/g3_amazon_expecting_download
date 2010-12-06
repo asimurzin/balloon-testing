@@ -35,7 +35,7 @@ test_hook()
   
   prepare_testing_data && a_study_name=`get_result`
   
-  a_testing_script="(cloudflu-study-seal --study-name=${a_study_name} 2>/dev/null &) && amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --wait 2>/dev/null"
+  a_testing_script="(cloudflu-study-seal --study-name=${a_study_name} 2>/dev/null &) && cloudflu-download --study-name=${a_study_name} --output-dir=${an_output_dir} --wait 2>/dev/null"
   process_script "${a_testing_script}"
   
   a_list_filenames=`create_list_filenames_in_casedir`

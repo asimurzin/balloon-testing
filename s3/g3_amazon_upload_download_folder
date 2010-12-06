@@ -43,7 +43,7 @@ test_hook()
       process_error "There is no uploading file '${case_dir}', in the S3"
   fi
 
-  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh"
+  process_script "cloudflu-download --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh"
 
   a_differences=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}/${case_dir}`
   if [ "x${a_differences}" == "x" ]; then

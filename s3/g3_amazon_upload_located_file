@@ -44,7 +44,7 @@ test_hook()
   a_filelocation2="test2" 
   process_script "cloudflu-study-book --study-name=${a_study_name} | cloudflu-upload-start ${a_files} --file-location=${a_filelocation1}:${a_filelocation2} | cloudflu-upload-resume"
 
-  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --located-files=${a_filelocation1}/${a_testing_filename1}:${a_filelocation2}/${a_testing_filename2}"
+  process_script "cloudflu-download --study-name=${a_study_name} --output-dir=${an_output_dir} --located-files=${a_filelocation1}/${a_testing_filename1}:${a_filelocation2}/${a_testing_filename2}"
 
   an_allright="True"
   for a_file in ${a_filelocation1}/${a_testing_filename1} ${a_filelocation2}/${a_testing_filename2}; do

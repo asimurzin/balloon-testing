@@ -36,7 +36,7 @@ test_hook()
   
   an_output_dir=${case_dir}.out
 
-  process_script "amazon_download.py --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh" ${an_old_api_number}
+  process_script "cloudflu-download --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh" ${an_old_api_number}
    
   an_abspath_files=`python -c "import os; print os.path.abspath(\"${case_dir}\")"`
   
