@@ -82,7 +82,7 @@ create_reservation()
      if [ "x${an_image_id}" != "x" ]; then
         an_option="${an_option} --image-id=${an_image_id}"
      fi
-     process_script "amazon_reservation_run.py --instance-type=${an_instance_type} ${an_option}" && a_reservation=`get_result`
+     process_script "cloudflu-reservation-run --instance-type=${an_instance_type} ${an_option}" && a_reservation=`get_result`
      a_file_reservation=${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}
      echo ${a_reservation} >> ${a_file_reservation}
 }
