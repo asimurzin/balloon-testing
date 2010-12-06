@@ -31,7 +31,7 @@ test_hook()
   echo $0
 
   prepare_reservation ${instance_type} && a_reservation=`get_result`
-  process_script "amazon_reservation_delete.py ${a_reservation}"
+  process_script "cloudflu-cluster-rm ${a_reservation}"
   unregister_reservation ${a_reservation} ${an_instance_type}
 
   echo '----------------------------------- OK -----------------------------------------'

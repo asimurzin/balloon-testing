@@ -51,7 +51,7 @@ test_hook()
      
      process_script "mkfifo $$ && cloudflu-study-book | tee >(cloudflu-solver-process --output-dir='damBreak.out' >$$) | cloudflu-solver-start <(echo '${a_reservation}') --case-dir='damBreak' | cat $$ && rm $$"
      
-     process_script "amazon_reservation_delete.py ${a_reservation}"
+     process_script "cloudflu-cluster-rm ${a_reservation}"
     
      unregister_reservation ${a_reservation} ${instance_type} ${a_region} ${an_image_id}
 

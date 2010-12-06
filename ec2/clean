@@ -38,7 +38,7 @@ for a_file_reservation in ${a_list_file_reservations} ; do
                export __CLOUDFLU_IMAGE_LOCATION__=${a_region}
 	    fi
 	    
-	    process_script "amazon_reservation_delete.py ${a_reservation}"
+	    process_script "cloudflu-cluster-rm ${a_reservation}"
 	fi
 	rm  ${a_file_reservation}
     fi
