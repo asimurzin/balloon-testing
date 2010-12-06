@@ -59,7 +59,7 @@ test_hook()
   if [ "${an_allright}" = "False" ]; then
      process_error "There is no '${a_bad_file}' file, in output folder '${a_location_bad_file}'"
   else
-     process_script "amazon_rm_study.py ${a_study_name}"
+     process_script "cloudflu-study-rm ${a_study_name}"
   fi  
 
   echo '----------------------------------- OK -----------------------------------------'

@@ -47,7 +47,7 @@ test_hook()
 
   a_differences=`diff -r -q -i -x "*~" ${case_dir} ${an_output_dir}/${case_dir}`
   if [ "x${a_differences}" == "x" ]; then
-      amazon_rm_study.py ${a_study_name} > /dev/null 2>&1
+      cloudflu-study-rm ${a_study_name} > /dev/null 2>&1
   else
       process_error "There are differences between '${case_dir}' and '${an_output_dir}/${case_dir}':\n${a_differences}"
   fi

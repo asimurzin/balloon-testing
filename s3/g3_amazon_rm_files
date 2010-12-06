@@ -51,7 +51,7 @@ test_hook()
   if [ "${an_allright}" = "False" ]; then
       process_error "The '${a_not_deleted_file}' file have not been removed from the S3"
   else
-      amazon_rm_study.py ${a_study_name} > /dev/null 2>&1
+      cloudflu-study-rm ${a_study_name} > /dev/null 2>&1
       unregister_study ${file_studies_starts}_ ${a_study_name}
   fi
 

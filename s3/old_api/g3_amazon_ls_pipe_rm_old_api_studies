@@ -35,7 +35,7 @@ test_hook()
   prepare_testing_data ${an_old_api_number} && a_study_name1=`get_result`
   prepare_new_testing_data ${an_old_api_number} && a_study_name2=`get_result`
 
-  process_script "cloudflu-ls | grep -e ${a_study_name1} -e ${a_study_name2} | xargs amazon_rm_study.py" ${an_old_api_number}
+  process_script "cloudflu-ls | grep -e ${a_study_name1} -e ${a_study_name2} | xargs cloudflu-study-rm" ${an_old_api_number}
 
   a_results=`cloudflu-ls 2>&1`
   count_entrances=`echo ${a_results} | grep -c -e ${a_study_name1} -e ${a_study_name2}`

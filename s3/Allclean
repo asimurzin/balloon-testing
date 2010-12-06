@@ -25,5 +25,5 @@
 
 #-----------------------------------------------------------------------------------------
 a_begin_study_name=`study_name_starts_with`
-cloudflu-ls 2>log.txt | grep "${a_begin_study_name}" | xargs amazon_rm_study.py 2>>log.txt
+cloudflu-ls 2>log.txt | grep "${a_begin_study_name}" | xargs cloudflu-study-rm 2>>log.txt
 

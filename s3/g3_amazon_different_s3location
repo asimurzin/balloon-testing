@@ -64,7 +64,7 @@ test_hook()
         process_error "There is no downloading file '${a_downloading_file}', in '${an_output_dir}' folder" ${a_s3location}
      fi
   
-     process_script "amazon_rm_study.py ${a_study_name}" ${a_s3location}
+     process_script "cloudflu-study-rm ${a_study_name}" ${a_s3location}
   
      echo '----------------------------------- OK -----------------------------------------'
   done
