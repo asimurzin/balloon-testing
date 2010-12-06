@@ -36,7 +36,7 @@ test_hook()
   a_study_name=`create_study_name`
   process_script "cloudflu-study-book --study-name=${a_study_name} | cloudflu-upload-start ${case_dir} | cloudflu-upload-resume"
 
-  a_results=`amazon_ls.py ${a_study_name} 2>&1`
+  a_results=`cloudflu-ls ${a_study_name} 2>&1`
   count_entrances=`echo ${a_results} | grep -c ${case_dir}`
 
   if [ ${count_entrances} -eq 0 ]; then

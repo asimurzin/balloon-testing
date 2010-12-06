@@ -33,7 +33,7 @@ test_hook()
   a_script_name=`basename $0`
   prepare_testing_data && a_study_name=`get_result`
 
-  process_script "amazon_ls.py" && a_result=`get_result` 
+  process_script "cloudflu-ls" && a_result=`get_result` 
   
   count=`echo ${a_result} | grep -c "${a_study_name}"`
   if [ ${count} -eq 0 ] ; then 

@@ -37,7 +37,7 @@ test_hook()
 
   process_script "amazon_rm.py --study-name=${a_study_name} ${a_list_file_to_rm}" 
 
-  a_results=`amazon_ls.py ${a_study_name} 2>&1`
+  a_results=`cloudflu-ls ${a_study_name} 2>&1`
   an_allright="True"
   for a_file in ${a_list_file_to_rm} ; do
       count_entrances=`echo ${a_results} | grep -c ${a_file}`

@@ -34,7 +34,7 @@ test_hook()
   an_old_api_number=${1}
   prepare_testing_data ${an_old_api_number} && a_study_name=`get_result`
 
-  process_script "amazon_ls.py ${a_study_name}" ${an_old_api_number} && a_result=`get_result`
+  process_script "cloudflu-ls ${a_study_name}" ${an_old_api_number} && a_result=`get_result`
 
   an_allright="True"
   a_list_filenames=`create_list_filenames_in_casedir`

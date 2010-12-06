@@ -50,7 +50,7 @@ test_hook()
       process_error "There is no '${a_bad_file}' file, in output folder '${an_output_dir}'"
   fi
   
-  a_studies=`amazon_ls.py 2>/dev/null`
+  a_studies=`cloudflu-ls 2>/dev/null`
   count_entrances=`echo ${a_studies} | grep -c -e ${a_study_name}`
   
    if [ ${count_entrances} -ne 0 ]; then
