@@ -35,7 +35,7 @@ test_hook()
   a_list_filenames=`create_list_filenames_in_casedir`
   a_list_file_to_rm=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 1 ],' ',_list[ 0 ]" `
 
-  process_script "amazon_rm.py --study-name=${a_study_name} ${a_list_file_to_rm}" 
+  process_script "cloudflu-rm --study-name=${a_study_name} ${a_list_file_to_rm}" 
 
   a_results=`cloudflu-ls ${a_study_name} 2>&1`
   an_allright="True"

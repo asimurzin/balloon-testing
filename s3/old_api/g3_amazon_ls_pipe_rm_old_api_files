@@ -34,7 +34,7 @@ test_hook()
   an_old_api_number=${1}
   prepare_new_testing_data ${an_old_api_number} && a_study_name=`get_result`
 
-  process_script "cloudflu-ls ${a_study_name} | xargs amazon_rm.py --study-name=${a_study_name}" ${an_old_api_number}
+  process_script "cloudflu-ls ${a_study_name} | xargs cloudflu-rm --study-name=${a_study_name}" ${an_old_api_number}
 
   a_results=`cloudflu-ls ${a_study_name} 2>&1`
   an_allright="True"

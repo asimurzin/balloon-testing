@@ -43,7 +43,7 @@ test_hook()
      a_list_file_to_rm=`python -c "temp='${a_list_files}';_list=temp.split(' '); import os; print os.path.abspath(_list[ 1 ] ),' ',os.path.abspath(_list[ 0 ] )" `
   fi
   
-  process_script "amazon_rm.py --study-name=${a_study_name} ${a_list_file_to_rm}" ${an_old_api_number}
+  process_script "cloudflu-rm --study-name=${a_study_name} ${a_list_file_to_rm}" ${an_old_api_number}
 
   a_results=`cloudflu-ls ${a_study_name} 2>&1`
   an_allright="True"
