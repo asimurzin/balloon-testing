@@ -31,7 +31,7 @@ test_hook()
   echo $0
 
   prepare_reservation ${instance_type} > /dev/null
-  process_script "amazon_reservation_list.py"
+  process_script "cloudflu-reservation-ls"
 
   echo '----------------------------------- OK -----------------------------------------'
 }
