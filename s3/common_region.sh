@@ -59,12 +59,12 @@ single_test()
   a_list_filenames=`create_list_filenames_in_casedir`
   a_downloading_file=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
 
-  process_script "cloudflu-download --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh" ${a_s3location}
+  process_script "cloudflu-download --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh"
   if [ ! -e ${an_output_dir}/${a_downloading_file} ]; then
-     process_error "There is no downloading file '${a_downloading_file}', in '${an_output_dir}' folder" ${a_s3location}
+     process_error "There is no downloading file '${a_downloading_file}', in '${an_output_dir}' folder"
   fi
   
-  process_script "cloudflu-study-rm ${a_study_name}" ${a_s3location}
+  process_script "cloudflu-study-rm ${a_study_name}"
   
   echo '----------------------------------- OK -----------------------------------------'
 }
