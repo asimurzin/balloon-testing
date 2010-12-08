@@ -31,28 +31,43 @@ __CLOUDFLU_DEPLOY_URL__="http://pypi.python.org/packages/source/c/cloudflu/cloud
 ec2_regions='ap-southeast-1 eu-west-1'
 
 
+
 #----------------------------------------------------------------------------------------
 params_in_region()
 {
    a_region=$1
-   
+   a_foam_version=$2
    case ${a_region} in
    eu-west-1)
-      echo 'EU':'ami-12ffca66'
+      a_result='EU':'ami-12ffca66'
    ;;
    us-east-1)
-      echo '':'ami-1cdb2c75'
+      a_result=':'
+      case ${a_foam_version} in
+        openfoam171_0-1ubuntu2)
+           a_result+='ami-ecf50385'
+        ;;
+        openfoam171_0-1)
+           a_result+='ami-62fa0c0b'
+        ;;
+        openfoam-dev-1.5)
+           a_result+='ami-98f701f1'
+        ;;
+        *)
+        ;;
+      esac
    ;;
    us-west-1)
-      echo 'us-west-1':'ami-24500061'
+      a_result='us-west-1':'ami-24500061'
    ;;
    ap-southeast-1)
-      echo 'ap-southeast-1':'ami-0c6d135e'
+      a_result='ap-southeast-1':'ami-0c6d135e'
    ;;
    *) 
-      echo '':''
+      a_result='':''
    ;;
    esac
+   echo ${a_result}
 }
 
 
