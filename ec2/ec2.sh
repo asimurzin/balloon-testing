@@ -131,39 +131,5 @@ prepare_reservation()
 
 
 #----------------------------------------------------------------------------------------
-single_test()
-{
-  echo "********************************************************************************"
-  echo $0
 
-  a_region=${1}
-  
-  a_foam_version=${2}
-  
-  echo " \"${a_region}\"  \"${a_foam_version}\""
-  
-  a_params=`params_in_region ${a_region} ${a_foam_version}`
-  a_s3location=`echo $a_params | awk "-F:" '{print $1}'`
-  an_image_id=`echo $a_params | awk "-F:" '{print $2}'`
-     
-  export __CLOUDFLU_IMAGE_LOCATION__=${a_region}
-      
-  export __CLOUDFLU_S3_LOCATION__=${a_s3location}
-     
-  prepare_reservation ${instance_type} ${a_region} ${an_image_id} && a_reservation=`get_result`
-     
-  process_script "echo '${a_reservation}' | cloudflu-openmpi-config | cloudflu-nfs-config"
-     
-  process_script "echo '${a_reservation}' | cloudflu-instance-extract" && an_instance=`get_result`
-     
-  process_script "echo ${an_instance} | cloudflu-credentials-deploy | cloudflu-deploy --production --url='${__CLOUDFLU_DEPLOY_URL__}'"
-     
-  process_script "mkfifo $$ && cloudflu-study-book | tee >(cloudflu-solver-process --output-dir='damBreak.out' >$$) | cloudflu-solver-start <(echo '${a_reservation}') --case-dir='damBreak' | cat $$ && rm $$"
-     
-  process_script "cloudflu-cluster-rm ${a_reservation}"
-    
-  unregister_reservation ${a_reservation} ${instance_type} ${a_region} ${an_image_id}
-
-  echo '----------------------------------- OK -----------------------------------------'
-}
 
