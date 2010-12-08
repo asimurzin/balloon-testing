@@ -25,43 +25,44 @@ source ./ec2.sh
 
 
 #-----------------------------------------------------------------------------------------
-test_hook()
+a_region='us-east-1'
+
+single_test()
 {
   echo "********************************************************************************"
   echo $0
 
-  for a_region in ${ec2_regions};do
-     echo "Testing ${a_region} "
+  a_foam_version=${1}
+  
+  echo " \"${a_region}\"  \"${a_foam_version}\""
+  
+  a_params=`params_in_region ${a_region} ${a_foam_version}`
+  a_s3location=`echo $a_params | awk "-F:" '{print $1}'`
+  an_image_id=`echo $a_params | awk "-F:" '{print $2}'`
      
-     a_params=`params_in_region ${a_region}`
-     a_s3location=`echo $a_params | awk "-F:" '{print $1}'`
-     an_image_id=`echo $a_params | awk "-F:" '{print $2}'`
+  export __CLOUDFLU_IMAGE_LOCATION__=${a_region}
+      
+  export __CLOUDFLU_S3_LOCATION__=${a_s3location}
      
-     export __CLOUDFLU_IMAGE_LOCATION__=${a_region}
+  prepare_reservation ${instance_type} ${a_region} ${an_image_id} && a_reservation=`get_result`
      
-     export __CLOUDFLU_S3_LOCATION__=${a_s3location}
+  process_script "echo '${a_reservation}' | cloudflu-openmpi-config | cloudflu-nfs-config"
      
-     prepare_reservation ${instance_type} ${a_region} ${an_image_id} && a_reservation=`get_result`
+  process_script "echo '${a_reservation}' | cloudflu-instance-extract" && an_instance=`get_result`
      
-     process_script "echo '${a_reservation}' | cloudflu-openmpi-config | cloudflu-nfs-config"
+  process_script "echo ${an_instance} | cloudflu-credentials-deploy | cloudflu-deploy --production --url='${__CLOUDFLU_DEPLOY_URL__}'"
      
-     process_script "echo '${a_reservation}' | cloudflu-instance-extract" && an_instance=`get_result`
+  process_script "mkfifo $$ && cloudflu-study-book | tee >(cloudflu-solver-process --output-dir='damBreak.out' >$$) | cloudflu-solver-start <(echo '${a_reservation}') --case-dir='damBreak' | cat $$ && rm $$"
      
-     process_script "echo ${an_instance} | cloudflu-credentials-deploy | cloudflu-deploy --production --url='${__CLOUDFLU_DEPLOY_URL__}'"
-     
-     process_script "mkfifo $$ && cloudflu-study-book | tee >(cloudflu-solver-process --output-dir='damBreak.out' >$$) | cloudflu-solver-start <(echo '${a_reservation}') --case-dir='damBreak' | cat $$ && rm $$"
-     
-     process_script "cloudflu-cluster-rm ${a_reservation}"
+  process_script "cloudflu-cluster-rm ${a_reservation}"
     
-     unregister_reservation ${a_reservation} ${instance_type} ${a_region} ${an_image_id}
+  unregister_reservation ${a_reservation} ${instance_type} ${a_region} ${an_image_id}
 
   echo '----------------------------------- OK -----------------------------------------'
-  done
 }
 
  
 #-----------------------------------------------------------------------------------------
-run_script test_hook
 
 
 #-----------------------------------------------------------------------------------------
