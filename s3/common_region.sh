@@ -44,7 +44,7 @@ create_study_in_location()
 
 
 #-----------------------------------------------------------------------------------------
-test_hook()
+single_test()
 {
   echo "********************************************************************************"
   echo $0
@@ -52,27 +52,23 @@ test_hook()
   a_script_name=`basename $0`
   an_output_dir=${case_dir}.out
   
-  for a_s3location in ${s3locations}; do
-     echo "Testing ${a_s3location} "
-     create_study_in_location ${a_s3location} && a_study_name=`get_result`
-  
-     a_list_filenames=`create_list_filenames_in_casedir`
-     a_downloading_file=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
+  a_s3location=${1}
+  echo "Testing ${a_s3location} "
+  create_study_in_location ${a_s3location} && a_study_name=`get_result`
+ 
+  a_list_filenames=`create_list_filenames_in_casedir`
+  a_downloading_file=`python -c "temp='${a_list_filenames}';_list=temp.split(' '); print _list[ 2 ]" `
 
-     process_script "cloudflu-download --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh" ${a_s3location}
-     if [ ! -e ${an_output_dir}/${a_downloading_file} ]; then
-        process_error "There is no downloading file '${a_downloading_file}', in '${an_output_dir}' folder" ${a_s3location}
-     fi
+  process_script "cloudflu-download --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh" ${a_s3location}
+  if [ ! -e ${an_output_dir}/${a_downloading_file} ]; then
+     process_error "There is no downloading file '${a_downloading_file}', in '${an_output_dir}' folder" ${a_s3location}
+  fi
   
-     process_script "cloudflu-study-rm ${a_study_name}" ${a_s3location}
+  process_script "cloudflu-study-rm ${a_study_name}" ${a_s3location}
   
-     echo '----------------------------------- OK -----------------------------------------'
-  done
+  echo '----------------------------------- OK -----------------------------------------'
 }
 
 
 #-----------------------------------------------------------------------------------------
-run_script test_hook
 
-
-#-----------------------------------------------------------------------------------------
