@@ -27,7 +27,7 @@ source ${__LEVEL_0__}/common.sh
 
 TEST_CLOUDFLU_CASE_DIR_NAME='case'
 
-TEST_CLOUDFLU_LIST_OLD_API="dummy 0.1 0.2 0.3"
+TEST_CLOUDFLU_LIST_OLD_API="0.5"
 
 TEST_CLOUDFLU_PATH_SCRIPT='s3'
 
@@ -107,18 +107,6 @@ calc_path_to_case_dir()
 
 
 #-----------------------------------------------------------------------------------------
-calc_path_to_api()
-{
-  an_api_number=$1
-  if [ x${an_api_number} != x ]; then
-     echo "../../cloudflu/r${an_api_number}/"
-  else
-     echo ''
-  fi
-}
-
-
-#-----------------------------------------------------------------------------------------
 create_study()
 {
   an_old_api_number=${1}
@@ -144,8 +132,12 @@ create_study()
 prepare_new_testing_data()
 { 
   an_old_api_number=${1}
-
-  create_study ${an_old_api_number} 
+  
+  if [ "x${an_old_api_number}" == "x" ]; then
+     create_study ${an_old_api_number} 
+  else
+     create_old_api_study ${an_old_api_number} 
+  fi
 }
      
 
