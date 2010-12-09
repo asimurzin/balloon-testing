@@ -25,15 +25,15 @@ if [ "${__LEVEL_0__}x" == 'x' ] ; then
 fi
 source ${__LEVEL_0__}/common.sh
 
-a_case_dir_name='case'
+TEST_CLOUDFLU_CASE_DIR_NAME='case'
 
-a_list_old_api="dummy 0.1 0.2 0.3"
+TEST_CLOUDFLU_LIST_OLD_API="dummy 0.1 0.2 0.3"
 
-a_path_script='s3'
+TEST_CLOUDFLU_PATH_SCRIPT='s3'
 
-file_studies_starts=studies
+TEST_CLOUDFLU_FILE_STUDIES_STARTS=studies
 
-s3locations="ap-southeast-1 EU us-west-1"
+TEST_CLOUDFLU_S3LOCATIONS="ap-southeast-1 EU us-west-1"
 
 
 #------------------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ get_study()
 {
   an_old_api_number=${1}
 
-  echo `sed '$!d' ${file_studies_starts}_${an_old_api_number}`
+  echo `sed '$!d' ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_number}`
 }
 
 
@@ -98,10 +98,10 @@ calc_path_to_case_dir()
 {
   a_curdir=`python -c "import os; print os.path.basename( os.path.abspath(os.path.curdir) )"`
   if [ "$a_curdir" == "old_api" ]; then
-     echo "${a_case_dir_name}" 
+     echo "${TEST_CLOUDFLU_CASE_DIR_NAME}" 
   fi
   if [ "$a_curdir" == "s3" ]; then
-     echo "${a_case_dir_name}" 
+     echo "${TEST_CLOUDFLU_CASE_DIR_NAME}" 
   fi
 }
 
@@ -134,7 +134,7 @@ create_study()
 
   process_script "${a_testing_script} | ${a_path_to_api}cloudflu-upload-resume" ${an_old_api_number}
 
-  echo ${a_study_name} >> ${file_studies_starts}_${an_old_api_number}
+  echo ${a_study_name} >> ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_number}
 
   export a_result=${a_study_name}
 }
@@ -154,7 +154,7 @@ prepare_testing_data()
 { 
   an_old_api_number=${1}
 
-  if [ ! -f ${file_studies_starts}_${an_old_api_number} ]; then
+  if [ ! -f ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_number} ]; then
      prepare_new_testing_data ${an_old_api_number}
   else
      a_study_name=`get_study ${an_old_api_number}`

@@ -43,8 +43,8 @@ test_hook()
   if [ ${count_entrances} -ne 0 ]; then
       process_error "There is study named ${a_study_name1} or ${a_study_name2} (may be both) in the S3"
   else
-      unregister_study ${file_studies_starts}_ ${a_study_name1}
-      unregister_study ${file_studies_starts}_ ${a_study_name2}
+      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_ ${a_study_name1}
+      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_ ${a_study_name2}
   fi
 
   echo '----------------------------------- OK -----------------------------------------'
