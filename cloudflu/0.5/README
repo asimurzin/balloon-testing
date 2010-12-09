@@ -1,0 +1,299 @@
+#--------------------------------------------------------------------------------------
+README
+#--------------------------------------------------------------------------------------
+
+Copyright 2010 Alexey Petrov
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+See http://sourceforge.net/apps/mediawiki/cloudflu
+
+
+#--------------------------------------------------------------------------------------
+Introduction
+#--------------------------------------------------------------------------------------
+
+'cloudflu' is a library that aims to provide unlimited 'cloud computing' HPC commodities
+for CFD engineers that use OpenFOAM (R) in they daily work. For more detail information 
+see
+
+   http://sourceforge.net/apps/mediawiki/cloudflu
+
+Below the 'cloudflu' crash course will be presented.
+
+
+#--------------------------------------------------------------------------------------
+'CloudFlu' Crash Course
+#--------------------------------------------------------------------------------------
+
+To start work with 'cloudflu' functionality user need to have an AWS Amazon account and 
+be registered for EC2 and S3 services.
+
+The only environment variables user need to setup in his environemnt is AWS security 
+credentails, for example:
+
+    export AWS_ACCESS_KEY_ID=YYVUYVIUBIBI
+    export AWS_SECRET_ACCESS_KEY=BBKBBOUjbkj/BBOUBOBJKBjbjbboubuBUB
+
+Amazon EC2 service allows user to aquire unlimited amount of computing power.
+
+
+#--------------------------------------------------------------------------------------
+I - Acquiring Cluster
+#--------------------------------------------------------------------------------------
+
+'cloudflu-cluster-start' utility is responsible for the first and most important step - 
+actual starting and configuring of the cluster. To run it just type :
+
+   cloudflu-cluster-start
+
+By default it launches Ubuntu 10.04 64bit based cluster nodes with the following 
+characteristics:
+
+   - Intel(R) Xeon(R) CPU E5410 @ 2.33GHz (8 virtual cores) & 7 GB RAM & 1690 GB HDD
+
+These nodes already have preintalled software and ready to use environment to be able 
+to compile and run OpenFOAM-1.7.0 solvers.
+
+To ask about avaiable options and see corresponding default values you can type :
+
+   cloudflu-cluster-start --help
+
+For example, you can increase the number of cluster nodes in the following way :
+
+   cloudflu-cluster-start --min-count=32
+
+To print a list of identifiers for the run clusters you need to type:
+
+   cloudflu-cluster-ls
+
+To terminate a cluster you need to use its identifier :
+  
+   echo <cluster id> | cloudflu-cluster-rm
+
+Terminate all the clusters :
+
+   cloudflu-cluster-ls | xargs cloudflu-cluster-rm
+
+
+#--------------------------------------------------------------------------------------
+II - Solver Run
+#--------------------------------------------------------------------------------------
+
+To run a solver (whether one of the standard one or user defined) user need to go through
+the following steps:
+
+   1. start a cluster (if you already started a cluster you can use just use by its identifier);
+   
+      a_cluster_id=`cloudflu-cluster-start` && echo ${a_cluster_id}
+
+   2. book a study (a symbolical name for a data channel which will be used to pass output 
+      solver results from the cluster) in the following way, for example :
+
+      a_study_name=`cloudflu-study-book` && echo ${a_study_name}
+
+ATTENTION : the following steps could be run in parallel, to do so you can use separate consoles.
+
+   -  start a solver in the following way, for example :
+
+      echo ${a_study_name} | cloudflu-solver-start --case-dir="~/cloudflu-examples/custom"
+
+   -  start downloading of the output solver results :
+
+      echo ${a_study_name} | cloudflu-solver-process --output-dir='damBreak.out'
+
+If you would prefere a shortcut, here it is :
+   
+   cloudflu-study-book | \
+   tee >(cloudflu-solver-process --output-dir='damBreak.out') | \
+   cloudflu-solver-start <(cloudflu-cluster-start) --case-dir='damBreak'
+
+NOTE : That 'cloudflu' functionality is failure protected. For example, you can easily 
+resume downloading the solver output results even after your internet connection was 
+broken. Just repeate this 'broken' step to be able to continue :
+
+      echo ${a_study_name} | cloudflu-solver-process --output-dir='damBreak.out'
+ 
+
+#--------------------------------------------------------------------------------------
+III - Standard Solvers
+#--------------------------------------------------------------------------------------
+
+To be able to run a solver case it should satisfy the following minor requirements.
+
+   1. Solver case should contain an excutable file named - 'Allrun'. 
+      Which is defined as an entry point for the case specific functionality.
+
+      Note: It is poosible to define you 'entry point', like in the following example :
+
+          cloudflu-solver-start --case-dir='damBreak' --run-hook='my_run'
+
+   2. Accept one command-line argument and iterpret it as number of cluster nodes:
+
+      a_number_nodes=${1}
+
+   3. Include the following standard procedure for generation of 'decomposeParDict':
+
+      a_slots=`python -c "import os; print os.sysconf( 'SC_NPROCESSORS_ONLN' )"`
+      a_number_processors=`python -c "print ${a_number_nodes} * ${a_slots}"`
+      weights=`python -c "print tuple( [ 1 for an_id in range( ${a_number_processors} ) ] )"`
+      processorWeights=`echo ${weights} | sed -e "s%,%%g"`
+   
+      cat > ./system/decomposeParDict <<EOF
+      FoamFile
+      {
+         version     2.0;
+         format      ascii;
+         class       dictionary;
+         location    "system";
+         object      decomposeParDict;
+      }
+      numberOfSubdomains ${a_number_processors};
+      method scotch;
+      scotchCoeffs
+      {
+         processorWeights ${processorWeights};
+      }
+      EOF
+
+All other details are left on the user.
+
+See 'http://cloudflu.svn.sourceforge.net/viewvc/cloudflu/trunk/standard' for more 
+details.
+
+
+#--------------------------------------------------------------------------------------
+IV - User Solvers
+#--------------------------------------------------------------------------------------
+
+User can run your own solveras well. The requrements for this 'user specific solver case',
+in general, are the same as for 'standard' one. For this specific case user additionally
+need :
+
+   1. Include his C++ solver defintion into the target case folder.
+   
+   2. Rredefine special FOAM_USER_APPBIN & FOAM_USER_LIBBIN OpenFOAM environment variables 
+      to point out on the case folder:
+   
+      export FOAM_USER_APPBIN=${a_cur_dir}
+      export PATH=${FOAM_USER_APPBIN}:${PATH}
+   
+      export FOAM_USER_LIBBIN=${a_cur_dir}
+      export LD_LIBRARY_PATH=${FOAM_USER_LIBBIN}:${LD_LIBRARY_PATH}
+   
+   where ${a_cur_dir} can be defined as:
+      
+      a_cur_dir=${0%/*}
+   
+   3. Include calling corresponding compilation procedure into the 'Allrun' script.
+
+All other details are left on the user.
+
+See 'http://cloudflu.svn.sourceforge.net/viewvc/cloudflu/trunk/custome' for more 
+details.
+
+
+#--------------------------------------------------------------------------------------
+IV - Solver Output
+#--------------------------------------------------------------------------------------
+
+'cloudflu' comes with functionality that enables you form solver output from the cluster, 
+namely :
+
+   - 'cloudflu-study-upload' - utility for uploading explict set of data;
+
+   - 'cloudflu-timestamps-upload' - utility for automatic uploading of fresh time results.
+
+Use them to describe what are you really interested to.
+
+See 'http://cloudflu.svn.sourceforge.net/viewvc/cloudflu/trunk/custome' for more 
+details.
+
+
+#--------------------------------------------------------------------------------------
+IV - Results Post-Processing
+#--------------------------------------------------------------------------------------
+
+'cloudflu' allows you not just download the solver output data from cluster, but 
+automatically post-process them as well. 'cloudflu-solver-process' comes with the 
+following additional options :
+
+   --time-hook=<an executable> - defines what functionality need to be run on the
+      downloading of each fresh timestamp. You can use 'cloudflu-foam2vtk' script 
+      to automatically generate corresponding VTK files.
+
+   --before-hook=<an executable> - defines what functionality need to be run before
+      any timestamp will be processed. You can use 'cloudflu-foam2vtk-before' script
+      to tell that a 'mesh' need to be uploaded first, to be able to run 
+      'cloudflu-foam2vtk' script sucessfuly, afterwards.
+
+   --after-hook=<an executable> - defines what functionality need to be run before
+      after the latest calculated timestamp will be received. You can use 
+      'cloudflu-foam2vtk-after' script to launch a ParaView, to check the final 
+      results. 
+
+
+#--------------------------------------------------------------------------------------
+V - Resources Cleanup
+#--------------------------------------------------------------------------------------
+
+'Nothing is perfect under the Sun'. Resources could be aquired and not released
+due to possible network failures. 'cloudflu' comes with corresponding 'cloudflu-clean' 
+utilitiy to ensure, that you are not going to pay for what you are not actually use
+anymore. Use it at the end of your calculation session, as a precaution :
+   
+   cloudflu-clean
+
+
+#--------------------------------------------------------------------------------------
+VI - Preferences
+#--------------------------------------------------------------------------------------
+
+'cloudflu' comes with its preferences system. Use this preferences to adjust 'cloudflu' 
+functionality to your particular needs and 'intertant connection'. Preferences is 
+defined in terms of Python file. You can find it in your home folder under the name :
+   
+   .cloudflurc-<version>.py
+
+One of the most important option is 'upload_seed_size'. It defines the speed in which
+your data will be transfered to / from the cluster. It can not be too high, because 
+of your limited connection speed. Been too small, will eat your precious time. Experiment
+with its value to find more efficient one.
+
+(An automatic utility to mesure the optimal 'upload_seed_size' value will come soon)
+
+
+#--------------------------------------------------------------------------------------
+VII - Conclusion
+#--------------------------------------------------------------------------------------
+
+That is, in short, all you need to know to be able to access and effectively start to use
+the unlimited cloud computing resources. To contact us use 'cloudflu' forum and bug-tracker :
+
+   http://sourceforge.net/projects/cloudflu
+
+Check 'cloudflu' wikki page, where we are going to talk about this functionality in more
+details :
+
+   http://sourceforge.net/apps/mediawiki/cloudflu
+
+We are open for any suggestions and remarks to make you CFD analysis more flexible and exciting.
+
+Use '--help' option to check what options are available to customize the given functionality.
+
+Use '--debug' option to be able to see what is happenening.
+
+Keep in touch and good luck!!!
+
+
+#--------------------------------------------------------------------------------------
