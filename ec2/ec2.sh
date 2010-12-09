@@ -26,7 +26,7 @@ file_reservations_starts='reservations'
 
 instance_type="m1.large"
 
-__CLOUDFLU_DEPLOY_URL__="http://pypi.python.org/packages/source/c/cloudflu/cloudflu-0.21-alfa.tar.gz"
+__CLOUDFLU_DEPLOY_URL__="http://pypi.python.org/packages/source/c/cloudflu/cloudflu-0.22-alfa.tar.gz"
 
 ec2_regions='ap-southeast-1 eu-west-1'
 
