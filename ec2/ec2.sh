@@ -22,13 +22,13 @@
 #----------------------------------------------------------------------------------------
 source ../common.sh
 
-file_reservations_starts='reservations'
+TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS='reservations'
 
-instance_type="m1.large"
+TEST_CLOUDFLU_INSTANCE_TYPE="m1.large"
 
 __CLOUDFLU_DEPLOY_URL__="http://pypi.python.org/packages/source/c/cloudflu/cloudflu-0.21-alfa.tar.gz"
 
-ec2_regions='ap-southeast-1 eu-west-1'
+TEST_CLOUDFLU_EC2_REGIONS='ap-southeast-1 eu-west-1'
 
 
 
@@ -80,7 +80,7 @@ unregister_reservation()
   a_region=${3}
   an_image_id=${4}
   
-  a_file_reservations=${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}
+  a_file_reservations=${TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS}_${an_instance_type}_${a_region}_${an_image_id}
   cat ${a_file_reservations} | grep -v -e ${a_reservation} > ${a_file_reservations}
 }
 
@@ -98,7 +98,7 @@ create_reservation()
         an_option="${an_option} --image-id=${an_image_id}"
      fi
      process_script "cloudflu-reservation-run --instance-type=${an_instance_type} ${an_option}" && a_reservation=`get_result`
-     a_file_reservation=${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}
+     a_file_reservation=${TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS}_${an_instance_type}_${a_region}_${an_image_id}
      echo ${a_reservation} >> ${a_file_reservation}
 }
         
@@ -121,12 +121,12 @@ prepare_reservation()
   if [ ! -f reservations_${an_instance_type}_${a_region}_${an_image_id} ]; then
      create_reservation ${an_instance_type} ${a_region} ${an_image_id}
   else
-     a_reservation=`get_reservation ${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}`
+     a_reservation=`get_reservation ${TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS}_${an_instance_type}_${a_region}_${an_image_id}`
      if [ "x${a_reservation}" == "x" ]; then
        create_reservation ${an_instance_type} ${a_region} ${an_image_id}
      fi
   fi
-  export __PROCESS_SCRIPT_RESULT__=`get_reservation ${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}`
+  export __PROCESS_SCRIPT_RESULT__=`get_reservation ${TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS}_${an_instance_type}_${a_region}_${an_image_id}`
 }
 
 

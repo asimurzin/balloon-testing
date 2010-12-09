@@ -39,7 +39,7 @@ single_test()
       
   export __CLOUDFLU_S3_LOCATION__=${a_s3location}
      
-  prepare_reservation ${instance_type} ${a_region} ${an_image_id} && a_reservation=`get_result`
+  prepare_reservation ${TEST_CLOUDFLU_INSTANCE_TYPE} ${a_region} ${an_image_id} && a_reservation=`get_result`
      
   process_script "echo '${a_reservation}' | cloudflu-openmpi-config | cloudflu-nfs-config"
      
@@ -51,7 +51,7 @@ single_test()
      
   process_script "cloudflu-cluster-rm ${a_reservation}"
     
-  unregister_reservation ${a_reservation} ${instance_type} ${a_region} ${an_image_id}
+  unregister_reservation ${a_reservation} ${TEST_CLOUDFLU_INSTANCE_TYPE} ${a_region} ${an_image_id}
 
   echo '----------------------------------- OK -----------------------------------------'
 }

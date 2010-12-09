@@ -30,7 +30,7 @@ test_hook()
   echo "********************************************************************************"
   echo $0
 
-  prepare_reservation ${instance_type} > /dev/null
+  prepare_reservation ${TEST_CLOUDFLU_INSTANCE_TYPE} > /dev/null
   process_script "cloudflu-reservation-ls"
 
   echo '----------------------------------- OK -----------------------------------------'
