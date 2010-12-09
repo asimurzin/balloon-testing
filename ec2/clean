@@ -46,7 +46,7 @@ done
 
 
 #-----------------------------------------------------------------------------------------
-amazon_ls.py | grep tmp- | xargs amazon_rm_study.py
+cloudflu-ls | grep tmp- | xargs cloudflu-study-rm
 
 rm -fr *~ damBreak.out*  log.*
 
