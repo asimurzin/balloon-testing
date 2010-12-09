@@ -29,13 +29,13 @@ source ${__LEVEL_1__}/common_s3.sh
 
 #----------------------------------------------------------------------------------------
 a_curdir_name=`python -c "import os; print os.path.basename( os.path.abspath( os.path.curdir ) )"`
-a_path_script="${a_path_script}/${a_curdir_name}"
+TEST_CLOUDFLU_PATH_SCRIPT="${TEST_CLOUDFLU_PATH_SCRIPT}/${a_curdir_name}"
 
 
 #----------------------------------------------------------------------------------------
 run_old_api_script()
 {
-    for an_api in ${a_list_old_api} ; do
+    for an_api in ${TEST_CLOUDFLU_LIST_OLD_API} ; do
 	a_test_log_name=log.`basename ${0}`_${an_api}
 	if [ -f ./${a_test_log_name} ]; then
 	    a_script_name=${0}; 

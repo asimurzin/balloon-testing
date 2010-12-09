@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#--------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------
 ## Copyright 2010 Alexey Petrov
 ##
 ## Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,30 +29,46 @@ test_hook()
 {
   echo "********************************************************************************"
   echo $0 "'${1}'"
-
+  
   a_script_name=`basename $0`
   an_old_api_number=${1}
-  prepare_testing_data ${an_old_api_number} && a_study_name1=`get_result`
-  prepare_new_testing_data ${an_old_api_number} && a_study_name2=`get_result`
-
-  process_script "cloudflu-ls | grep -e ${a_study_name1} -e ${a_study_name2} | xargs cloudflu-study-rm" ${an_old_api_number}
-
-  a_results=`cloudflu-ls 2>&1`
-  count_entrances=`echo ${a_results} | grep -c -e ${a_study_name1} -e ${a_study_name2}`
-
-  if [ ${count_entrances} -ne 0 ]; then
-      process_error "There are study named ${a_study_name1} or ${a_study_name2} (may be both) in the S3" ${an_old_api_number}
+  prepare_new_testing_data ${an_old_api_number} && a_study_name=`get_result`
+  
+  a_list_filenames=`create_list_filenames_in_casedir`
+  a_list_files=`create_list_case_files ${a_list_filenames}`
+  
+  if [ ${an_old_api_number} \> "0.2" ] && [ ${an_old_api_number} != "dummy" ]; then
+     a_list_file_to_rm=${a_list_filenames}
   else
-      unregister_study ${file_studies_starts}_${an_old_api_number} ${a_study_name1}
-      unregister_study ${file_studies_starts}_${an_old_api_number} ${a_study_name2}
+     a_list_file_to_rm=`python -c "temp='${a_list_files}';_list=temp.split(' '); import os; print os.path.abspath(_list[ 1 ] ),' ',os.path.abspath(_list[ 0 ] )" `
   fi
   
+  process_script "cloudflu-rm --study-name=${a_study_name} ${a_list_file_to_rm}" ${an_old_api_number}
+
+  a_results=`cloudflu-ls ${a_study_name} 2>&1`
+  an_allright="True"
+  for a_file in ${a_list_file_to_rm}; do
+      count_entrances=`echo ${a_results} | grep -c ${a_file}`
+      if [ ${count_entrances} -ne 0 ]; then
+          an_allright="False"
+          a_not_deleted_file=${a_file}
+          break
+      fi
+  done
+
+  if [ "${an_allright}" = "False" ]; then
+      process_error "The '${a_not_deleted_file}' file have not been removed from the S3" ${an_old_api_number}
+  else
+      cloudflu-study-rm ${a_study_name} > /dev/null 2>&1
+      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_number} ${a_study_name}
+  fi
+
   echo '----------------------------------- OK -----------------------------------------'
 }
 
 
 #-----------------------------------------------------------------------------------------
-run_old_api_script test_hook 
+run_old_api_script test_hook
 
 
 #-----------------------------------------------------------------------------------------
