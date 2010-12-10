@@ -56,7 +56,7 @@ test_hook()
    if [ ${count_entrances} -ne 0 ]; then
       process_error "There is study named ${a_study_name} in the S3"
   else
-      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_ ${a_study_name}
+      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS} ${a_study_name}
   fi 
 
   echo '----------------------------------- OK -----------------------------------------'
