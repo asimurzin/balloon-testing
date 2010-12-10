@@ -21,17 +21,17 @@
 
 #-----------------------------------------------------------------------------------------
 cd ${0%/*} || exit 1 # run from this directory
-source ./old_api.sh
+export __LEVEL_0__=../../..
+export __LEVEL_1__=../..
+source ../old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
-a_list_studies=''
-for an_old_api_verion in ${TEST_CLOUDFLU_LIST_OLD_API} ; do
-  if [ -f ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_verion} ] ; then 
-     a_list_studies="`cat ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_verion}` ${a_list_studies}"
-     rm ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_verion}
-  fi
-done
+if [ -f ${TEST_CLOUDFLU_FILE_STUDIES_STARTS} ] ; then 
+     a_list_studies="`cat ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}` ${a_list_studies}"
+     rm ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}
+fi
+
 
 if [ "x${a_list_studies}" != "x" ] ; then
     cloudflu-study-rm ${a_list_studies} # to use muti-threading capabilities
