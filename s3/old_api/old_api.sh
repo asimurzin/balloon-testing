@@ -24,6 +24,7 @@ if [ "${__LEVEL_0__}x" == 'x' ] ; then
     export __LEVEL_0__=../..
     export __LEVEL_1__=..
 fi
+
 source ${__LEVEL_1__}/common_s3.sh
 
 
@@ -37,7 +38,7 @@ calc_path_to_api()
 {
   an_api_number=$1
   if [ x${an_api_number} != x ]; then
-     echo "../../cloudflu/r${an_api_number}/cloudflu/amazon/apps/"
+     echo "../../../cloudflu/r${an_api_number}/cloudflu/amazon/apps/"
   else
      echo ''
   fi
@@ -55,29 +56,14 @@ create_old_api_study()
 
   a_testing_script="${a_path_to_api}study_book.py --study-name=${a_study_name} | ${a_path_to_api}upload_start.py ${a_list_files}"
 
-  process_script "${a_testing_script} | ${a_path_to_api}upload_resume.py" ${an_old_api_number}
+  process_script "${a_testing_script} | ${a_path_to_api}upload_resume.py"
 
-  echo ${a_study_name} >> ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_number}
+  echo ${a_study_name} >> ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}
 
   export a_result=${a_study_name}
 }
 
 
 #----------------------------------------------------------------------------------------
-run_old_api_script()
-{
-    for an_api in ${TEST_CLOUDFLU_LIST_OLD_API} ; do
-	a_test_log_name=log.`basename ${0}`_${an_api}
-	if [ -f ./${a_test_log_name} ]; then
-	    a_script_name=${0}; 
-	    a_user_log_name=`dirname ${0}`/${a_test_log_name}
-	    echo "rm ${a_user_log_name} # before run '${a_script_name}' for '${an_api}' API"
-	    continue
-	else
-	    a_function=${1}; ${a_function} ${an_api}
-	fi
-    done
-}
 
 
-#----------------------------------------------------------------------------------------

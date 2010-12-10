@@ -21,7 +21,14 @@
 
 #-----------------------------------------------------------------------------------------
 cd ${0%/*} || exit 1 # run from this directory
-source ./old_api.sh
+
+if [ "${__LEVEL_0__}x" == 'x' ] ; then
+    export __LEVEL_0__=../../..
+    export __LEVEL_1__=../..
+    export __LEVEL_2__=..
+fi
+
+source ${__LEVEL_2__}/old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
@@ -49,10 +56,10 @@ test_hook()
   done
 
   if [ "${an_allright}" = "False" ]; then
-      process_error "The '${a_not_deleted_file}' file have not been removed from the S3" ${an_old_api_number}
+      process_error "The '${a_not_deleted_file}' file have not been removed from the S3"
   else
       cloudflu-study-rm ${a_study_name} > /dev/null 2>&1
-      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_number} ${a_study_name}
+      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS} ${a_study_name}
   fi
 
   echo '----------------------------------- OK -----------------------------------------'

@@ -21,7 +21,14 @@
 
 #-----------------------------------------------------------------------------------------
 cd ${0%/*} || exit 1 # run from this directory
-source ./old_api.sh
+
+if [ "${__LEVEL_0__}x" == 'x' ] ; then
+    export __LEVEL_0__=../../..
+    export __LEVEL_1__=../..
+    export __LEVEL_2__=..
+fi
+
+source ${__LEVEL_2__}/old_api.sh
 
 
 #-----------------------------------------------------------------------------------------
@@ -43,8 +50,8 @@ test_hook()
   if [ ${count_entrances} -ne 0 ]; then
       process_error "There are study named ${a_study_name1} or ${a_study_name2} (may be both) in the S3" ${an_old_api_number}
   else
-      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_number} ${a_study_name1}
-      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}_${an_old_api_number} ${a_study_name2}
+      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS} ${a_study_name1}
+      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS} ${a_study_name2}
   fi
   
   echo '----------------------------------- OK -----------------------------------------'
