@@ -56,7 +56,7 @@ test_hook()
   if [ "x${a_differences}" != "x" ]; then
       process_error "There are differences between '${case_dir}' and '${a_diffing_dir}':\n${a_differences}" ${an_old_api_number}
   else
-      unregister_study ${TEST_CLOUDFLU_FILE_STUDIES_STARTS} ${a_study_name}
+      process_script "cloudflu-study-rm ${a_study_name}"
       rm -rf ${an_output_dir}
   fi
 
