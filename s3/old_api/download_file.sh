@@ -51,7 +51,7 @@ test_hook()
        a_downloading_file=`python -c "import os; print os.path.abspath(\"${case_dir}/${a_filename}\")"`
    fi
    
-   process_script "cloudflu-download --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh" ${an_old_api_number}
+   process_script "cloudflu-download --study-name=${a_study_name} --located-files=${a_downloading_file} --output-dir=${an_output_dir} --fresh"
    if [ ! -e ${an_output_dir}/${a_downloading_file} ]; then
        process_error "There is no downloading file '${a_downloading_file}', in '${an_output_dir}' folder" ${an_old_api_number}
    fi
