@@ -49,7 +49,7 @@ test_hook()
   
   an_output_dir=${case_dir}.out
 
-  process_script "cloudflu-download --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh" ${an_old_api_number}
+  process_script "cloudflu-download --study-name=${a_study_name} --output-dir=${an_output_dir} --fresh --remove" ${an_old_api_number}
    
   a_diffing_dir=${an_output_dir}
   a_differences=`diff -r -q -i -x "*~" ${case_dir} ${a_diffing_dir}/${TEST_CLOUDFLU_CASE_DIR_NAME}`
