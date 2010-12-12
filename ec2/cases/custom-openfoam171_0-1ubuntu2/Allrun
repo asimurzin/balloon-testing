@@ -83,10 +83,11 @@ cloudflu-study-upload ./system ./log.decomposePar $* &
 
 
 #--------------------------------------------------------------------------------------
-cloudflu-timestamps-upload "mpirun --hostfile ${an_openmpi_hostfile} -x PATH -x LD_LIBRARY_PATH -np ${a_number_processors} ${application} -case . -parallel" \
-    --solver-log="log.${application}" $*
-
-cloudflu-study-upload ./log.${application} ./log.reconstructPar $*
+cloudflu-timestamps-upload \
+  "mpirun --hostfile ${an_openmpi_hostfile} -x PATH -x LD_LIBRARY_PATH -np ${a_number_processors} ${application} -case . -parallel" \
+     --finish-hook="cloudflu-timestamps-hook" \
+     --solver-log="log.solver" \
+     $*
 
 
 #--------------------------------------------------------------------------------------
