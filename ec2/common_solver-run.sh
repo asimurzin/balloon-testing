@@ -38,6 +38,9 @@ single_test()
   export __CLOUDFLU_IMAGE_LOCATION__=${a_region}
       
   export __CLOUDFLU_S3_LOCATION__=${a_s3location}
+  
+  a_case_dir=${TEST_CLOUDFLU_EC2_CASES}/custom-${a_foam_version}
+  an_output_dir=${a_case_dir}.out
      
   prepare_reservation ${TEST_CLOUDFLU_INSTANCE_TYPE} ${a_region} ${an_image_id} && a_reservation=`get_result`
      
@@ -47,11 +50,14 @@ single_test()
      
   process_script "echo ${an_instance} | cloudflu-credentials-deploy | cloudflu-deploy --production --url='${__CLOUDFLU_DEPLOY_URL__}'"
      
-  process_script "mkfifo $$ && cloudflu-study-book | tee >(cloudflu-solver-process --output-dir='damBreak.out' >$$) | cloudflu-solver-start <(echo '${a_reservation}') --case-dir='damBreak' | cat $$ && rm $$"
+  process_script "mkfifo $$ && cloudflu-study-book | tee >(cloudflu-solver-process --output-dir=${an_output_dir} >$$) | cloudflu-solver-start <(echo '${a_reservation}') --case-dir=${a_case_dir} | cat $$ && rm $$"
      
   process_script "cloudflu-cluster-rm ${a_reservation}"
     
   unregister_reservation ${a_reservation} ${TEST_CLOUDFLU_INSTANCE_TYPE} ${a_region} ${an_image_id}
-
+  
+  if [ ! -e ${an_output_dir}/log.interFoam.cloudflu ]; then
+     process_error "There is no solver log 'log.InterFoam.cloudflu' in '${an_output_dir}' folder"
+  fi
   echo '----------------------------------- OK -----------------------------------------'
 }

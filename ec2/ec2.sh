@@ -30,6 +30,8 @@ __CLOUDFLU_DEPLOY_URL__="http://pypi.python.org/packages/source/c/cloudflu/cloud
 
 TEST_CLOUDFLU_EC2_REGIONS='ap-southeast-1 eu-west-1'
 
+TEST_CLOUDFLU_EC2_CASES=cases
+
 
 
 #----------------------------------------------------------------------------------------
