@@ -42,8 +42,8 @@ test_hook()
   a_case_dir=${TEST_CLOUDFLU_EC2_CASES}/damBreak
   an_output_dir=${a_case_dir}.out
   process_script "mkfifo $$ && cloudflu-study-book | tee >(cloudflu-solver-process --output-dir=${an_output_dir} >$$) | cloudflu-solver-start <(echo '${a_reservation}') --case-dir=${a_case_dir} | cat $$ && rm $$"
-  
-  if [ ! -e ${an_output_dir}/log.interFoam.cloudflu ]; then
+ 
+  if [ ! -e ${an_output_dir}/log.solver ]; then
      process_error "There is no solver log 'log.InterFoam.cloudflu' in '${an_output_dir}' folder"
   fi
   echo '----------------------------------- OK -----------------------------------------'

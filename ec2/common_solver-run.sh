@@ -56,7 +56,7 @@ single_test()
     
   unregister_reservation ${a_reservation} ${TEST_CLOUDFLU_INSTANCE_TYPE} ${a_region} ${an_image_id}
   
-  if [ ! -e ${an_output_dir}/log.interFoam.cloudflu ]; then
+  if [ ! -e ${an_output_dir}/log.solver ]; then
      process_error "There is no solver log 'log.InterFoam.cloudflu' in '${an_output_dir}' folder"
   fi
   echo '----------------------------------- OK -----------------------------------------'
