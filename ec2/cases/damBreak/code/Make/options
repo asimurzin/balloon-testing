@@ -7,9 +7,11 @@ EXE_INC = \
 
 EXE_LIBS = \
     -L$(FOAM_LIBBIN) \
-    -linterfaceProperties \
+    -ltwoPhaseInterfaceProperties \
     -lincompressibleTransportModels \
+    -lincompressibleTurbulenceModel \
     -lincompressibleRASModels \
     -lincompressibleLESModels \
     -lfiniteVolume \
     -lOpenFOAM
+

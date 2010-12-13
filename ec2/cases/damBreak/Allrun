@@ -42,17 +42,17 @@ setDamBreakFine ()
     mv temp.$$ ${blockMeshDict}
     sed \
     -e s/"\(deltaT[ \t]*\) 0.001;"/"\1 5e-04;"/g \
-    -e s/"\(endTime[ \t]*\) 0.9;"/"\1 0.4;"/g \
+    -e s/"\(endTime[ \t]*\) 0.9;"/"\1 0.9;"/g \
     ${controlDict} > temp.$$
     mv temp.$$ ${controlDict}
 }
 setDamBreakFine
 
 runApplication blockMesh
-cloudflu-study-upload ./constant ./log.blockMesh $*
+cloudflu-study-upload ./constant ./log.blockMesh $* &
 
 runApplication setFields
-cloudflu-study-upload ./0 ./log.setFields $*
+cloudflu-study-upload ./0 ./log.setFields $* &
 
 
 #--------------------------------------------------------------------------------------
@@ -79,14 +79,15 @@ scotchCoeffs
 EOF
 
 runApplication decomposePar
-cloudflu-study-upload ./system ./log.decomposePar $*
+cloudflu-study-upload ./system ./log.decomposePar $* &
 
 
 #--------------------------------------------------------------------------------------
-cloudflu-timestamps-upload "mpirun --hostfile ${an_openmpi_hostfile} -x LD_LIBRARY_PATH -x PATH -x WM_PROJECT_DIR -x MPI_BUFFER_SIZE -np ${a_number_processors} ${application} -case . -parallel" \
-    --solver-log="log.${application}" $*
-
-cloudflu-study-upload ./log.${application} ./log.reconstructPar $*
+cloudflu-timestamps-upload \
+  "mpirun --hostfile ${an_openmpi_hostfile} -x PATH -x LD_LIBRARY_PATH -np ${a_number_processors} ${application} -case . -parallel" \
+     --finish-hook="cloudflu-timestamps-hook" \
+     --solver-log="log.solver" \
+     $*
 
 
 #--------------------------------------------------------------------------------------
