@@ -30,7 +30,9 @@ test_hook()
   echo "********************************************************************************"
   echo $0
 
-  prepare_reservation ${TEST_CLOUDFLU_INSTANCE_TYPE} && a_reservation=`get_result`
+  a_region='us-east-1'
+  an_image_id='ami-ecf50385'
+  prepare_reservation ${TEST_CLOUDFLU_INSTANCE_TYPE} ${a_region} ${an_image_id} && a_reservation=`get_result`
   process_script "echo '${a_reservation}' | cloudflu-openmpi-config | cloudflu-nfs-config"
 
   process_script "echo '${a_reservation}' | cloudflu-instance-extract" && an_instance=`get_result`
