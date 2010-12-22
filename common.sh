@@ -31,9 +31,6 @@ process_script()
     a_testing_script=${1}
 
     a_log_file_name="./log.${a_script_name}"
-    if [ $# -ge 2 ] ; then 
-	a_log_file_name="${a_log_file_name}_${2}"
-    fi
 
     echo "================================================================================"
     echo "${a_testing_script}" 
@@ -67,9 +64,6 @@ process_error()
     an_error_message=${1}
 
     a_log_file_name="./log.${a_script_name}"
-    if [ $# -ge 2 ] ; then 
-	a_log_file_name="${a_log_file_name}_${2}"
-    fi
 
     echo "---------------------------------- ERROR----------------------------------------"
     cat ${a_log_file_name}
@@ -85,14 +79,14 @@ process_error()
 run_script()
 {
     a_test_log_name=log.`basename ${0}`
-    a_test_log_names=`ls | grep ${a_test_log_name}`
-    if [ "${a_test_log_names}x" != "x" ]; then
+
+    if [ -f ${a_test_log_name} ]; then
 	a_script_name=${0}; 
 	a_user_log_name=`dirname ${0}`/${a_test_log_name}
-	echo "rm ${a_user_log_name}* # before run '${a_script_name}'"
+	echo "rm ${a_user_log_name} # before run '${a_script_name}'"
 	exit 0
     else
-	a_function=${1}; ${a_function}
+	a_function=$*; ${a_function}
     fi
 }
 

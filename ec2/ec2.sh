@@ -22,37 +22,53 @@
 #----------------------------------------------------------------------------------------
 source ../common.sh
 
-file_reservations_starts='reservations'
+TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS='reservations'
 
-instance_type="m1.large"
+TEST_CLOUDFLU_INSTANCE_TYPE="m1.large"
 
 __CLOUDFLU_DEPLOY_URL__="http://pypi.python.org/packages/source/c/cloudflu/cloudflu-0.22-alfa.tar.gz"
 
-ec2_regions='ap-southeast-1 eu-west-1'
+TEST_CLOUDFLU_EC2_REGIONS='ap-southeast-1 eu-west-1'
+
+TEST_CLOUDFLU_EC2_CASES=cases
 
 
 #----------------------------------------------------------------------------------------
 params_in_region()
 {
    a_region=$1
-   
+   a_foam_version=$2
    case ${a_region} in
    eu-west-1)
-      echo 'EU':'ami-12ffca66'
+      a_result='EU':'ami-12ffca66'
    ;;
    us-east-1)
-      echo '':'ami-1cdb2c75'
+      a_result=':'
+      case ${a_foam_version} in
+        openfoam171_0-1ubuntu2)
+           a_result+='ami-ecf50385'
+        ;;
+        openfoam171_0-1)
+           a_result+='ami-62fa0c0b'
+        ;;
+        openfoam-dev-1.5)
+           a_result+='ami-98f701f1'
+        ;;
+        *)
+        ;;
+      esac
    ;;
    us-west-1)
-      echo 'us-west-1':'ami-24500061'
+      a_result='us-west-1':'ami-24500061'
    ;;
    ap-southeast-1)
-      echo 'ap-southeast-1':'ami-0c6d135e'
+      a_result='ap-southeast-1':'ami-0c6d135e'
    ;;
    *) 
-      echo '':''
+      a_result='':''
    ;;
    esac
+   echo ${a_result}
 }
 
 
@@ -65,7 +81,7 @@ unregister_reservation()
   a_region=${3}
   an_image_id=${4}
   
-  a_file_reservations=${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}
+  a_file_reservations=${TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS}_${an_instance_type}_${a_region}_${an_image_id}
   cat ${a_file_reservations} | grep -v -e ${a_reservation} > ${a_file_reservations}
 }
 
@@ -83,7 +99,7 @@ create_reservation()
         an_option="${an_option} --image-id=${an_image_id}"
      fi
      process_script "cloudflu-reservation-run --instance-type=${an_instance_type} ${an_option}" && a_reservation=`get_result`
-     a_file_reservation=${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}
+     a_file_reservation=${TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS}_${an_instance_type}_${a_region}_${an_image_id}
      echo ${a_reservation} >> ${a_file_reservation}
 }
         
@@ -106,13 +122,15 @@ prepare_reservation()
   if [ ! -f reservations_${an_instance_type}_${a_region}_${an_image_id} ]; then
      create_reservation ${an_instance_type} ${a_region} ${an_image_id}
   else
-     a_reservation=`get_reservation ${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}`
+     a_reservation=`get_reservation ${TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS}_${an_instance_type}_${a_region}_${an_image_id}`
      if [ "x${a_reservation}" == "x" ]; then
        create_reservation ${an_instance_type} ${a_region} ${an_image_id}
      fi
   fi
-  export __PROCESS_SCRIPT_RESULT__=`get_reservation ${file_reservations_starts}_${an_instance_type}_${a_region}_${an_image_id}`
+  export __PROCESS_SCRIPT_RESULT__=`get_reservation ${TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS}_${an_instance_type}_${a_region}_${an_image_id}`
 }
 
 
 #----------------------------------------------------------------------------------------
+
+

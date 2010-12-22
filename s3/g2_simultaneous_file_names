@@ -1,0 +1,78 @@
+#!/bin/bash
+
+#----------------------------------------------------------------------------------------
+## Copyright 2010 Alexey Petrov
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+## Author : Andrey Simurzin
+##
+
+
+#-----------------------------------------------------------------------------------------
+cd ${0%/*} || exit 1 # run from this directory
+source ./s3.sh
+
+
+#-----------------------------------------------------------------------------------------
+prepare_testing_data()
+{
+  a_study_name=`create_study_name`
+  
+  a_filename1='test'
+  a_filename2='test1'
+  dd if=/dev/zero of=${a_filename1} bs=10 count=1 > /dev/null 2>&1
+  dd if=/dev/zero of=${a_filename2} bs=10 count=1 > /dev/null 2>&1
+  
+  a_script="cloudflu-study-book --study-name=${a_study_name} | cloudflu-upload-start ${a_filename1} ${a_filename2}"
+  
+  process_script "${a_script} | cloudflu-upload-resume"
+  
+  export a_result=${a_study_name}
+  export a_deleting_file=${a_filename1}
+  export a_not_deleted_file=${a_filename2}
+}
+
+
+#-----------------------------------------------------------------------------------------
+test_hook()
+{
+  echo "********************************************************************************"
+  echo $0
+
+  a_script_name=`basename $0`
+  prepare_testing_data && a_study_name=`get_result`
+  
+  #cleaning log of this script, to analize it further
+  rm log.${a_script_name}
+  
+  process_script "cloudflu-rm --study-name=${a_study_name} ${a_deleting_file}" 
+  
+  count_entrances=`echo ${a_not_deleted_file} | grep -c log.${a_script_name}`
+  
+  if [ ${count_entrances} -ne 0 ]; then
+      process_error "The is '${a_not_deleted_file}' in the log of the remove ${a_deleting_file}"
+  else
+      cloudflu-study-rm ${a_study_name} > /dev/null 2>&1
+  fi
+  
+  rm -f ${a_deleting_file} ${a_not_deleted_file}
+  echo '----------------------------------- OK -----------------------------------------'
+}
+
+
+#-----------------------------------------------------------------------------------------
+run_script test_hook
+
+
+#-----------------------------------------------------------------------------------------

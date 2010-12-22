@@ -26,12 +26,12 @@ source s3.sh
 
 #-----------------------------------------------------------------------------------------
 an_old_api_verion=''
-if [ -f ${file_studies_starts}_${an_old_api_verion} ] ; then 
-   a_list_studies=`cat ${file_studies_starts}_${an_old_api_verion}`
+if [ -f ${TEST_CLOUDFLU_FILE_STUDIES_STARTS} ] ; then 
+   a_list_studies=`cat ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}`
    if [ "x${a_list_studies}" != "x" ] ; then
       cloudflu-study-rm ${a_list_studies}
    fi
-   rm ${file_studies_starts}_${an_old_api_verion}
+   rm ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}
 fi
 
 rm -rf ${case_dir}.out *~ log.*
