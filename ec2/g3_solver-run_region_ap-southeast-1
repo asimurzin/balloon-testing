@@ -20,11 +20,9 @@
 
 
 #-----------------------------------------------------------------------------------------
-source ./ec2.sh
-source ./common_solver-run.sh
+cd ${0%/*} || exit 1 # run from this directory
+source ./common_solver-run_region.sh
 
 
 #-----------------------------------------------------------------------------------------
-TEST_CLOUDFLU_EC2_REGION='us-east-1'
-
-
+run_script single_test "ap-southeast-1" ${TEST_CLOUDFLU_FOAM_VERSION}
