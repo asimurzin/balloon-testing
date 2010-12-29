@@ -51,6 +51,9 @@ params_in_region()
         openfoam-dev-1.5)
            a_result+='ami-4d9ca939'
         ;;
+        openfoam-1.6-ext)
+           a_result+=' ami-f998ad8d'
+        ;;
         *)
         ;;
       esac
@@ -66,6 +69,9 @@ params_in_region()
         ;;
         openfoam-dev-1.5)
            a_result+='ami-98f701f1'
+        ;;
+        openfoam-1.6-ext)
+           a_result+='ami-b2fd0cdb'
         ;;
         *)
         ;;
@@ -83,6 +89,9 @@ params_in_region()
         openfoam-dev-1.5)
            a_result+='ami-a97e2eec'
         ;;
+        openfoam-1.6-ext)
+           a_result+='ami-5f60301a'
+        ;;
         *)
         ;;
       esac
@@ -98,6 +107,9 @@ params_in_region()
         ;;
         openfoam-dev-1.5)
            a_result+='ami-2c423c7e'
+        ;;
+        openfoam-1.6-ext)
+           a_result+='ami-3a433d68'
         ;;
         *)
         ;;
