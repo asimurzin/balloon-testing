@@ -40,7 +40,20 @@ params_in_region()
    a_foam_version=$2
    case ${a_region} in
    eu-west-1)
-      a_result='EU':'ami-12ffca66'
+      a_result='EU:'
+      case ${a_foam_version} in
+        openfoam171_0-1ubuntu2)
+           a_result+='ami-519ca925'
+        ;;
+        openfoam171_0-1)
+           a_result+='ami-8d9da8f9'
+        ;;
+        openfoam-dev-1.5)
+           a_result+='ami-4d9ca939'
+        ;;
+        *)
+        ;;
+      esac
    ;;
    us-east-1)
       a_result=':'
@@ -59,10 +72,37 @@ params_in_region()
       esac
    ;;
    us-west-1)
-      a_result='us-west-1':'ami-24500061'
+      a_result='us-west-1:'
+      case ${a_foam_version} in
+        openfoam171_0-1ubuntu2)
+           a_result+='ami-bb7e2efe'
+        ;;
+        openfoam171_0-1)
+           a_result+='ami-8d7e2ec8'
+        ;;
+        openfoam-dev-1.5)
+           a_result+='ami-a97e2eec'
+        ;;
+        *)
+        ;;
+      esac
    ;;
    ap-southeast-1)
-      a_result='ap-southeast-1':'ami-0c6d135e'
+      a_result='ap-southeast-1:'
+      case ${a_foam_version} in
+        openfoam171_0-1ubuntu2)
+           a_result+='ami-d2423c80'
+        ;;
+        openfoam171_0-1)
+           a_result+='ami-28423c7a'
+        ;;
+        openfoam-dev-1.5)
+           a_result+='ami-2c423c7e'
+        ;;
+        *)
+        ;;
+      esac
+
    ;;
    *) 
       a_result='':''
