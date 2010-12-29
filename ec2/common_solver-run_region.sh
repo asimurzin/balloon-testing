@@ -20,7 +20,6 @@
 
 
 #-----------------------------------------------------------------------------------------
-cd ${0%/*} || exit 1 # run from this directory
 source ./ec2.sh
 source ./common_solver-run.sh
 
