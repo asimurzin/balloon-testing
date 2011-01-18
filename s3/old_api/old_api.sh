@@ -38,7 +38,7 @@ calc_path_to_api()
 {
   an_api_number=$1
   if [ x${an_api_number} != x ]; then
-     echo "../../../cloudflu/r${an_api_number}/cloudflu/amazon/apps/"
+     echo "${PATH_TO_CLOUDFLU}/cloudflu/amazon/apps/"
   else
      echo ''
   fi

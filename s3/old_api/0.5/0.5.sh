@@ -22,4 +22,8 @@
 #-----------------------------------------------------------------------------------------
 TEST_CLOUDFLU_API_VESRSION='0.5'
 
+cloudflu_path="../../../cloudflu/r${TEST_CLOUDFLU_API_VESRSION}/"
+absolute_cloudflu_path=`python -c "import os; print os.path.abspath( \"$cloudflu_path\" )"`
+export PATH_TO_CLOUDFLU=$absolute_cloudflu_path
+
 
