@@ -28,13 +28,9 @@ This script is responsible for efficient uploading of multi file data
 
 
 #------------------------------------------------------------------------------------------
-import os, sys
-sys.path.insert( 0, os.getenv( 'PATH_TO_CLOUDFLU' ) )
-
 import cloudflu.common as common
 from cloudflu.common import print_d, print_i, print_e, sh_command
 from cloudflu.common import Timer, WorkerPool, compute_md5
-# print_i( "%s" %sys.path )
 
 import cloudflu.amazon as amazon
 from cloudflu.amazon.s3 import generate_uploading_dir
