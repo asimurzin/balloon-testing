@@ -37,13 +37,12 @@ test_hook()
 
   a_script_name=`basename $0`
   an_old_api_number=${1}
-  a_path_to_api=`calc_path_to_api $an_old_api_number`
-  
+
   a_study_name=`create_study_name`
 
-  a_testing_script="${a_path_to_api}study_book.py --study-name=${a_study_name} | ${a_path_to_api}upload_start.py ${case_dir}"
+  a_testing_script="${CLOUDFLUPATH}/cloudflu-study-book --study-name=${a_study_name} | ${CLOUDFLUPATH}/cloudflu-upload-start ${case_dir}"
 
-  process_script "${a_testing_script} | ${a_path_to_api}upload_resume.py"
+  process_script "${a_testing_script} | ${CLOUDFLUPATH}/cloudflu-upload-resume"
   
   an_output_dir=${case_dir}.out
 

@@ -34,29 +34,16 @@ TEST_CLOUDFLU_PATH_SCRIPT="${TEST_CLOUDFLU_PATH_SCRIPT}/${a_curdir_name}"
 
 
 #----------------------------------------------------------------------------------------
-calc_path_to_api()
-{
-  an_api_number=$1
-  if [ x${an_api_number} != x ]; then
-     echo "${PATH_TO_CLOUDFLU}/cloudflu/amazon/apps/"
-  else
-     echo ''
-  fi
-}
-
-
-#----------------------------------------------------------------------------------------
 create_old_api_study()
 {
   an_old_api_number=${1}
-  a_path_to_api=`calc_path_to_api $an_old_api_number`
   a_list_filenames=`create_list_filenames_in_casedir`
   a_list_files=`create_list_case_files ${a_list_filenames}`
   a_study_name=`create_study_name`
 
-  a_testing_script="${a_path_to_api}study_book.py --study-name=${a_study_name} | ${a_path_to_api}upload_start.py ${a_list_files}"
+  a_testing_script="${CLOUDFLUPATH}/cloudflu-study-book --study-name=${a_study_name} | ${CLOUDFLUPATH}/cloudflu-upload-start ${a_list_files}"
 
-  process_script "${a_testing_script} | ${a_path_to_api}upload_resume.py"
+  process_script "${a_testing_script} | ${CLOUDFLUPATH}/cloudflu-upload-resume"
 
   echo ${a_study_name} >> ${TEST_CLOUDFLU_FILE_STUDIES_STARTS}
 
