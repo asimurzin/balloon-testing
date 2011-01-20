@@ -26,7 +26,7 @@ TEST_CLOUDFLU_FILE_RESERVATIONS_STARTS='reservations'
 
 TEST_CLOUDFLU_INSTANCE_TYPE="m1.large"
 
-__CLOUDFLU_DEPLOY_URL__="http://pypi.python.org/packages/source/c/cloudflu/cloudflu-0.24-alfa.tar.gz"
+__CLOUDFLU_DEPLOY_URL__="http://pypi.python.org/packages/source/c/cloudflu/cloudflu-0.25-alfa.tar.gz"
 
 TEST_CLOUDFLU_EC2_REGIONS='ap-southeast-1 eu-west-1'
 
