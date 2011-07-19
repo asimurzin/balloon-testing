@@ -84,7 +84,7 @@ cloudflu-study-upload ./system ./log.decomposePar $* &
 
 #--------------------------------------------------------------------------------------
 cloudflu-timestamps-upload \
-  "mpirun --hostfile ${an_openmpi_hostfile} -x PATH -x LD_LIBRARY_PATH -np ${a_number_processors} ${application} -case . -parallel" \
+  "mpirun --hostfile ${an_openmpi_hostfile} -x PATH -x LD_LIBRARY_PATH -np ${a_number_processors} ./launcher.sh ${application} -case . -parallel" \
      --finish-hook="cloudflu-timestamps-hook" \
      --solver-log="log.solver" \
      $*
