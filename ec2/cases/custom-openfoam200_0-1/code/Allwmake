@@ -6,12 +6,17 @@ set -x
 
 
 #--------------------------------------------------------------------------------------
-echo `wmake exe` > ./wmake.log
+wmake exe 1>./cout.wmake 2>./cerr.wmake || errorcode=$?
 
-if [ $? != 0 ] ; then
-    exit 1
+cat cout.wmake > ./log.wmake
+cat cerr.wmake >> ./log.wmake
+
+if [ ${errorcode} != 0 ] ; then
+    echo "ERROR"
+    exit ${errorcode}
 fi
  
+
 # To extract the target application name
 application=`cat ./Make/files | grep SEXE | sed -e"s%\([^/]*\)/\(.*\)%\2%g"`
 

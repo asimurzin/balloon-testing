@@ -22,8 +22,8 @@ export LD_LIBRARY_PATH=${FOAM_USER_LIBBIN}:${LD_LIBRARY_PATH}
 
 export application=`./code/Allwmake`
 
-if [ $? != 0 ] ; then
-    exit 1
+if [ ${application} == "ERROR" ] ; then
+    exit -1
 fi
 
 
