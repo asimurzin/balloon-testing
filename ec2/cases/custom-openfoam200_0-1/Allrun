@@ -83,8 +83,15 @@ cloudflu-study-upload ./system ./log.decomposePar $* &
 
 
 #--------------------------------------------------------------------------------------
+# To prepare a specific launcher for this application
+cat ./launcher.sh >> ./launcher
+echo ${a_cur_dir}/${application} -case . -parallel >> ./launcher
+chmod 755 ./launcher
+
+
+#--------------------------------------------------------------------------------------
 cloudflu-timestamps-upload \
-  "mpirun --hostfile ${an_openmpi_hostfile} -x PATH -x LD_LIBRARY_PATH -np ${a_number_processors} ./launcher.sh ${application} -case . -parallel" \
+  "mpirun --hostfile ${an_openmpi_hostfile} -x PATH -x LD_LIBRARY_PATH -np ${a_number_processors} ./launcher" \
      --finish-hook="cloudflu-timestamps-hook" \
      --solver-log="log.solver" \
      $*

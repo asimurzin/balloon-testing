@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-source /opt/openfoam200/etc/bashrc && $*
+# To adjust environment first
+source /opt/openfoam200/etc/bashrc
+
+# To run the application ...
