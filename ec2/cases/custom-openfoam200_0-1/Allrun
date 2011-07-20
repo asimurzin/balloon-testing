@@ -15,10 +15,7 @@ an_openmpi_hostfile=${1}; shift
 a_cur_dir=`pwd`
 
 export FOAM_USER_APPBIN=${a_cur_dir}
-export PATH=${FOAM_USER_APPBIN}:${PATH}
-
 export FOAM_USER_LIBBIN=${a_cur_dir}
-export LD_LIBRARY_PATH=${FOAM_USER_LIBBIN}:${LD_LIBRARY_PATH}
 
 export application=`./code/Allwmake`
 
@@ -49,10 +46,10 @@ setDamBreakFine ()
 setDamBreakFine
 
 runApplication blockMesh
-cloudflu-study-upload ./constant ./log.blockMesh $* &
+cloudflu-study-upload ./constant ./log.blockMesh $*
 
 runApplication setFields
-cloudflu-study-upload ./0 ./log.setFields $* &
+cloudflu-study-upload ./0 ./log.setFields $*
 
 
 #--------------------------------------------------------------------------------------
@@ -79,19 +76,22 @@ scotchCoeffs
 EOF
 
 runApplication decomposePar
-cloudflu-study-upload ./system ./log.decomposePar $* &
+cloudflu-study-upload ./system ./log.decomposePar $*
 
 
 #--------------------------------------------------------------------------------------
-# To prepare a specific launcher for this application
-cat ./launcher.sh >> ./launcher
-echo ${a_cur_dir}/${application} -case . -parallel >> ./launcher
-chmod 755 ./launcher
+# To prepare a specific "launcher.sh" for this application
+echo \#!/usr/bin/env bash > ${a_cur_dir}/launcher.sh
+echo source /opt/openfoam200/etc/bashrc >> ${a_cur_dir}/launcher.sh
+# echo export PATH=${FOAM_USER_APPBIN}:\${PATH} >> ${a_cur_dir}/launcher.sh
+# echo export LD_LIBRARY_PATH=${FOAM_USER_LIBBIN}:\${LD_LIBRARY_PATH} >> ${a_cur_dir}/launcher.sh
+echo ${a_cur_dir}/${application} -case . -parallel >> ${a_cur_dir}/launcher.sh
+chmod 755 ${a_cur_dir}/launcher.sh
 
 
 #--------------------------------------------------------------------------------------
 cloudflu-timestamps-upload \
-  "mpirun --hostfile ${an_openmpi_hostfile} -x PATH -x LD_LIBRARY_PATH -np ${a_number_processors} ./launcher" \
+  "mpirun --hostfile ${an_openmpi_hostfile} -np ${a_number_processors} ${a_cur_dir}/launcher.sh" \
      --finish-hook="cloudflu-timestamps-hook" \
      --solver-log="log.solver" \
      $*
