@@ -94,7 +94,7 @@ echo source /etc/profile >> ${a_cur_dir}/launcher.sh
 echo ${application} -case ${a_cur_dir} -parallel >> ${a_cur_dir}/launcher.sh
 chmod 755 ${a_cur_dir}/launcher.sh
 
-cloudflu-study-upload ${a_cur_dir}/launcher.sh &
+cloudflu-study-upload ${a_cur_dir}/launcher.sh $* &
 
 
 #--------------------------------------------------------------------------------------
