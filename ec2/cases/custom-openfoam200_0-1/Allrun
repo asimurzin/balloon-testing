@@ -2,6 +2,7 @@
 
 #--------------------------------------------------------------------------------------
 cd ${0%/*} || exit 1    # run from this directory
+a_cur_dir=`pwd`
 
 source ${WM_PROJECT_DIR}/bin/tools/RunFunctions # source tutorial run functions
 
@@ -11,14 +12,20 @@ an_openmpi_hostfile=${1}; shift
 
 
 #--------------------------------------------------------------------------------------
+# Comment this section if you use referenced OpenFOAM solvers
+# (just name 'application' variable after the solver)
+
+# To compile solver for each of the cluster node independandtly
+# (sometimes there are problems in launching executable compiled 
+# on a master node no the slave nodes)
+for a_host in `cat ${an_openmpi_hostfile} | sed -e "s%slots=.*%%g"` ; do 
+    ssh ${a_host} ". /etc/profile && ${a_cur_dir}/code/Allwclean" ;
+    ssh ${a_host} ". /etc/profile && ${a_cur_dir}/code/Allwmake" ;
+done
+cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/code $* &
+
 # Get application name
-a_cur_dir=`pwd`
-
-export FOAM_USER_APPBIN=${a_cur_dir}
-export FOAM_USER_LIBBIN=${a_cur_dir}
-
-export application=`./code/Allwmake`
-
+export application=`${a_cur_dir}/code/Allwmake`
 if [ ${application} == "ERROR" ] ; then
     exit -1
 fi
@@ -46,10 +53,10 @@ setDamBreakFine ()
 setDamBreakFine
 
 runApplication blockMesh
-cloudflu-study-upload ./constant ./log.blockMesh $*
+cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh $* &
 
 runApplication setFields
-cloudflu-study-upload ./0 ./log.setFields $*
+cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/log.setFields $* &
 
 
 #--------------------------------------------------------------------------------------
@@ -58,7 +65,7 @@ a_number_processors=`python -c "print ${a_number_nodes} * ${a_slots}"`
 weights=`python -c "print tuple( [ 1 for an_id in range( ${a_number_processors} ) ] )"`
 processorWeights=`echo ${weights} | sed -e "s%,%%g"`
 
-cat > ./system/decomposeParDict <<EOF
+cat > ${a_cur_dir}/system/decomposeParDict <<EOF
 FoamFile
 {
     version     2.0;
@@ -76,20 +83,22 @@ scotchCoeffs
 EOF
 
 runApplication decomposePar
-cloudflu-study-upload ./system ./log.decomposePar $*
+cloudflu-study-upload ${a_cur_dir}/system ${a_cur_dir}/log.decomposePar $* &
 
 
 #--------------------------------------------------------------------------------------
 # To prepare a specific "launcher.sh" for this application
+# to secure that it is run in proper environment
 echo \#!/usr/bin/env bash > ${a_cur_dir}/launcher.sh
-echo source /opt/openfoam200/etc/bashrc >> ${a_cur_dir}/launcher.sh
-# echo export PATH=${FOAM_USER_APPBIN}:\${PATH} >> ${a_cur_dir}/launcher.sh
-# echo export LD_LIBRARY_PATH=${FOAM_USER_LIBBIN}:\${LD_LIBRARY_PATH} >> ${a_cur_dir}/launcher.sh
-echo ${a_cur_dir}/${application} -case . -parallel >> ${a_cur_dir}/launcher.sh
+echo source /etc/profile >> ${a_cur_dir}/launcher.sh
+echo ${application} -case ${a_cur_dir} -parallel >> ${a_cur_dir}/launcher.sh
 chmod 755 ${a_cur_dir}/launcher.sh
+
+cloudflu-study-upload ${a_cur_dir}/launcher.sh &
 
 
 #--------------------------------------------------------------------------------------
+# Run the 'application' as well as timestamps watcher
 cloudflu-timestamps-upload \
   "mpirun --hostfile ${an_openmpi_hostfile} -np ${a_number_processors} ${a_cur_dir}/launcher.sh" \
      --finish-hook="cloudflu-timestamps-hook" \

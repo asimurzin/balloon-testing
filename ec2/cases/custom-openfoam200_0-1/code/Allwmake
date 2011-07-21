@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 #--------------------------------------------------------------------------------------
 cd ${0%/*} || exit 1    # run from this directory
@@ -6,16 +6,17 @@ set -x
 
 
 #--------------------------------------------------------------------------------------
-wmake exe 1>./cout.wmake 2>./cerr.wmake || errorcode=$?
+a_hostname=`hostname`
+wmake exe 1>./log.cout.wmake.${a_hostname} 2>./log.cerr.wmake.${a_hostname} || errorcode=$?
 
-cat cout.wmake > ./log.wmake
-cat cerr.wmake >> ./log.wmake
+cat log.cout.wmake.${a_hostname} > ./log.wmake.${a_hostname}
+cat log.cerr.wmake.${a_hostname} >> ./log.wmake.${a_hostname}
 
-if [ ${errorcode} != 0 ] ; then
+if [ "${errorcode}x" != "x" ] ; then
     echo "ERROR"
     exit ${errorcode}
 fi
- 
+
 
 # To extract the target application name
 application=`cat ./Make/files | grep SEXE | sed -e"s%\([^/]*\)/\(.*\)%\2%g"`
