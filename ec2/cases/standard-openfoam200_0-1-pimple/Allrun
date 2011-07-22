@@ -1,62 +1,44 @@
 #!/bin/bash -x
 
 #--------------------------------------------------------------------------------------
+## Copyright 2010 Alexey Petrov
+##
+## Licensed under the Apache License, Version 2.0 (the "License");
+## you may not use this file except in compliance with the License.
+## You may obtain a copy of the License at
+##
+##     http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+## Author : Alexey Petrov
+##
+
+
+#--------------------------------------------------------------------------------------
 cd ${0%/*} || exit 1    # run from this directory
 a_cur_dir=`pwd`
 
 source ${WM_PROJECT_DIR}/bin/tools/RunFunctions # source tutorial run functions
 
-a_number_nodes=${1}; shift
+a_number_nodes=${1-1}; shift
 
 an_openmpi_hostfile=${1}; shift
 
+application="pimpleFoam"
 
-#--------------------------------------------------------------------------------------
-# Comment this section if you use referenced OpenFOAM solvers
-# (just name 'application' variable after the solver)
-
-# To compile solver for each of the cluster node independandtly
-# (sometimes there are problems in launching executable compiled 
-# on a master node no the slave nodes)
-for a_host in `cat ${an_openmpi_hostfile} | sed -e "s%slots=.*%%g"` ; do 
-    ssh ${a_host} ". /etc/profile && ${a_cur_dir}/code/Allwclean" ;
-    ssh ${a_host} ". /etc/profile && ${a_cur_dir}/code/Allwmake" ;
-done
-cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/code $* &
-
-# Get application name
-export application=`${a_cur_dir}/code/Allwmake`
-if [ ${application} == "ERROR" ] ; then
-    exit -1
-fi
+# a_run_local='yes'
 
 
 #--------------------------------------------------------------------------------------
-setDamBreakFine ()
-{
-    blockMeshDict="constant/polyMesh/blockMeshDict"
-    controlDict="system/controlDict"
-    sed \
-    -e s/"23 8"/"46 10"/g \
-    -e s/"19 8"/"40 10"/g \
-    -e s/"23 42\(.*\) 1 1)"/"46 76\1 2 1)"/g \
-    -e s/"4 42\(.*\) 1 1)"/"4 76\1 2 1)"/g \
-    -e s/"19 42\(.*\) 1 1)"/"40 76\1 2 1)"/g \
-    ${blockMeshDict} > temp.$$
-    mv temp.$$ ${blockMeshDict}
-    sed \
-    -e s/"\(deltaT[ \t]*\) 0.001;"/"\1 5e-04;"/g \
-    -e s/"\(endTime[ \t]*\) 0.9;"/"\1 0.9;"/g \
-    ${controlDict} > temp.$$
-    mv temp.$$ ${controlDict}
-}
-setDamBreakFine
-
 runApplication blockMesh
-cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh $* &
-
-runApplication setFields
-cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/log.setFields $* &
+if [ "${a_run_local}x" != "yesx" ] ; then
+    cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh $* &
+fi
 
 
 #--------------------------------------------------------------------------------------
@@ -83,7 +65,9 @@ scotchCoeffs
 EOF
 
 runApplication decomposePar
-cloudflu-study-upload ${a_cur_dir}/system ${a_cur_dir}/log.decomposePar $* &
+if [ "${a_run_local}x" != "yesx" ] ; then
+    cloudflu-study-upload ${a_cur_dir}/system ${a_cur_dir}/log.decomposePar $* &
+fi
 
 
 #--------------------------------------------------------------------------------------
@@ -93,17 +77,22 @@ echo \#!/usr/bin/env bash > ${a_cur_dir}/launcher.sh
 echo source /etc/profile >> ${a_cur_dir}/launcher.sh
 echo ${application} -case ${a_cur_dir} -parallel >> ${a_cur_dir}/launcher.sh
 chmod 755 ${a_cur_dir}/launcher.sh
-
-cloudflu-study-upload ${a_cur_dir}/launcher.sh $* &
+if [ "${a_run_local}x" != "yesx" ] ; then
+    cloudflu-study-upload ${a_cur_dir}/launcher.sh $* &
+fi
 
 
 #--------------------------------------------------------------------------------------
 # Run the 'application' as well as timestamps watcher
-cloudflu-timestamps-upload \
-  "mpirun --hostfile ${an_openmpi_hostfile} -np ${a_number_processors} ${a_cur_dir}/launcher.sh" \
-     --finish-hook="cloudflu-timestamps-hook" \
-     --solver-log="log.solver" \
-     $*
+if [ "${a_run_local}x" != "yesx" ] ; then
+    cloudflu-timestamps-upload \
+	"mpirun --hostfile ${an_openmpi_hostfile} -np ${a_number_processors} ${a_cur_dir}/launcher.sh" \
+	--finish-hook="cloudflu-timestamps-hook" \
+	--solver-log="log.solver" \
+	$*
+else
+    mpirun -np ${a_number_processors} ${a_cur_dir}/launcher.sh > ${a_cur_dir}/log.solver
+fi
 
 
 #--------------------------------------------------------------------------------------
