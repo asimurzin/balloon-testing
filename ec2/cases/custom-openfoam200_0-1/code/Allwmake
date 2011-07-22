@@ -7,12 +7,12 @@ set -x
 
 #--------------------------------------------------------------------------------------
 a_hostname=`hostname`
-wmake exe 1>./log.cout.wmake.${a_hostname} 2>./log.cerr.wmake.${a_hostname} || errorcode=$?
+wmake exe 1>./log.cout.wmake.${a_hostname} 2>./log.cerr.wmake.${a_hostname} ; errorcode=$?
 
 cat log.cout.wmake.${a_hostname} > ./log.wmake.${a_hostname}
 cat log.cerr.wmake.${a_hostname} >> ./log.wmake.${a_hostname}
 
-if [ "${errorcode}x" != "x" ] ; then
+if [ "${errorcode}x" != "0x" ] ; then
     echo "ERROR"
     exit ${errorcode}
 fi

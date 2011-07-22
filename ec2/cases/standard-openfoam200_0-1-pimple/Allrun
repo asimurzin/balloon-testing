@@ -41,7 +41,10 @@ fi
 #--------------------------------------------------------------------------------------
 ${a_cur_dir}/generateMeshDict.pl 0.04 0.392 0.4 1.36 0.56 0.002 > ${a_cur_dir}/constant/polyMesh/blockMeshDict 
 
-runApplication blockMesh
+runApplication blockMesh ; an_error_code=$?
+if [ "${an_error_code}x" != "0x" ] ; then
+    exit ${an_error_code}
+fi
 if [ "${a_run_local}x" != "yesx" ] ; then
     cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh $* &
 fi
@@ -72,7 +75,10 @@ EOF
 
 rm -rf ${a_cur_dir}/processor*
 
-runApplication decomposePar
+runApplication decomposePar ; an_error_code=$?
+if [ "${an_error_code}x" != "0x" ] ; then
+    exit ${an_error_code}
+fi
 if [ "${a_run_local}x" != "yesx" ] ; then
     cloudflu-study-upload ${a_cur_dir}/system ${a_cur_dir}/log.decomposePar $* &
 fi
