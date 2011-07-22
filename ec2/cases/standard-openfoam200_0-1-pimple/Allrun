@@ -25,16 +25,22 @@ a_cur_dir=`pwd`
 
 source ${WM_PROJECT_DIR}/bin/tools/RunFunctions # source tutorial run functions
 
-a_number_nodes=${1-1}; shift
+a_number_nodes=${1}; shift
 
 an_openmpi_hostfile=${1}; shift
 
 application="pimpleFoam"
 
-# a_run_local='yes'
+if [ "${a_number_nodes}x" == "x" ] ; then
+    a_run_local='yes'
+    a_number_nodes=1
+fi
 
 
 #--------------------------------------------------------------------------------------
+${a_cur_dir}/generateMeshDict.pl 0.04 0.392 0.4 1.36 0.56 0.001 > \
+    ${a_cur_dir}/constant/polyMesh/blockMeshDict 
+
 runApplication blockMesh
 if [ "${a_run_local}x" != "yesx" ] ; then
     cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh $* &
