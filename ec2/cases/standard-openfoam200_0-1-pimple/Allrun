@@ -1,0 +1,109 @@
+#!/bin/bash -x
+
+#--------------------------------------------------------------------------------------
+cd ${0%/*} || exit 1    # run from this directory
+a_cur_dir=`pwd`
+
+source ${WM_PROJECT_DIR}/bin/tools/RunFunctions # source tutorial run functions
+
+a_number_nodes=${1}; shift
+
+an_openmpi_hostfile=${1}; shift
+
+
+#--------------------------------------------------------------------------------------
+# Comment this section if you use referenced OpenFOAM solvers
+# (just name 'application' variable after the solver)
+
+# To compile solver for each of the cluster node independandtly
+# (sometimes there are problems in launching executable compiled 
+# on a master node no the slave nodes)
+for a_host in `cat ${an_openmpi_hostfile} | sed -e "s%slots=.*%%g"` ; do 
+    ssh ${a_host} ". /etc/profile && ${a_cur_dir}/code/Allwclean" ;
+    ssh ${a_host} ". /etc/profile && ${a_cur_dir}/code/Allwmake" ;
+done
+cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/code $* &
+
+# Get application name
+export application=`${a_cur_dir}/code/Allwmake`
+if [ ${application} == "ERROR" ] ; then
+    exit -1
+fi
+
+
+#--------------------------------------------------------------------------------------
+setDamBreakFine ()
+{
+    blockMeshDict="constant/polyMesh/blockMeshDict"
+    controlDict="system/controlDict"
+    sed \
+    -e s/"23 8"/"46 10"/g \
+    -e s/"19 8"/"40 10"/g \
+    -e s/"23 42\(.*\) 1 1)"/"46 76\1 2 1)"/g \
+    -e s/"4 42\(.*\) 1 1)"/"4 76\1 2 1)"/g \
+    -e s/"19 42\(.*\) 1 1)"/"40 76\1 2 1)"/g \
+    ${blockMeshDict} > temp.$$
+    mv temp.$$ ${blockMeshDict}
+    sed \
+    -e s/"\(deltaT[ \t]*\) 0.001;"/"\1 5e-04;"/g \
+    -e s/"\(endTime[ \t]*\) 0.9;"/"\1 0.9;"/g \
+    ${controlDict} > temp.$$
+    mv temp.$$ ${controlDict}
+}
+setDamBreakFine
+
+runApplication blockMesh
+cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh $* &
+
+runApplication setFields
+cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/log.setFields $* &
+
+
+#--------------------------------------------------------------------------------------
+a_slots=`python -c "import os; print os.sysconf( 'SC_NPROCESSORS_ONLN' )"`
+a_number_processors=`python -c "print ${a_number_nodes} * ${a_slots}"`
+weights=`python -c "print tuple( [ 1 for an_id in range( ${a_number_processors} ) ] )"`
+processorWeights=`echo ${weights} | sed -e "s%,%%g"`
+
+cat > ${a_cur_dir}/system/decomposeParDict <<EOF
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      decomposeParDict;
+}
+numberOfSubdomains ${a_number_processors};
+method scotch;
+scotchCoeffs
+{
+    processorWeights ${processorWeights};
+}
+EOF
+
+runApplication decomposePar
+cloudflu-study-upload ${a_cur_dir}/system ${a_cur_dir}/log.decomposePar $* &
+
+
+#--------------------------------------------------------------------------------------
+# To prepare a specific "launcher.sh" for this application
+# to secure that it is run in proper environment
+echo \#!/usr/bin/env bash > ${a_cur_dir}/launcher.sh
+echo source /etc/profile >> ${a_cur_dir}/launcher.sh
+echo ${application} -case ${a_cur_dir} -parallel >> ${a_cur_dir}/launcher.sh
+chmod 755 ${a_cur_dir}/launcher.sh
+
+cloudflu-study-upload ${a_cur_dir}/launcher.sh $* &
+
+
+#--------------------------------------------------------------------------------------
+# Run the 'application' as well as timestamps watcher
+cloudflu-timestamps-upload \
+  "mpirun --hostfile ${an_openmpi_hostfile} -np ${a_number_processors} ${a_cur_dir}/launcher.sh" \
+     --finish-hook="cloudflu-timestamps-hook" \
+     --solver-log="log.solver" \
+     $*
+
+
+#--------------------------------------------------------------------------------------
