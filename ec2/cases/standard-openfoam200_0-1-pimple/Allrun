@@ -39,7 +39,7 @@ fi
 
 
 #--------------------------------------------------------------------------------------
-${a_cur_dir}/generateMeshDict.pl 0.04 0.392 0.4 1.36 0.56 0.01 > ${a_cur_dir}/constant/polyMesh/blockMeshDict 
+${a_cur_dir}/generateMeshDict.pl 0.04 0.392 0.4 1.36 0.56 0.002 > ${a_cur_dir}/constant/polyMesh/blockMeshDict 
 
 runApplication blockMesh
 if [ "${a_run_local}x" != "yesx" ] ; then
@@ -69,6 +69,8 @@ scotchCoeffs
     processorWeights ${processorWeights};
 }
 EOF
+
+rm -rf ${a_cur_dir}/processor*
 
 runApplication decomposePar
 if [ "${a_run_local}x" != "yesx" ] ; then
