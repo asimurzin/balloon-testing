@@ -34,12 +34,12 @@ application="pimpleFoam"
 if [ "${a_number_nodes}x" == "x" ] ; then
     a_run_local='yes'
     a_number_nodes=1
+    rm -fr ${a_cur_dir}/log.*
 fi
 
 
 #--------------------------------------------------------------------------------------
-${a_cur_dir}/generateMeshDict.pl 0.04 0.392 0.4 1.36 0.56 0.001 > \
-    ${a_cur_dir}/constant/polyMesh/blockMeshDict 
+${a_cur_dir}/generateMeshDict.pl 0.04 0.392 0.4 1.36 0.56 0.01 > ${a_cur_dir}/constant/polyMesh/blockMeshDict 
 
 runApplication blockMesh
 if [ "${a_run_local}x" != "yesx" ] ; then
