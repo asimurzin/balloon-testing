@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 #--------------------------------------------------------------------------------------
 ## Copyright 2010 Alexey Petrov
@@ -25,10 +25,41 @@ a_cur_dir=`pwd`
 
 source ${WM_PROJECT_DIR}/bin/tools/RunFunctions # source tutorial run functions
 
-a_number_nodes=${1}; shift
 
-an_openmpi_hostfile=${1}; shift
+#--------------------------------------------------------------------------------------
+# To parse the input command-line arguments
+a_watched_keyword=`echo $* | perl -p -i -e "s%(.*)(--watched-keyword=)(.*)%\2\3%g"`
+args=`echo $* | perl -p -i -e "s%(.*)--watched-keyword=.*%\1%g"`
+for arg in ${args} ;  do
+    echo ${arg}
+    if [ `echo ${arg} | grep --regexp='--hostfile='` ]; then
+        a_hostfile=`echo ${arg} | awk "-F=" '{print $2}'`
+    fi  
+    if [ `echo ${arg} | grep --regexp='--number-nodes='` ]; then
+        a_number_nodes=`echo ${arg} | awk "-F=" '{print $2}'`
+    fi  
+    
+    if [ `echo ${arg} | grep --regexp='--booked'` ]; then
+        a_study_booked=${arg}
+    fi  
+    if [ `echo ${arg} | grep --regexp='--study-name='` ]; then
+        a_study_name=${arg}
+    fi  
+    if [ `echo ${arg} | grep --regexp='--upload-seed-size='` ]; then
+        an_upload_seed_size=${arg}
+    fi  
+    
+    if [ `echo ${arg} | grep --regexp='--watched-timeout='` ]; then
+        a_watched_timeout=${arg}
+    fi  
+    if [ `echo ${arg} | grep --regexp='--finish-hook='` ]; then
+        a_finish_hook=${arg}
+    fi  
+done
 
+
+#--------------------------------------------------------------------------------------
+set -x
 application="pimpleFoam"
 
 if [ "${a_number_nodes}x" == "x" ] ; then
@@ -46,7 +77,8 @@ if [ "${an_error_code}x" != "0x" ] ; then
     exit ${an_error_code}
 fi
 if [ "${a_run_local}x" != "yesx" ] ; then
-    cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh $* &
+    cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh \
+        ${a_study_booked} ${a_study_name} ${an_upload_seed_size}
 fi
 
 
@@ -80,7 +112,8 @@ if [ "${an_error_code}x" != "0x" ] ; then
     exit ${an_error_code}
 fi
 if [ "${a_run_local}x" != "yesx" ] ; then
-    cloudflu-study-upload ${a_cur_dir}/system ${a_cur_dir}/log.decomposePar $* &
+    cloudflu-study-upload ${a_cur_dir}/system ${a_cur_dir}/log.decomposePar \
+        ${a_study_booked} ${a_study_name} ${an_upload_seed_size}
 fi
 
 
@@ -92,7 +125,8 @@ echo source /etc/profile >> ${a_cur_dir}/launcher.sh
 echo ${application} -case ${a_cur_dir} -parallel >> ${a_cur_dir}/launcher.sh
 chmod 755 ${a_cur_dir}/launcher.sh
 if [ "${a_run_local}x" != "yesx" ] ; then
-    cloudflu-study-upload ${a_cur_dir}/launcher.sh $* &
+    cloudflu-study-upload ${a_cur_dir}/launcher.sh \
+        ${a_study_booked} ${a_study_name} ${an_upload_seed_size}
 fi
 
 
@@ -100,10 +134,9 @@ fi
 # Run the 'application' as well as timestamps watcher
 if [ "${a_run_local}x" != "yesx" ] ; then
     cloudflu-timestamps-upload \
-	"mpirun --hostfile ${an_openmpi_hostfile} -np ${a_number_processors} ${a_cur_dir}/launcher.sh" \
-	--finish-hook="cloudflu-timestamps-hook" \
-	--solver-log="log.solver" \
-	$*
+        "mpirun --hostfile ${a_hostfile} -np ${a_number_processors} ${a_cur_dir}/launcher.sh" \
+        ${a_study_booked} ${a_study_name} ${an_upload_seed_size} --solver-log="log.solver" \
+        ${a_watched_keyword} ${a_watched_timeout} ${a_finish_hook}
 else
     mpirun -np ${a_number_processors} ${a_cur_dir}/launcher.sh > ${a_cur_dir}/log.solver
 fi

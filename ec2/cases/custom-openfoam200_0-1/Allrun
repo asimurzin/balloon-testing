@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 #--------------------------------------------------------------------------------------
 cd ${0%/*} || exit 1    # run from this directory
@@ -6,23 +6,53 @@ a_cur_dir=`pwd`
 
 source ${WM_PROJECT_DIR}/bin/tools/RunFunctions # source tutorial run functions
 
-a_number_nodes=${1}; shift
 
-an_openmpi_hostfile=${1}; shift
+#--------------------------------------------------------------------------------------
+# To parse the input command-line arguments
+a_watched_keyword=`echo $* | perl -p -i -e "s%(.*)(--watched-keyword=)(.*)%\2\3%g"`
+args=`echo $* | perl -p -i -e "s%(.*)--watched-keyword=.*%\1%g"`
+for arg in ${args} ;  do
+    echo ${arg}
+    if [ `echo ${arg} | grep --regexp='--hostfile='` ]; then
+        a_hostfile=`echo ${arg} | awk "-F=" '{print $2}'`
+    fi  
+    if [ `echo ${arg} | grep --regexp='--number-nodes='` ]; then
+        a_number_nodes=`echo ${arg} | awk "-F=" '{print $2}'`
+    fi  
+    
+    if [ `echo ${arg} | grep --regexp='--booked'` ]; then
+        a_study_booked=${arg}
+    fi  
+    if [ `echo ${arg} | grep --regexp='--study-name='` ]; then
+        a_study_name=${arg}
+    fi  
+    if [ `echo ${arg} | grep --regexp='--upload-seed-size='` ]; then
+        an_upload_seed_size=${arg}
+    fi  
+    
+    if [ `echo ${arg} | grep --regexp='--watched-timeout='` ]; then
+        a_watched_timeout=${arg}
+    fi  
+    if [ `echo ${arg} | grep --regexp='--finish-hook='` ]; then
+        a_finish_hook=${arg}
+    fi  
+done
 
 
 #--------------------------------------------------------------------------------------
+set -x
 # Comment this section if you use referenced OpenFOAM solvers
 # (just name 'application' variable after the solver)
 
 # To compile solver for each of the cluster node independandtly
 # (sometimes there are problems in launching executable compiled 
 # on a master node no the slave nodes)
-for a_host in `cat ${an_openmpi_hostfile} | sed -e "s%slots=.*%%g"` ; do 
+for a_host in `cat ${a_hostfile} | sed -e "s%slots=.*%%g"` ; do 
     ssh ${a_host} ". /etc/profile && ${a_cur_dir}/code/Allwclean" ;
     ssh ${a_host} ". /etc/profile && ${a_cur_dir}/code/Allwmake" ;
 done
-cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/code $* &
+cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/code \
+    ${a_study_booked} ${a_study_name} ${an_upload_seed_size}
 
 # Get application name
 export application=`${a_cur_dir}/code/Allwmake`
@@ -53,10 +83,12 @@ setDamBreakFine ()
 setDamBreakFine
 
 runApplication blockMesh
-cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh $* &
+cloudflu-study-upload ${a_cur_dir}/constant ${a_cur_dir}/log.blockMesh \
+    ${a_study_booked} ${a_study_name} ${an_upload_seed_size}
 
 runApplication setFields
-cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/log.setFields $* &
+cloudflu-study-upload ${a_cur_dir}/0 ${a_cur_dir}/log.setFields \
+    ${a_study_booked} ${a_study_name} ${an_upload_seed_size}
 
 
 #--------------------------------------------------------------------------------------
@@ -83,7 +115,8 @@ scotchCoeffs
 EOF
 
 runApplication decomposePar
-cloudflu-study-upload ${a_cur_dir}/system ${a_cur_dir}/log.decomposePar $* &
+cloudflu-study-upload ${a_cur_dir}/system ${a_cur_dir}/log.decomposePar \
+    ${a_study_booked} ${a_study_name} ${an_upload_seed_size}
 
 
 #--------------------------------------------------------------------------------------
@@ -94,16 +127,16 @@ echo source /etc/profile >> ${a_cur_dir}/launcher.sh
 echo ${application} -case ${a_cur_dir} -parallel >> ${a_cur_dir}/launcher.sh
 chmod 755 ${a_cur_dir}/launcher.sh
 
-cloudflu-study-upload ${a_cur_dir}/launcher.sh $* &
+cloudflu-study-upload ${a_cur_dir}/launcher.sh \
+    ${a_study_booked} ${a_study_name} ${an_upload_seed_size}
 
 
 #--------------------------------------------------------------------------------------
 # Run the 'application' as well as timestamps watcher
 cloudflu-timestamps-upload \
-  "mpirun --hostfile ${an_openmpi_hostfile} -np ${a_number_processors} ${a_cur_dir}/launcher.sh" \
-     --finish-hook="cloudflu-timestamps-hook" \
-     --solver-log="log.solver" \
-     $*
+    "mpirun --hostfile ${a_hostfile} -np ${a_number_processors} ${a_cur_dir}/launcher.sh" \
+    ${a_study_booked} ${a_study_name} ${an_upload_seed_size} --solver-log="log.solver" \
+    ${a_watched_keyword} ${a_watched_timeout} ${a_finish_hook}
 
 
 #--------------------------------------------------------------------------------------
